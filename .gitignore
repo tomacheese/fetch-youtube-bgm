@@ -1,0 +1,4 @@
+data/*
+!data/.gitkeep
+config.json
+node_modules

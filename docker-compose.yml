@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  downloader:
+    build: downloader
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data
+      - type: bind
+        source: ./config.json
+        target: /app/config.json
