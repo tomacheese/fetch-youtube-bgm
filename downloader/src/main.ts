@@ -33,8 +33,8 @@ async function main() {
           resolve()
         })
     })
-    if (fs.existsSync(`/data/tracks/${id}.mp3`)) {
-      fs.unlinkSync(`/data/tracks/${id}.mp3`)
+    if (fs.existsSync(`/tmp/download-movies/${id}.mp3`)) {
+      fs.unlinkSync(`/tmp/download-movies/${id}.mp3`)
     }
   }
 
