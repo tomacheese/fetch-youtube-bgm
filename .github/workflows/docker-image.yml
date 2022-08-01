@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        directory: [downloader]
+        directory: [downloader, viewer]
 
     steps:
       - uses: actions/checkout@v3

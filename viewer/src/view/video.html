@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fetch-youtube-bgm</title>
+  </head>
+  <body>
+    <main id="app">
+      <v-app>
+        <v-container>
+          <v-container>
+            <iframe :src="'https://www.youtube.com/embed/' + videoId" title="YouTube video player" frameborder="0"
+              height="320" width="100%"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen></iframe>
+          </v-container>
+
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-text-field v-model="form.track" label="Title" required></v-text-field>
+            <v-text-field v-model="form.artist" label="Artist"></v-text-field>
+            <v-text-field v-model="form.album" label="Album"></v-text-field>
+            <v-text-field v-model="form.albumArtist" label="AlbumArtist"></v-text-field>
+
+            <v-btn color="success" @click="submitForm" :loading="loading">
+              Submit
+            </v-btn>
+          </v-form>
+          <v-snackbar v-model="saved" color="success">
+            Saved
+            <template v-slot:action="{ attrs }">
+              <v-btn text v-bind="attrs" @click="saved = false">
+                Close
+              </v-btn>
+            </template>
+          </v-snackbar>
+          <v-snackbar v-model="failed" color="error">
+            Failed
+            <template v-slot:action="{ attrs }">
+              <v-btn text v-bind="attrs" @click="failed = false">
+                Close
+              </v-btn>
+            </template>
+          </v-snackbar>
+        </v-container>
+      </v-app>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      new Vue({
+        el: '#app',
+        vuetify: new Vuetify(),
+        data: {
+          videoId: '',
+          isHideDefinedArtist: false,
+          form: {
+            track: '',
+            artist: '',
+            album: '',
+            albumArtist: ''
+          },
+          loading: false,
+          saved: false,
+          failed: false
+        },
+        mounted() {
+          const query = new URLSearchParams(window.location.search);
+          this.videoId = query.get('vid');
+          axios.get(`/api/info/${this.videoId}`)
+            .then(response => {
+              this.form = response.data.data
+            })
+            .catch(error => {
+              console.log(error)
+            })
+        },
+        methods: {
+          submitForm() {
+            if (!this.$refs.form.validate()) {
+              alert("Please fill in the required fields.")
+              return
+            }
+            this.loading = true
+            axios.patch(`/api/info/${this.videoId}`, this.form)
+              .then(response => {
+                this.items = response.data.data
+                this.loading = false
+                this.saved = true
+              })
+              .catch(error => {
+                console.log(error)
+                this.loading = false
+                this.failed = true
+              })
+          }
+        }
+      })
+    </script>
+  </body>
+</html>

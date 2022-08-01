@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "downloader"
+    },
+    {
+      "path": "viewer"
+    },
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "liveServer.settings.multiRootWorkspaceName": "viewer"
+  }
+}
