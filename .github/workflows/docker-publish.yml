@@ -41,7 +41,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ matrix.directory }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v3.1.0
+        uses: docker/build-push-action@v3.1.1
         with:
           context: ${{ matrix.directory }}
           push: true
