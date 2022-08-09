@@ -26,6 +26,9 @@ async function main() {
     addId3Tag(track)
 
     const filename = getFilename(track)
+    if (filename !== `${id}.mp3` && fs.existsSync(`/data/tracks/${id}.mp3`)) {
+      fs.unlinkSync(`/data/tracks/${id}.mp3`)
+    }
     await new Promise<void>((resolve) => {
       fs.createReadStream(`/tmp/download-movies/${id}.mp3`)
         .pipe(fs.createWriteStream(`/data/tracks/${filename}`))
