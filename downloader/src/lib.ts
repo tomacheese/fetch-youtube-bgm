@@ -97,10 +97,17 @@ export function addId3Tag(track: Track) {
     {
       title: track.track,
       artist: track.artist.split(',').join('/'),
+      fileUrl: `https://youtu.be/${track.vid}`,
     },
     prevBuffer
   )
   fs.writeFileSync(file, newBuffer)
+}
+
+export function getId3TagFileUrl(file: string) {
+  const buffer = fs.readFileSync(file)
+  const tags = NodeID3.read(buffer)
+  return tags.fileUrl
 }
 
 export function normalizeVolume(file: string) {
