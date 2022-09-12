@@ -1,4 +1,4 @@
-# 任意のレジストリに Docker image を公開orビルドする。
+# 任意のレジストリに複数の Docker image を公開orビルドする。
 # master/mainのプッシュ時、プルリクの作成・更新時、リリース時に動作する。
 
 name: Docker
@@ -17,16 +17,21 @@ on:
       - published
 
 env:
-  REGISTRY: ghcr.io
+  REGISTRY: ghcr.io # DockerHubの際はこの行を削除
   DOCKER_USERNAME: ${{ github.actor }}
   DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-  IMAGE_NAME: ${{ github.repository }}
   PLATFORMS: linux/amd64,linux/arm64
 
 jobs:
   job:
-    name: Build
+    name: Docker build (${{ fromJson(matrix.target).directory }})
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        target:
+          - '{ imageName: "tomacheese/fetch-youtube-bgm-downloader", directory: "downloader" }'
+          - '{ imageName: "tomacheese/fetch-youtube-bgm-viewer", directory: "viewer" }'
 
     steps:
       - name: Check out the repo
@@ -37,8 +42,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-        with:
-          install: true
 
       - name: Login to ${{ env.REGISTRY }}
         if: github.event_name == 'release'
@@ -52,12 +55,18 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4.0.1
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
+          images: ${{ fromJson(matrix.target).imageName }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
       - name: Build and push Docker image
         uses: docker/build-push-action@v3.1.1
         with:
-          context: .
+          context: ${{ fromJson(matrix.target).directory }}
           push: ${{ github.event_name == 'release' }}
           platforms: ${{ env.PLATFORMS }}
           tags: ${{ steps.meta.outputs.tags }}
