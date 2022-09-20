@@ -1,4 +1,4 @@
-# Node.js v16 でビルド・テストを実行する
+# 複数のディレクトリにある Node.js v14 と v16 でビルド・テストを実行する
 
 name: Node CI
 
@@ -20,7 +20,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         node: [16]
-        directory: [downloader]
+        directory: [AAAAA, BBBBB]
 
     steps:
       - name: 🛎 Checkout
@@ -32,8 +32,8 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: 📃 Check package.json definition
-        working-directory: ${{ matrix.directory }}
         id: package-json
+        working-directory: ${{ matrix.directory }}
         run: |
           compile=$(cat package.json | jq '.scripts | has("compile")')
           build=$(cat package.json | jq '.scripts | has("build")')
@@ -70,35 +70,43 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 👨🏻‍💻 Install dependencies
+        working-directory: ${{ matrix.directory }}
         run: yarn
 
       - name: 👀 Run linter
         if: steps.package-json.outputs.lint == 'true'
+        working-directory: ${{ matrix.directory }}
         run: yarn lint
 
       - name: 🎁 Run package
         if: steps.package-json.outputs.package == 'true'
+        working-directory: ${{ matrix.directory }}
         run: yarn package
 
       - name: 🏃 Run compile
         if: steps.package-json.outputs.compile == 'true'
+        working-directory: ${{ matrix.directory }}
         run: yarn compile
 
       - name: 🏗️ Run build & generate (Nuxt.js)
         if: steps.package-json.outputs.build == 'true' && steps.package-json.outputs.generate == 'true'
+        working-directory: ${{ matrix.directory }}
         run: |
           yarn build
           yarn generate
 
       - name: 🧪 Run tests
         if: steps.package-json.outputs.test == 'true'
+        working-directory: ${{ matrix.directory }}
         run: yarn test
 
       - name: ☑️ Check Dependencies
+        working-directory: ${{ matrix.directory }}
         run: npx depcheck
 
       - name: Check exists dist directory
         id: check-dist
+        working-directory: ${{ matrix.directory }}
         run: |
           echo "::set-output name=exists::$(test -d dist && echo true || echo false)"
 
@@ -106,5 +114,5 @@ jobs:
         if: steps.check-dist.outputs.exists == 'true'
         uses: actions/upload-artifact@v3
         with:
-          name: dist
-          path: dist
+          name: ${{ matrix.directory }}-dist
+          path: ${{ matrix.directory }}/dist
