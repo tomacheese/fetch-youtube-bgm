@@ -20,7 +20,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         node: [16]
-        directory: [AAAAA, BBBBB]
+        directory: [downloader]
 
     steps:
       - name: 🛎 Checkout
