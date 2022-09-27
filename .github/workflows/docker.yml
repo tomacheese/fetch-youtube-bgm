@@ -57,7 +57,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4.0.1
         with:
-          images: ${{ fromJson(matrix.target).imageName }}
+          images: ${{ env.REGISTRY }}/${{ fromJson(matrix.target).imageName }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
