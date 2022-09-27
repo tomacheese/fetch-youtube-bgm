@@ -17,7 +17,7 @@ on:
       - published
 
 env:
-  REGISTRY: ghcr.io # DockerHubの際はこの行を削除
+  REGISTRY: ghcr.io
   DOCKER_USERNAME: ${{ github.actor }}
   DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
   PLATFORMS: linux/amd64,linux/arm64
