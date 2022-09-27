@@ -24,6 +24,49 @@
             </div>
           </div>
 
+          <div>
+            <v-btn block @click="isActiveDialog = true" x-large>ADD NEW TRACK</v-btn>
+
+            <v-dialog v-model="isActiveDialog" persistent>
+              <v-card>
+                <v-card-title>Add new track</v-card-title>
+
+                <v-card-text>
+                  <v-text-field v-model="form.vid" label="YouTube Video Id (Or URL)" @blur="getVideoInfo()" required>
+                  </v-text-field>
+                  <v-text-field v-model="form.title" label="Title" required></v-text-field>
+                  <v-text-field v-model="form.artist" label="Artist"></v-text-field>
+                  <v-text-field v-model="form.album" label="Album"></v-text-field>
+                  <v-text-field v-model="form.albumArtist" label="AlbumArtist"></v-text-field>
+                </v-card-text>
+
+                <v-card-actions>
+                  <v-btn color="error" @click="isActiveDialog = false">Cancel</v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn color="success" @click="submitForm" :loading="loading">
+                    Submit
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <v-snackbar v-model="saved" color="success">
+              Saved
+              <template v-slot:action="{ attrs }">
+                <v-btn text v-bind="attrs" @click="saved = false">
+                  Close
+                </v-btn>
+              </template>
+            </v-snackbar>
+            <v-snackbar v-model="failed" color="error">
+              Failed
+              <template v-slot:action="{ attrs }">
+                <v-btn text v-bind="attrs" @click="failed = false">
+                  Close
+                </v-btn>
+              </template>
+            </v-snackbar>
+          </div>
+
           <v-row>
             <v-col v-for="(item, i) in items" :key="i" cols="12"
               v-if="isHideDefinedArtist ? item.artist == null : true">
@@ -55,7 +98,17 @@
         vuetify: new Vuetify(),
         data: {
           items: [],
-          isHideDefinedArtist: false
+          isActiveDialog: false,
+          isHideDefinedArtist: false,
+          form: {
+            vid: '',
+            artist: '',
+            album: '',
+            albumArtist: ''
+          },
+          loading: false,
+          saved: false,
+          failed: false
         },
         mounted() {
           axios.get('/api/info')
@@ -77,12 +130,46 @@
                 albumArtist: item.albumArtist
               }
             }
-            const blob = new Blob([JSON.stringify(items)], { type: 'application/json' })
+            const blob = new Blob([JSON.stringify(items)], {type: 'application/json'})
             const url = window.URL.createObjectURL(blob)
             const link = document.createElement('a')
             link.href = url
             link.download = 'export-video-informations.json'
             link.click()
+          },
+          getVideoInfo() {
+            const ytLongUrlRegex = /https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/
+            const ytShortUrlRegex = /https:\/\/youtu\.be\/([a-zA-Z0-9_-]+)/
+
+            if (ytLongUrlRegex.test(this.form.vid)) {
+              this.form.vid = this.form.vid.match(ytLongUrlRegex)[1]
+            } else if (ytShortUrlRegex.test(this.form.vid)) {
+              this.form.vid = this.form.vid.match(ytShortUrlRegex)[1]
+            }
+
+
+            axios.get(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${this.form.vid}&format=json`)
+              .then(response => {
+                this.form.title = response.data.title
+                this.form.artist = response.data.author_name
+              })
+              .catch(error => {
+                console.log(error)
+              })
+          },
+          submitForm() {
+            this.loading = true
+            axios.patch(`/api/info/${this.videoId}`, this.form)
+              .then(response => {
+                this.items = response.data.data
+                this.loading = false
+                this.saved = true
+              })
+              .catch(error => {
+                console.log(error)
+                this.loading = false
+                this.failed = true
+              })
           }
         }
       })
