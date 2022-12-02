@@ -5,6 +5,7 @@ import {
   addId3Tag,
   addTrack,
   downloadPlaylist,
+  getFileMd5,
   getFilename,
   getId3TagFileUrl,
   getTrack,
@@ -41,6 +42,17 @@ async function main() {
       fs.unlinkSync(`/data/tracks/${id}.mp3`)
     }
 
+    // ファイル内容が異なるかを確認
+    // 同じな場合はスキップ
+    if (
+      fs.existsSync(`/data/tracks/${filename}`) &&
+      getFileMd5(`/data/tracks/${filename}`) ===
+        getFileMd5(`/tmp/download-movies/${id}.mp3`)
+    ) {
+      console.log(`Skip ${id}`)
+      continue
+    }
+
     // ファイルをコピー
     await new Promise<void>((resolve) => {
       fs.createReadStream(`/tmp/download-movies/${id}.mp3`)
@@ -53,6 +65,19 @@ async function main() {
     // 一時ファイルを削除
     if (fs.existsSync(`/tmp/download-movies/${id}.mp3`)) {
       fs.unlinkSync(`/tmp/download-movies/${id}.mp3`)
+    }
+
+    // メタデータが未定義かを確認し、未定義だったら通知
+    if (!track.track) {
+      await axios
+        .post('http://discord-deliver', {
+          embed: {
+            title: `Downloaded ${id}`,
+            url: `https://youtu.be/${id}`,
+            color: 0x00ff00,
+          },
+        })
+        .catch(() => null)
     }
   }
 

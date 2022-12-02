@@ -2,6 +2,7 @@ import axios from 'axios'
 import { execSync } from 'child_process'
 import fs from 'fs'
 import NodeID3 from 'node-id3'
+import { createHash } from 'crypto'
 
 interface Track {
   vid: string
@@ -129,4 +130,20 @@ export async function downloadPlaylist(playlistId: string) {
   return fs
     .readdirSync('/tmp/download-movies/')
     .map((file) => file.replace('.mp3', ''))
+}
+
+// see: https://qiita.com/yasuhiroki/items/ec7f0c959827e3217588
+export function getFileMd5(file: string) {
+  return new Promise((resolve, reject) => {
+    const readStream = fs.createReadStream(file)
+    const md5hash = createHash('md5')
+    md5hash.setEncoding('base64')
+    readStream.pipe(md5hash)
+    readStream.on('end', () => {
+      resolve(md5hash.read())
+    })
+    readStream.on('error', (e) => {
+      reject(e)
+    })
+  })
 }
