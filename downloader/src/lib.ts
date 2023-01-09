@@ -123,8 +123,23 @@ export async function downloadPlaylist(playlistId: string) {
   }
   fs.mkdirSync('/tmp/download-movies/')
 
-  const command = `yt-dlp --ignore-config -f "ba" -x --audio-format mp3 --embed-thumbnail -o "%(id)s.%(ext)s" https://www.youtube.com/playlist?list=${playlistId}`
-  execSync(command, {
+  const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy
+  const command = [
+    'yt-dlp',
+    '--ignore-config',
+    httpsProxy ? '--proxy' : '',
+    httpsProxy || '',
+    '-f',
+    'ba',
+    '-x',
+    '--audio-format',
+    'mp3',
+    '--embed-thumbnail',
+    '-o',
+    '%(id)s.%(ext)s',
+    `https://www.youtube.com/playlist?list=${playlistId}`,
+  ]
+  execSync(command.join(' '), {
     cwd: '/tmp/download-movies/',
   })
   return fs
