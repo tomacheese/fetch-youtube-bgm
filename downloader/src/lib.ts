@@ -136,7 +136,7 @@ export async function downloadPlaylist(playlistId: string) {
     'mp3',
     '--embed-thumbnail',
     '-o',
-    '%(id)s.%(ext)s',
+    '"%(id)s.%(ext)s"',
     `https://www.youtube.com/playlist?list=${playlistId}`,
   ]
   execSync(command.join(' '), {
