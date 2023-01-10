@@ -143,7 +143,7 @@ export async function getPlaylistVideoIds(playlistId: string) {
   const result = execSync(command.join(' '), {
     cwd: '/tmp/download-movies/',
   })
-  return result.toString().split('\n')
+  return result.toString().split('\n').filter((id) => id)
 }
 
 export async function downloadVideo(videoId: string) {
