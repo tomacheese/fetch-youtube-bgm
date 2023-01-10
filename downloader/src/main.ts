@@ -4,10 +4,12 @@ import { getConfig } from './configuration'
 import {
   addId3Tag,
   addTrack,
-  downloadPlaylist,
+  deleteDownloadMoviesDir,
+  downloadVideo,
   getFileMd5,
   getFilename,
   getId3TagFileUrl,
+  getPlaylistVideoIds,
   getTrack,
   normalizeVolume,
   removeCacheDir,
@@ -17,11 +19,18 @@ async function main() {
   const config = getConfig()
   const playlistId = config.playlistId
 
+  deleteDownloadMoviesDir()
+
   await removeCacheDir()
 
-  const ids = await downloadPlaylist(playlistId)
+  const ids = await getPlaylistVideoIds(playlistId)
 
-  console.log(`Downloaded ${ids.length} videos. Processing...`)
+  console.log(`Found ${ids.length} videos. Download...`)
+
+  // プレイリスト動画をダウンロード
+  for (const id of ids) {
+    await downloadVideo(id)
+  }
 
   // ダウンロードしたプレイリスト動画を処理する
   for (const id of ids) {

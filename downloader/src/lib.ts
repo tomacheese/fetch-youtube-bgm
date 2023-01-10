@@ -120,12 +120,34 @@ export async function removeCacheDir() {
   execSync('yt-dlp --rm-cache-dir')
 }
 
-export async function downloadPlaylist(playlistId: string) {
-  console.log(`Downloading playlist ${playlistId}`)
+export function deleteDownloadMoviesDir() {
   if (fs.existsSync('/tmp/download-movies/')) {
     fs.rmSync('/tmp/download-movies/', { recursive: true })
   }
   fs.mkdirSync('/tmp/download-movies/')
+}
+
+export async function getPlaylistVideoIds(playlistId: string) {
+  console.log(`Get playlist videos ${playlistId}`)
+  const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy
+  const command = [
+    'yt-dlp',
+    '--ignore-config',
+    httpsProxy ? '--proxy' : '',
+    httpsProxy || '',
+    '--flat-playlist',
+    '--print',
+    'id',
+    `https://www.youtube.com/playlist?list=${playlistId}`,
+  ]
+  const result = execSync(command.join(' '), {
+    cwd: '/tmp/download-movies/',
+  })
+  return result.toString().split('\n')
+}
+
+export async function downloadVideo(videoId: string) {
+  console.log(`Downloading video ${videoId}`)
 
   const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy
   const command = [
@@ -141,14 +163,11 @@ export async function downloadPlaylist(playlistId: string) {
     '--embed-thumbnail',
     '-o',
     '"%(id)s.%(ext)s"',
-    `https://www.youtube.com/playlist?list=${playlistId}`,
+    `https://youtu.be/${videoId}`,
   ]
   execSync(command.join(' '), {
     cwd: '/tmp/download-movies/',
   })
-  return fs
-    .readdirSync('/tmp/download-movies/')
-    .map((file) => file.replace('.mp3', ''))
 }
 
 // see: https://qiita.com/yasuhiroki/items/ec7f0c959827e3217588
