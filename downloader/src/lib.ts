@@ -149,7 +149,7 @@ export async function getPlaylistVideoIds(playlistId: string) {
     .filter((id) => id)
 }
 
-export async function downloadVideo(videoId: string) {
+export async function downloadVideo(videoId: string): Promise<boolean> {
   console.log(`Downloading video ${videoId}`)
 
   const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy
@@ -168,9 +168,15 @@ export async function downloadVideo(videoId: string) {
     '"%(id)s.%(ext)s"',
     `https://youtu.be/${videoId}`,
   ]
-  execSync(command.join(' '), {
-    cwd: '/tmp/download-movies/',
-  })
+  try {
+    execSync(command.join(' '), {
+      cwd: '/tmp/download-movies/',
+    })
+    return true
+  } catch (e) {
+    console.warn(`Failed to download ${videoId}`)
+    return false
+  }
 }
 
 // see: https://qiita.com/yasuhiroki/items/ec7f0c959827e3217588
