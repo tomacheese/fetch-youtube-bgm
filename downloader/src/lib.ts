@@ -116,6 +116,10 @@ export function normalizeVolume(file: string) {
   execSync(`mp3gain -r -c -p "${file}"`)
 }
 
+export async function removeCacheDir() {
+  execSync('yt-dlp --rm-cache-dir')
+}
+
 export async function downloadPlaylist(playlistId: string) {
   console.log(`Downloading playlist ${playlistId}`)
   if (fs.existsSync('/tmp/download-movies/')) {

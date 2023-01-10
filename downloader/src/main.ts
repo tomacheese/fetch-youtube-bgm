@@ -10,11 +10,14 @@ import {
   getId3TagFileUrl,
   getTrack,
   normalizeVolume,
+  removeCacheDir,
 } from './lib'
 
 async function main() {
   const config = getConfig()
   const playlistId = config.playlistId
+
+  await removeCacheDir()
 
   const ids = await downloadPlaylist(playlistId)
 
