@@ -29,7 +29,16 @@ async function main() {
 
   // プレイリスト動画をダウンロード
   for (const id of ids) {
-    await downloadVideo(id)
+    // 3回までリトライする
+    for (let i = 0; i < 3; i++) {
+      const result = await downloadVideo(id)
+      if (result) {
+        console.log(`Successfully downloaded ${id}`)
+        break
+      }
+      console.log(`Failed to download ${id}. Retry...`)
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+    }
   }
 
   // ダウンロードしたプレイリスト動画を処理する
