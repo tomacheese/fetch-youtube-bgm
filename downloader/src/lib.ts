@@ -97,7 +97,7 @@ function parseHttpProxy(): AxiosProxyConfig | false {
 export async function getVideoInformation(vid: string) {
   const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${vid}&format=json`
   const response = await axios.get(url, {
-    proxy: parseHttpProxy()
+    proxy: parseHttpProxy(),
   })
   if (response.status !== 200) {
     console.warn(`Failed to get video information for ${vid}`)
