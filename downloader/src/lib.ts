@@ -197,7 +197,6 @@ export async function downloadVideo(videoId: string): Promise<boolean> {
     })
     return true
   } catch (e) {
-    console.warn(`Failed to download ${videoId}`)
     return false
   }
 }

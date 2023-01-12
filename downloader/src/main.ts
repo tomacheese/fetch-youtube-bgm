@@ -39,6 +39,10 @@ async function main() {
       console.log(`Failed to download ${id}. Retry...`)
       await new Promise((resolve) => setTimeout(resolve, 3000))
     }
+
+    if (!fs.existsSync(`/tmp/download-movies/${id}.mp3`)) {
+      throw new Error(`Failed to download ${id}`)
+    }
   }
 
   // ダウンロードしたプレイリスト動画を処理する
