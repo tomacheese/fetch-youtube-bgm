@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosProxyConfig } from 'axios'
 import { execSync } from 'child_process'
 import fs from 'fs'
 import NodeID3 from 'node-id3'
@@ -73,9 +73,32 @@ export function getFilename(track: Track) {
   return `${vid}.mp3`
 }
 
+function parseHttpProxy(): AxiosProxyConfig | false {
+  const proxy = process.env.HTTPS_PROXY || process.env.HTTP_PROXY
+  if (!proxy) return false
+
+  const parsed = new URL(proxy)
+  if (!parsed.hostname || !parsed.port) return false
+
+  return {
+    host: parsed.hostname,
+    port: parseInt(parsed.port),
+    auth:
+      parsed.username && parsed.password
+        ? {
+            username: parsed.username,
+            password: parsed.password,
+          }
+        : undefined,
+    protocol: parsed.protocol.replace(':', ''),
+  }
+}
+
 export async function getVideoInformation(vid: string) {
   const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${vid}&format=json`
-  const response = await axios.get(url)
+  const response = await axios.get(url, {
+    proxy: parseHttpProxy()
+  })
   if (response.status !== 200) {
     console.warn(`Failed to get video information for ${vid}`)
     return null
