@@ -35,8 +35,8 @@ env:
   # ビルド対象情報の情報
   TARGETS: >-
     [
-      { imageName: "tomacheese/fetch-youtube-bgm-downloader", context: "downloader", file: "{context}/Dockerfile", packageName: "fetch-youtube-bgm-downloader" },
-      { imageName: "tomacheese/fetch-youtube-bgm-viewer", context: "viewer", file: "{context}/Dockerfile", packageName: "fetch-youtube-bgm-viewer" }
+      { imageName: "tomacheese/fetch-youtube-bgm-downloader", context: "downloader", file: "downloader/Dockerfile", packageName: "fetch-youtube-bgm-downloader" },
+      { imageName: "tomacheese/fetch-youtube-bgm-viewer", context: "viewer", file: "viewer/Dockerfile", packageName: "fetch-youtube-bgm-viewer" }
     ]
 
 concurrency:
