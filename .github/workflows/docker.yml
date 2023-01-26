@@ -35,8 +35,8 @@ env:
   # ビルド対象情報の情報
   TARGETS: >-
     [
-      { imageName: "tomacheese/fetch-youtube-bgm-downloader", dir: "downloader", file: "Dockerfile", packageName: "fetch-youtube-bgm-downloader" },
-      { imageName: "tomacheese/fetch-youtube-bgm-viewer", dir: "viewer", file: "Dockerfile", packageName: "fetch-youtube-bgm-viewer" }
+      { imageName: "tomacheese/fetch-youtube-bgm-downloader", context: "downloader", file: "{context}/Dockerfile", packageName: "fetch-youtube-bgm-downloader" },
+      { imageName: "tomacheese/fetch-youtube-bgm-viewer", context: "viewer", file: "{context}/Dockerfile", packageName: "fetch-youtube-bgm-viewer" }
     ]
 
 concurrency:
@@ -180,7 +180,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3.3.0
         with:
-          context: ${{ matrix.target.dir }}
+          context: ${{ matrix.target.context }}
           file: ${{ matrix.target.file }}
           push: ${{ github.event.pull_request.merged == true }}
           platforms: ${{ matrix.platform }}
