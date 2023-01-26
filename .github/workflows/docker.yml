@@ -73,8 +73,8 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          default_bump: 'minor'
-          custom_release_rules: 'feat:minor:✨ Features,fix:patch:🐛 Fixes,docs:patch:📰 Docs,chore:patch:🎨 Chore,pref:patch:🎈 Performance improvements,refactor:patch:🧹 Refactoring,build:patch:🔍 Build,ci:patch:🔍 CI,revert:patch:⏪ Revert,style:patch:🧹 Style,test:patch:👀 Test,release:major:📦 Release'
+          default_bump: "minor"
+          custom_release_rules: "feat:minor:✨ Features,fix:patch:🐛 Fixes,docs:patch:📰 Docs,chore:patch:🎨 Chore,pref:patch:🎈 Performance improvements,refactor:patch:🧹 Refactoring,build:patch:🔍 Build,ci:patch:🔍 CI,revert:patch:⏪ Revert,style:patch:🧹 Style,test:patch:👀 Test,release:major:📦 Release"
           dry_run: ${{ github.event.pull_request.merged == false }}
 
       - name: Set platform matrix
@@ -111,8 +111,7 @@ jobs:
     steps:
       - name: Remove platform prefix
         id: platform
-        run:
-          echo "shortPlatform=$(echo "${{ matrix.platform }}" | sed -r -e 's/^[^\/]+\///')" >> $GITHUB_OUTPUT
+        run: echo "shortPlatform=$(echo "${{ matrix.platform }}" | sed -r -e 's/^[^\/]+\///')" >> $GITHUB_OUTPUT
 
       - name: Create GitHub deployment
         uses: chrnorm/deployment-action@v2.0.5
@@ -121,7 +120,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ needs.calc-version.outputs.tag }}
-          environment: '${{ matrix.target.packageName }}:${{ steps.platform.outputs.shortPlatform }}'
+          environment: "${{ matrix.target.packageName }}:${{ steps.platform.outputs.shortPlatform }}"
           environment-url: https://github.com/${{ github.repository }}/pkgs/container/${{ matrix.target.packageName }}
 
       - name: Update deployment status (in_progress)
@@ -205,6 +204,17 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           state: failure
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+
+  finished-build:
+    name: Check finished build
+    runs-on: ubuntu-latest
+    needs:
+      - calc-version
+      - build
+
+    steps:
+      - name: Check finished build
+        run: echo ok
 
   # 各プラットフォームのlatestからlatestタグにマージしてイメージを作成
   merge-latest:
