@@ -1,5 +1,6 @@
 FROM node:19
 
+# hadolint ignore=DL3008
 RUN apt-get update && \
   apt-get upgrade -y && \
   apt-get install --no-install-recommends -y software-properties-common && \
@@ -12,7 +13,8 @@ WORKDIR /app
 
 COPY package.json .
 COPY yarn.lock .
-RUN yarn install && \
+RUN echo network-timeout 600000 > .yarnrc && \
+  yarn install --frozen-lockfile && \
   yarn cache clean
 
 RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && \
