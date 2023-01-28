@@ -111,16 +111,19 @@
           saved: false,
           failed: false
         },
-        mounted() {
-          axios.get('/api/info')
-            .then(response => {
-              this.items = response.data.data
-            })
-            .catch(error => {
-              console.log(error)
-            })
+        async mounted() {
+          await fetch()
         },
         methods: {
+          fetch() {
+            axios.get('/api/info')
+              .then(response => {
+                this.items = response.data.data
+              })
+              .catch(error => {
+                console.log(error)
+              })
+          },
           downloadJson() {
             const items = {}
             for (const item of this.items) {
@@ -131,7 +134,7 @@
                 albumArtist: item.albumArtist
               }
             }
-            const blob = new Blob([JSON.stringify(items)], {type: 'application/json'})
+            const blob = new Blob([JSON.stringify(items)], { type: 'application/json' })
             const url = window.URL.createObjectURL(blob)
             const link = document.createElement('a')
             link.href = url
@@ -161,9 +164,18 @@
             this.loading = true
             axios.patch(`/api/info/${this.form.vid}`, this.form)
               .then(response => {
-                this.items = response.data.data
-                this.loading = false
-                this.saved = true
+                fetch().then(() => {
+                  this.loading = false
+                  this.saved = true
+                  this.isActiveDialog = false
+                  this.form = {
+                    vid: '',
+                    track: '',
+                    artist: '',
+                    album: '',
+                    albumArtist: ''
+                  }
+                })
               })
               .catch(error => {
                 console.log(error)
