@@ -34,7 +34,7 @@
                 <v-card-text>
                   <v-text-field v-model="form.vid" label="YouTube Video Id (Or URL)" @blur="getVideoInfo()" required>
                   </v-text-field>
-                  <v-text-field v-model="form.title" label="Title" required></v-text-field>
+                  <v-text-field v-model="form.track" label="Title" required></v-text-field>
                   <v-text-field v-model="form.artist" label="Artist"></v-text-field>
                   <v-text-field v-model="form.album" label="Album"></v-text-field>
                   <v-text-field v-model="form.albumArtist" label="AlbumArtist"></v-text-field>
@@ -102,6 +102,7 @@
           isHideDefinedArtist: false,
           form: {
             vid: '',
+            track: '',
             artist: '',
             album: '',
             albumArtist: ''
@@ -147,10 +148,9 @@
               this.form.vid = this.form.vid.match(ytShortUrlRegex)[1]
             }
 
-
             axios.get(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${this.form.vid}&format=json`)
               .then(response => {
-                this.form.title = response.data.title
+                this.form.track = response.data.title
                 this.form.artist = response.data.author_name
               })
               .catch(error => {
@@ -159,7 +159,7 @@
           },
           submitForm() {
             this.loading = true
-            axios.patch(`/api/info/${this.videoId}`, this.form)
+            axios.patch(`/api/info/${this.form.vid}`, this.form)
               .then(response => {
                 this.items = response.data.data
                 this.loading = false
