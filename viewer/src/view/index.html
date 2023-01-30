@@ -112,7 +112,7 @@
           failed: false
         },
         async mounted() {
-          await fetch()
+          await this.fetch()
         },
         methods: {
           fetch() {
@@ -164,7 +164,7 @@
             this.loading = true
             axios.patch(`/api/info/${this.form.vid}`, this.form)
               .then(response => {
-                fetch().then(() => {
+                this.fetch().then(() => {
                   this.loading = false
                   this.saved = true
                   this.isActiveDialog = false
