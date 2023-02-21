@@ -17,8 +17,8 @@ RUN echo network-timeout 600000 > .yarnrc && \
   yarn install --frozen-lockfile && \
   yarn cache clean
 
-# renovate: datasource=github-releases depName=yt-dlp/yt-dlp
-ENV YT_DLP_VERSION=2023.01.06
+# renovate: datasource=github-tags depName=yt-dlp/yt-dlp versioning=loose
+ENV YT_DLP_VERSION="2023.01.06"
 RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/${YT_DLP_VERSION}/download/yt-dlp -o /usr/local/bin/yt-dlp && \
   chmod a+rx /usr/local/bin/yt-dlp
 
