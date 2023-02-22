@@ -19,7 +19,7 @@ RUN echo network-timeout 600000 > .yarnrc && \
 
 # renovate: datasource=github-tags depName=yt-dlp/yt-dlp versioning=loose
 ENV YT_DLP_VERSION=2023.02.17
-RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/${YT_DLP_VERSION}/download/yt-dlp -o /usr/local/bin/yt-dlp && \
+RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/download/${YT_DLP_VERSION}/yt-dlp -o /usr/local/bin/yt-dlp && \
   chmod a+rx /usr/local/bin/yt-dlp
 
 COPY entrypoint.sh .
