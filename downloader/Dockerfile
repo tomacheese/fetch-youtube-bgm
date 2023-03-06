@@ -51,4 +51,6 @@ RUN chmod +x entrypoint.sh
 COPY src src
 COPY tsconfig.json .
 
+ENV LOG_DIR /data/logs
+
 ENTRYPOINT [ "/app/entrypoint.sh" ]

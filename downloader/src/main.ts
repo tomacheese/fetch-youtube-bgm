@@ -1,4 +1,3 @@
-import axios from 'axios'
 import fs from 'fs'
 import { getConfig } from './configuration'
 import { sendDiscordMessage } from './discord'
@@ -9,14 +8,17 @@ import {
   downloadVideo,
   getEchoPrint,
   getFilename,
+  getHumanReadableSize,
   getId3TagFileUrl,
   getPlaylistVideoIds,
   getTrack,
   normalizeVolume,
   removeCacheDir,
 } from './lib'
+import { Logger } from './logger'
 
 async function main() {
+  const logger = Logger.configure('main')
   const config = getConfig()
   const playlistId = config.playlistId
 
@@ -24,20 +26,26 @@ async function main() {
 
   await removeCacheDir()
 
+  logger.info(`📚 Getting playlist videos for ${playlistId}`)
   const ids = await getPlaylistVideoIds(playlistId)
 
-  console.log(`Found ${ids.length} videos. Download...`)
+  logger.info(`🎥 Found ${ids.length} videos. Downloading...`)
 
   // プレイリスト動画をダウンロード
   for (const id of ids) {
+    logger.info(
+      `📥 Downloading video ${id} (${ids.indexOf(id) + 1}/${ids.length})`
+    )
     // 3回までリトライする
     for (let i = 0; i < 3; i++) {
       const result = await downloadVideo(id)
       if (result) {
-        console.log(`Successfully downloaded ${id}`)
+        const filesize = fs.statSync(`/tmp/download-movies/${id}.mp3`).size
+        const humanFileSize = getHumanReadableSize(filesize)
+        logger.info(`✅ Successfully downloaded ${id} (${humanFileSize})`)
         break
       }
-      console.log(`Failed to download ${id}. Retry...`)
+      logger.info(`❌ Failed to download ${id}. Retry after 3 seconds...`)
       await new Promise((resolve) => setTimeout(resolve, 3000))
     }
 
@@ -48,7 +56,7 @@ async function main() {
 
   // ダウンロードしたプレイリスト動画を処理する
   for (const id of ids) {
-    console.log(`Processing ${id}`)
+    logger.info(`🎵 Processing ${id}`)
 
     // 登録されているトラック情報を取得
     const track = getTrack(id)
@@ -58,13 +66,17 @@ async function main() {
     }
 
     // 音量を正規化・ID3タグを付与
+    logger.info(`🔊 Normalizing volume of ${id}`)
     normalizeVolume(`/tmp/download-movies/${id}.mp3`)
+
+    logger.info(`📃 Adding ID3 tag for ${track.vid}`)
     addId3Tag(track)
 
     const filename = getFilename(track)
 
     // タイトルが定義されている場合、古いファイル名（{videoId}.mp3）のファイルを削除
     if (filename !== `${id}.mp3` && fs.existsSync(`/data/tracks/${id}.mp3`)) {
+      logger.info(`🗑️ Deleting old file: ${id}.mp3`)
       fs.unlinkSync(`/data/tracks/${id}.mp3`)
     }
 
@@ -75,7 +87,7 @@ async function main() {
       getEchoPrint(`/data/tracks/${filename}`) ===
         getEchoPrint(`/tmp/download-movies/${id}.mp3`)
     ) {
-      console.log(`Skip ${id}`)
+      logger.info(`⏭️ Skipping because the file is the same: ${id}`)
       continue
     }
 
@@ -92,6 +104,8 @@ async function main() {
     if (fs.existsSync(`/tmp/download-movies/${id}.mp3`)) {
       fs.unlinkSync(`/tmp/download-movies/${id}.mp3`)
     }
+
+    logger.info(`✅ Successfully processed ${id}`)
 
     sendDiscordMessage(config, '', {
       title: `Downloaded ${id}`,
@@ -115,11 +129,10 @@ async function main() {
   }
 
   // プレイリストにない音楽ファイルを削除
-  console.log('Deleting playlist removed tracks...')
+  logger.info('🗑️ Deleting playlist removed tracks...')
 
   const files = fs.readdirSync('/data/tracks/')
   for (const file of files) {
-    console.log(`Processing ${file}`)
     const fileUrl = getId3TagFileUrl(`/data/tracks/${file}`)
     if (!fileUrl) {
       continue
@@ -127,25 +140,17 @@ async function main() {
 
     const id = fileUrl.split('/').pop()
     if (id && !ids.includes(id)) {
-      console.log(`Deleting ${file}`)
+      logger.info(`🗑️ Deleting track: ${file}`)
       fs.unlinkSync(`/data/tracks/${file}`)
     }
   }
 
-  console.log('Done')
+  logger.info('🎉 Successfully finished!')
 }
 
 ;(async () => {
   await main().catch(async (err) => {
-    console.error(err)
-    await axios
-      .post('http://discord-deliver', {
-        embed: {
-          title: `Error`,
-          description: `${err.message}`,
-          color: 0xff0000,
-        },
-      })
-      .catch(() => null)
+    const logger = Logger.configure('main')
+    logger.error('Error', err)
   })
 })()
