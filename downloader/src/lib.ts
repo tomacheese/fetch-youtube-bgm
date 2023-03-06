@@ -2,6 +2,7 @@ import axios, { AxiosProxyConfig } from 'axios'
 import { execSync } from 'child_process'
 import fs from 'fs'
 import NodeID3 from 'node-id3'
+import { Logger } from './logger'
 
 interface Track {
   vid: string
@@ -94,12 +95,13 @@ function parseHttpProxy(): AxiosProxyConfig | false {
 }
 
 export async function getVideoInformation(vid: string) {
+  const logger = Logger.configure('getVideoInformation')
   const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${vid}&format=json`
   const response = await axios.get(url, {
     proxy: parseHttpProxy(),
   })
   if (response.status !== 200) {
-    console.warn(`Failed to get video information for ${vid}`)
+    logger.warn(`🚫 Failed to get video information for ${vid}`)
     return null
   }
   const { title, author_name: authorName } = response.data
@@ -110,7 +112,6 @@ export async function getVideoInformation(vid: string) {
 }
 
 export function addId3Tag(track: Track) {
-  console.log(`Adding ID3 tag for ${track.vid}`)
   const file = `/tmp/download-movies/${track.vid}.mp3`
   const prevBuffer = fs.readFileSync(file)
   if (!track.track || !track.artist) {
@@ -134,7 +135,6 @@ export function getId3TagFileUrl(file: string) {
 }
 
 export function normalizeVolume(file: string) {
-  console.log(`Normalizing volume of ${file}`)
   execSync(`mp3gain -r -c -p "${file}"`)
 }
 
@@ -150,7 +150,6 @@ export function deleteDownloadMoviesDir() {
 }
 
 export async function getPlaylistVideoIds(playlistId: string) {
-  console.log(`Get playlist videos ${playlistId}`)
   const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy
   const command = [
     'yt-dlp',
@@ -172,8 +171,6 @@ export async function getPlaylistVideoIds(playlistId: string) {
 }
 
 export async function downloadVideo(videoId: string): Promise<boolean> {
-  console.log(`Downloading video ${videoId}`)
-
   const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy
   const command = [
     'yt-dlp',
@@ -205,4 +202,10 @@ export function getEchoPrint(file: string) {
   const result = execSync(command.join(' '))
   const json = JSON.parse(result.toString())
   return json.code
+}
+
+export function getHumanReadableSize(bytes: number) {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${units[i]}`
 }
