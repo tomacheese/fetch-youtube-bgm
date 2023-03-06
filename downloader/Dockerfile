@@ -1,13 +1,36 @@
-FROM node:19
+FROM buildpack-deps:bullseye as builder
+
+WORKDIR /build
+
+# hadolint ignore=DL3008
+RUN apt-get update && \
+  apt-get upgrade -y && \
+  apt-get install --no-install-recommends -y libboost-dev libtag1-dev zlib1g-dev && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/* && \
+  git clone https://github.com/spotify/echoprint-codegen.git
+
+WORKDIR /build/echoprint-codegen/src
+RUN make
+
+WORKDIR /build/echoprint-codegen
+RUN cp echoprint-codegen /usr/local/bin/
+
+WORKDIR /build
+RUN rm -rf echoprint-codegen
+
+FROM node:19 as runner
 
 # hadolint ignore=DL3008
 RUN apt-get update && \
   apt-get upgrade -y && \
   apt-get install --no-install-recommends -y software-properties-common && \
   apt-get update && \
-  apt-get install --no-install-recommends -y ffmpeg curl python3 mp3gain \
+  apt-get install --no-install-recommends -y ffmpeg curl python3 mp3gain libboost-dev libtag1-dev zlib1g-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/local/bin/echoprint-codegen /usr/local/bin/echoprint-codegen
 
 WORKDIR /app
 

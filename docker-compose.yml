@@ -10,6 +10,7 @@ services:
       - type: bind
         source: ./config.json
         target: /app/config.json
+    init: true
 
   viewer:
     build: viewer
@@ -19,3 +20,4 @@ services:
       - type: bind
         source: ./data
         target: /data
+    init: true
