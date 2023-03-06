@@ -6,7 +6,7 @@ import {
   addTrack,
   deleteDownloadMoviesDir,
   downloadVideo,
-  getFileMd5,
+  getEchoPrint,
   getFilename,
   getId3TagFileUrl,
   getPlaylistVideoIds,
@@ -71,8 +71,8 @@ async function main() {
     // 同じな場合はスキップ
     if (
       fs.existsSync(`/data/tracks/${filename}`) &&
-      getFileMd5(`/data/tracks/${filename}`) ===
-        getFileMd5(`/tmp/download-movies/${id}.mp3`)
+      getEchoPrint(`/data/tracks/${filename}`) ===
+        getEchoPrint(`/tmp/download-movies/${id}.mp3`)
     ) {
       console.log(`Skip ${id}`)
       continue
