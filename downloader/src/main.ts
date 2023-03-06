@@ -1,6 +1,7 @@
 import axios from 'axios'
 import fs from 'fs'
 import { getConfig } from './configuration'
+import { sendDiscordMessage } from './discord'
 import {
   addId3Tag,
   addTrack,
@@ -92,18 +93,25 @@ async function main() {
       fs.unlinkSync(`/tmp/download-movies/${id}.mp3`)
     }
 
-    // メタデータが未定義かを確認し、未定義だったら通知
-    if (!track.track) {
-      await axios
-        .post('http://discord-deliver', {
-          embed: {
-            title: `Downloaded ${id}`,
-            url: `https://youtu.be/${id}`,
-            color: 0x00ff00,
-          },
-        })
-        .catch(() => null)
-    }
+    sendDiscordMessage(config, '', {
+      title: `Downloaded ${id}`,
+      url: `https://youtu.be/${id}`,
+      color: 0x00ff00,
+      fields: [
+        {
+          name: 'Title',
+          value: track.track || '*Unknown*',
+        },
+        {
+          name: 'Artist',
+          value: track.artist || '*Unknown*',
+        },
+        {
+          name: 'Album',
+          value: track.album || '*Unknown*',
+        },
+      ],
+    })
   }
 
   // プレイリストにない音楽ファイルを削除
