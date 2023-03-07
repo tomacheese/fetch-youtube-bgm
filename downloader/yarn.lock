@@ -2,6 +2,16 @@
 # yarn lockfile v1
 
 
+"@book000/node-utils@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.0.3.tgz#a36c08c699d9c840d3bb29f00c3d7b472c18b37e"
+  integrity sha512-4h/r0EWJ+ylN/HXg4ghoE6tZUybufMXrj5jZnBwkMSbyzk6CW5+4sujJ9oMAtwW2BJfclxCklv/UOft66Z1Xew==
+  dependencies:
+    cycle "1.0.3"
+    logform "2.5.1"
+    winston "3.8.2"
+    winston-daily-rotate-file "4.7.1"
+
 "@colors/colors@1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
