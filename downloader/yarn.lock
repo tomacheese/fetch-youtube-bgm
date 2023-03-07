@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@book000/node-utils@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.0.1.tgz#06e117ee0c511993941c346669b2a39e418a4a51"
+  integrity sha512-llHilUFt0AokIxkpUA0S91JOuNACsDAAqbiXLgQihC0FTmyRbB+R/rwrtaeQHUEuzTWjZPlNUtd4Pp2OyMYmDw==
+
 "@colors/colors@1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"

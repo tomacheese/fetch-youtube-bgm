@@ -15,7 +15,7 @@ import {
   normalizeVolume,
   removeCacheDir,
 } from './lib'
-import { Logger } from './logger'
+import { Logger } from '@book000/node-utils'
 
 async function main() {
   const logger = Logger.configure('main')

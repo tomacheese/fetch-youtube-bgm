@@ -2,7 +2,7 @@ import axios, { AxiosProxyConfig } from 'axios'
 import { execSync } from 'child_process'
 import fs from 'fs'
 import NodeID3 from 'node-id3'
-import { Logger } from './logger'
+import { Logger } from '@book000/node-utils'
 
 interface Track {
   vid: string
