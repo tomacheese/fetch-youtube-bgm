@@ -1,12 +1,28 @@
-FROM php:8-alpine
+FROM node:18 as builder
 
-RUN apk update && \
-  apk upgrade
+WORKDIR /build
+
+COPY package.json yarn.lock ./
+
+RUN echo network-timeout 600000 > .yarnrc && \
+  yarn install --frozen-lockfile --non-interactive && \
+  yarn cache clean
+
+COPY nuxt.config.ts .
+COPY src src
+
+RUN yarn build
+
+FROM node:18 as runner
 
 WORKDIR /app
 
-COPY src/ src/
-COPY entrypoint.sh /app/
-RUN chmod +x /app/entrypoint.sh
+COPY --from=builder /build/.output/ /app/
 
-ENTRYPOINT [ "/app/entrypoint.sh" ]
+ENV TRACKS_FILE /data/tracks.json
+ENV TRACKS_DIR /data/tracks/
+
+ENV PORT 80
+EXPOSE 80
+
+CMD ["node", "server/index.mjs"]
