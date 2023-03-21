@@ -8,6 +8,8 @@ import { getReadableError } from './server/utils/readable-error'
 const tracks = ref<Track[]>([])
 /** アーティスト定義済み非表示か */
 const isHideDefinedArtist = ref(false)
+/** ダウンロード済みのみ表示か */
+const isOnlyDownloaded = ref(false)
 /** 編集中トラック情報 */
 const editingTrack = ref<Track>()
 
@@ -45,11 +47,16 @@ function closeEditTrack() {
 }
 
 // --- computed
-const getTracks = computed(() => {
-  if (isHideDefinedArtist.value) {
-    return tracks.value.filter(t => !t.artist)
-  }
-  return tracks.value
+const filteredTracks = computed(() => {
+  return tracks.value.filter((t) => {
+    if (isHideDefinedArtist.value && t.artist) {
+      return false
+    }
+    if (isOnlyDownloaded.value && !t.isDownloaded) {
+      return false
+    }
+    return true
+  })
 })
 
 // --- mounted
@@ -62,7 +69,11 @@ onMounted(async () => {
   <v-app>
     <v-container fluid>
       <div class="d-flex align-center justify-space-between">
-        <v-switch v-model="isHideDefinedArtist" label="アーティスト定義済みを非表示" />
+        <div class="d-flex align-center">
+          <v-switch v-model="isHideDefinedArtist" label="アーティスト定義済みを非表示" />
+          <v-switch v-model="isOnlyDownloaded" class="mx-2" label="ダウンロード済みのみ表示" />
+        </div>
+        <v-spacer />
         <DownloadBtn class="mx-2" />
         <DarkModeSwitch />
       </div>
@@ -75,7 +86,7 @@ onMounted(async () => {
 
       <v-row>
         <v-col
-          v-for="(item, i) in getTracks"
+          v-for="(item, i) in filteredTracks"
           :key="i"
           cols="12"
           md="6"
