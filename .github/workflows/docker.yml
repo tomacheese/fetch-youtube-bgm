@@ -36,6 +36,7 @@ jobs:
           { imageName: "tomacheese/fetch-youtube-bgm-downloader", context: "downloader", file: "downloader/Dockerfile", packageName: "fetch-youtube-bgm-downloader" },
           { imageName: "tomacheese/fetch-youtube-bgm-viewer", context: "viewer", file: "viewer/Dockerfile", packageName: "fetch-youtube-bgm-viewer" }
         ]
+      platforms: linux/amd64
     secrets:
       DOCKER_USERNAME: ${{ github.actor }}
       DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
