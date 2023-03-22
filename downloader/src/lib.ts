@@ -3,6 +3,7 @@ import { execSync } from 'child_process'
 import fs from 'fs'
 import NodeID3 from 'node-id3'
 import { Logger } from '@book000/node-utils'
+import sharp from 'sharp'
 
 interface Track {
   vid: string
@@ -14,6 +15,27 @@ interface Track {
 
 type TrackFile = {
   [vid: string]: Omit<Track, 'vid'>
+}
+
+export interface YouTubeoEmbed {
+  title: string
+  author_name: string
+  author_url: string
+  type: string
+  height: number
+  width: number
+  version: string
+  provider_name: string
+  provider_url: string
+  thumbnail_height: number
+  thumbnail_width: number
+  thumbnail_url: string
+  html: string
+}
+
+interface VideoInformation {
+  title: string
+  artist: string
 }
 
 export function getDefinedTracks(): Track[] {
@@ -46,11 +68,13 @@ export function getTrack(vid: string): Track {
   )
 }
 
-export async function addTrack(vid: string) {
+export async function addTrack(
+  vid: string,
+  information: VideoInformation | null
+) {
   const prev = fs.existsSync('/data/tracks.json')
     ? (JSON.parse(fs.readFileSync('/data/tracks.json').toString()) as TrackFile)
     : {}
-  const information = await getVideoInformation(vid)
   const newTrack = {
     track: information ? information.title : null,
     artist: null,
@@ -94,10 +118,12 @@ function parseHttpProxy(): AxiosProxyConfig | false {
   }
 }
 
-export async function getVideoInformation(vid: string) {
+export async function getVideoInformation(
+  vid: string
+): Promise<VideoInformation | null> {
   const logger = Logger.configure('getVideoInformation')
   const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${vid}&format=json`
-  const response = await axios.get(url, {
+  const response = await axios.get<YouTubeoEmbed>(url, {
     proxy: parseHttpProxy(),
   })
   if (response.status !== 200) {
@@ -128,10 +154,47 @@ export function addId3Tag(track: Track) {
   fs.writeFileSync(file, newBuffer)
 }
 
+export function updateArtwork(vid: string, image: Buffer) {
+  const file = `/tmp/download-movies/${vid}.mp3`
+  const prevBuffer = fs.readFileSync(file)
+  const newBuffer = NodeID3.update(
+    {
+      image: {
+        mime: 'image/jpeg',
+        type: {
+          id: 3,
+          name: 'front cover',
+        },
+        description: 'Cover',
+        imageBuffer: image,
+      },
+    },
+    prevBuffer
+  )
+  fs.writeFileSync(file, newBuffer)
+}
+
 export function getId3TagFileUrl(file: string) {
   const buffer = fs.readFileSync(file)
   const tags = NodeID3.read(buffer)
   return tags.fileUrl
+}
+
+export async function getClippedArtwork(vid: string) {
+  const response = await axios.get(
+    `https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`,
+    {
+      responseType: 'arraybuffer',
+    }
+  )
+  return await sharp(response.data)
+    .extract({
+      left: 280,
+      top: 0,
+      width: 720,
+      height: 720,
+    })
+    .toBuffer()
 }
 
 export function normalizeVolume(file: string) {
@@ -142,11 +205,15 @@ export async function removeCacheDir() {
   execSync('yt-dlp --rm-cache-dir')
 }
 
-export function deleteDownloadMoviesDir() {
+export function recreateDirectories() {
   if (fs.existsSync('/tmp/download-movies/')) {
     fs.rmSync('/tmp/download-movies/', { recursive: true })
   }
-  fs.mkdirSync('/tmp/download-movies/')
+  fs.mkdirSync('/tmp/download-movies/', { recursive: true })
+
+  if (!fs.existsSync('/data/tracks/')) {
+    fs.mkdirSync('/data/tracks/', { recursive: true })
+  }
 }
 
 export async function getPlaylistVideoIds(playlistId: string) {

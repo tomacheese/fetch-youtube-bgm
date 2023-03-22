@@ -4,16 +4,19 @@ import { sendDiscordMessage } from './discord'
 import {
   addId3Tag,
   addTrack,
-  deleteDownloadMoviesDir,
+  recreateDirectories,
   downloadVideo,
+  getClippedArtwork,
   getEchoPrint,
   getFilename,
   getHumanReadableSize,
   getId3TagFileUrl,
   getPlaylistVideoIds,
   getTrack,
+  getVideoInformation,
   normalizeVolume,
   removeCacheDir,
+  updateArtwork,
 } from './lib'
 import { Logger } from '@book000/node-utils'
 
@@ -55,19 +58,36 @@ async function runDownloadVideo(id: string) {
 async function processVideo(id: string) {
   const logger = Logger.configure(`processVideo#${id}`)
   const config = getConfig()
+
+  const videoInfo = await getVideoInformation(id)
+  if (videoInfo) {
+    logger.info(`📺 ${videoInfo.title}`)
+    logger.info(`🎤 ${videoInfo.artist}`)
+  }
+
   // 登録されているトラック情報を取得
   const track = getTrack(id)
   if (!track.track) {
     // トラック情報がない場合は、デフォルト値を設定
-    await addTrack(id)
+    await addTrack(id, videoInfo)
   }
 
-  // 音量を正規化・ID3タグを付与
+  // 音量を正規化
   logger.info(`🔊 Normalizing volume of ${id}`)
   normalizeVolume(`/tmp/download-movies/${id}.mp3`)
 
+  // ID3タグを付与
   logger.info(`📃 Adding ID3 tag for ${track.vid}`)
   addId3Tag(track)
+
+  // トピック(YouTube Music)の場合、アートワークの更新をする
+  if (videoInfo && videoInfo.artist.endsWith(' - Topic')) {
+    const artwork = await getClippedArtwork(id)
+    if (artwork) {
+      logger.info(`🎨 Updating artwork for ${id}`)
+      updateArtwork(id, artwork)
+    }
+  }
 
   const filename = getFilename(track)
 
@@ -77,7 +97,7 @@ async function processVideo(id: string) {
     fs.unlinkSync(`/data/tracks/${id}.mp3`)
   }
 
-  // ファイル内容が異なるかを確認
+  // 音声指紋を元にファイル内容が異なるかを確認
   // 同じな場合はスキップ
   if (
     fs.existsSync(`/data/tracks/${filename}`) &&
@@ -162,8 +182,8 @@ async function main() {
   const config = getConfig()
   const playlistId = config.playlistId
 
-  logger.info('🗑️ Deleting temporary files...')
-  deleteDownloadMoviesDir()
+  logger.info('📁 Recreating directories...')
+  recreateDirectories()
 
   logger.info('🗑️ Deleting yt-dlp cache...')
   await removeCacheDir()
