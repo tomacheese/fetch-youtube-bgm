@@ -171,9 +171,17 @@ async function deleteRemovedTracks(ids: string[]) {
  * m3u8 プレイリストファイルを作成する
  */
 async function createPlaylistFile() {
+  const logger = Logger.configure('createPlaylistFile')
   // 相対パスで表記された m3u8 プレイリストを作成
   const files = fs.readdirSync('/data/tracks/')
   const playlist = files.filter((file) => file.endsWith('.mp3')).join('\n')
+  const oldPlaylist = fs.existsSync('/data/tracks/YouTubeDownloadeds.m3u8')
+    ? fs.readFileSync('/data/tracks/YouTubeDownloadeds.m3u8').toString()
+    : ''
+  if (playlist === oldPlaylist) {
+    logger.info('⏭️ Skipping because the playlist is the same')
+    return
+  }
   fs.writeFileSync('/data/tracks/YouTubeDownloadeds.m3u8', playlist)
 }
 
