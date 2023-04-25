@@ -182,8 +182,8 @@ onMounted(() => {
 
 <template>
   <div>
-    <v-dialog v-model="isActiveDialog" persistent scrollable>
-      <v-form ref="form">
+    <v-dialog v-model="isActiveDialog" persistent>
+      <v-form ref="form" class="scrollable-form">
         <v-card>
           <v-card-title>Create or Edit track</v-card-title>
 
@@ -275,3 +275,9 @@ onMounted(() => {
     </v-snackbar>
   </div>
 </template>
+
+<style scoped>
+.scrollable-form {
+  overflow-y: scroll;
+}
+</style>
