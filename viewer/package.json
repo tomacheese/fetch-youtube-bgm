@@ -19,7 +19,7 @@
     "@mdi/font": "7.2.96",
     "@nuxtjs/eslint-config-typescript": "12.0.0",
     "@types/node": "18.16.13",
-    "eslint": "8.40.0",
+    "eslint": "8.41.0",
     "eslint-plugin-nuxt": "4.0.0",
     "nuxt": "3.5.0",
     "vite-plugin-eslint": "1.8.1",
