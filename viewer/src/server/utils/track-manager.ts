@@ -6,6 +6,7 @@ export class TrackManager {
   private static readonly tracksDir = process.env.TRACKS_DIR || 'data/tracks/'
 
   private static trackFiles: string[] | undefined
+  private static lastLoadedAt: number | undefined
 
   public static getTracks(): ITracksFile {
     if (!fs.existsSync(this.tracksFile)) {
@@ -39,9 +40,12 @@ export class TrackManager {
     if (!fs.existsSync(this.tracksDir)) {
       return []
     }
-    if (this.trackFiles) {
+    // 10 minutes cache
+    if (this.trackFiles && this.lastLoadedAt && Date.now() - this.lastLoadedAt < 600000) {
       return this.trackFiles
     }
     this.trackFiles = fs.readdirSync(this.tracksDir).map(file => file.replace('.mp3', ''))
+    this.lastLoadedAt = Date.now()
+    return this.trackFiles
   }
 }
