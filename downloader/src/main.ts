@@ -59,7 +59,13 @@ async function processVideo(id: string) {
   const logger = Logger.configure(`processVideo#${id}`)
   const config = getConfig()
 
-  const videoInfo = await getVideoInformation(id)
+  let videoInfo = await getVideoInformation(id)
+  if (!videoInfo) {
+    // retry
+    logger.info(`❌ Failed to get video information. Retry after 5 seconds...`)
+    await new Promise((resolve) => setTimeout(resolve, 5000))
+    videoInfo = await getVideoInformation(id)
+  }
   if (videoInfo) {
     logger.info(`📺 ${videoInfo.title}`)
     logger.info(`🎤 ${videoInfo.artist}`)

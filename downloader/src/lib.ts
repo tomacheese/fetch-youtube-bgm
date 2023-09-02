@@ -125,6 +125,7 @@ export async function getVideoInformation(
   const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${vid}&format=json`
   const response = await axios.get<YouTubeoEmbed>(url, {
     proxy: parseHttpProxy(),
+    validateStatus: () => true,
   })
   if (response.status !== 200) {
     logger.warn(`🚫 Failed to get video information for ${vid}`)
@@ -185,8 +186,12 @@ export async function getClippedArtwork(vid: string) {
     `https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`,
     {
       responseType: 'arraybuffer',
+      validateStatus: () => true,
     },
   )
+  if (response.status !== 200) {
+    return null
+  }
   return await sharp(response.data)
     .extract({
       left: 280,
