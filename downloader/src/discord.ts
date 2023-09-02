@@ -73,10 +73,16 @@ export async function sendDiscordMessage(
   // webhook or bot
   if (config.discord.webhook_url) {
     // webhook
-    const response = await axios.post(config.discord.webhook_url, {
-      content: `${text}`,
-      embeds: embed ? [embed] : undefined,
-    })
+    const response = await axios.post(
+      config.discord.webhook_url,
+      {
+        content: `${text}`,
+        embeds: embed ? [embed] : undefined,
+      },
+      {
+        validateStatus: () => true,
+      },
+    )
     if (response.status !== 204) {
       throw new Error(`Discord webhook failed (${response.status})`)
     }
@@ -94,6 +100,7 @@ export async function sendDiscordMessage(
         headers: {
           Authorization: `Bot ${config.discord.token}`,
         },
+        validateStatus: () => true,
       },
     )
     if (response.status !== 200) {
