@@ -41,7 +41,7 @@ interface VideoInformation {
 export function getDefinedTracks(): Track[] {
   if (fs.existsSync('/data/tracks.json')) {
     const result = JSON.parse(
-      fs.readFileSync('/data/tracks.json').toString()
+      fs.readFileSync('/data/tracks.json').toString(),
     ) as TrackFile
     const ret = []
     for (const vid in result) {
@@ -70,7 +70,7 @@ export function getTrack(vid: string): Track {
 
 export async function addTrack(
   vid: string,
-  information: VideoInformation | null
+  information: VideoInformation | null,
 ) {
   const prev = fs.existsSync('/data/tracks.json')
     ? (JSON.parse(fs.readFileSync('/data/tracks.json').toString()) as TrackFile)
@@ -119,7 +119,7 @@ function parseHttpProxy(): AxiosProxyConfig | false {
 }
 
 export async function getVideoInformation(
-  vid: string
+  vid: string,
 ): Promise<VideoInformation | null> {
   const logger = Logger.configure('getVideoInformation')
   const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${vid}&format=json`
@@ -149,7 +149,7 @@ export function addId3Tag(track: Track) {
       artist: track.artist.split(',').join('/'),
       fileUrl: `https://youtu.be/${track.vid}`,
     },
-    prevBuffer
+    prevBuffer,
   )
   fs.writeFileSync(file, newBuffer)
 }
@@ -169,7 +169,7 @@ export function updateArtwork(vid: string, image: Buffer) {
         imageBuffer: image,
       },
     },
-    prevBuffer
+    prevBuffer,
   )
   fs.writeFileSync(file, newBuffer)
 }
@@ -185,7 +185,7 @@ export async function getClippedArtwork(vid: string) {
     `https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`,
     {
       responseType: 'arraybuffer',
-    }
+    },
   )
   return await sharp(response.data)
     .extract({

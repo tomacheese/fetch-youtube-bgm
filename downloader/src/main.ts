@@ -204,7 +204,7 @@ async function main() {
   // プレイリスト動画をダウンロード
   for (const id of ids) {
     logger.info(
-      `📥 Downloading video ${id} (${ids.indexOf(id) + 1}/${ids.length})`
+      `📥 Downloading video ${id} (${ids.indexOf(id) + 1}/${ids.length})`,
     )
     await runDownloadVideo(id)
   }

@@ -65,7 +65,7 @@ export interface DiscordEmbed {
 export async function sendDiscordMessage(
   config: Config,
   text: string,
-  embed?: DiscordEmbed
+  embed?: DiscordEmbed,
 ): Promise<void> {
   if (!config.discord) {
     return
@@ -94,7 +94,7 @@ export async function sendDiscordMessage(
         headers: {
           Authorization: `Bot ${config.discord.token}`,
         },
-      }
+      },
     )
     if (response.status !== 200) {
       throw new Error(`Discord bot failed (${response.status})`)

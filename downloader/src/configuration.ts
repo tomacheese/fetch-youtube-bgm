@@ -15,7 +15,7 @@ export interface Config {
 
 export function getConfig() {
   const config = JSON.parse(
-    fs.readFileSync('./config.json').toString()
+    fs.readFileSync('./config.json').toString(),
   ) as Config
   return config
 }
