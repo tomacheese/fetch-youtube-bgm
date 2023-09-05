@@ -25,7 +25,7 @@ class ParallelDownloadVideo {
   private readonly videoCount: number
 
   constructor(ids: string[]) {
-    this.ids = ids
+    this.ids = [...ids]
     this.videoCount = ids.length
   }
 
@@ -86,7 +86,7 @@ class ParallelProcessVideo {
   private readonly videoCount: number
 
   constructor(ids: string[]) {
-    this.ids = ids
+    this.ids = [...ids]
     this.videoCount = ids.length
   }
 
