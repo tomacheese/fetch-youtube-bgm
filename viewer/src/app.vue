@@ -62,6 +62,17 @@ const filteredTracks = computed(() => {
 // --- mounted
 onMounted(async () => {
   await fetchTracks()
+
+  // ?vid=xxx があれば編集画面を開く
+  const vid = new URLSearchParams(location.search).get('vid')
+  if (!vid || !tracks.value) {
+    return
+  }
+
+  const track = tracks.value.find(t => t.vid === vid)
+  if (track) {
+    openEditDialog(track)
+  }
 })
 </script>
 
