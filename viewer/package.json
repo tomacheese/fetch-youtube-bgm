@@ -24,7 +24,7 @@
     "nuxt": "3.7.4",
     "sass": "1.69.0",
     "vite-plugin-eslint": "1.8.1",
-    "vue-tsc": "1.8.16",
+    "vue-tsc": "1.8.17",
     "vuetify": "3.3.20"
   }
 }
