@@ -7,12 +7,12 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@book000/node-utils@1.9.4":
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.9.4.tgz#707e516d7a52d352e78512e4685597c91b05d6a5"
-  integrity sha512-PDsPo3tKzZpawKzvSgCpjJJPixID4n1LimK9F3rekBDmBmXytX7tGRTqLSChyu1TGcMj+vgMPIMRkSlDnMcKsw==
+"@book000/node-utils@1.9.5":
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.9.5.tgz#0aeaa69487914896731a691d62f6966e44871715"
+  integrity sha512-9R0y5TxPpYVcRDWOQ5xyByAdRf56vzIR4rsVC5rTaZ6Edrz5kYDj608Q/IYImaFW95bMT+DyVY6oHl3OA0S7pQ==
   dependencies:
-    axios "1.6.1"
+    axios "1.6.2"
     cycle "1.0.3"
     form-data "4.0.0"
     jsonc-parser "3.2.0"
@@ -448,15 +448,6 @@ available-typed-arrays@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz#92f95616501069d07d10edb2fc37d3e1c65123b7"
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
-
-axios@1.6.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.1.tgz#76550d644bf0a2d469a01f9244db6753208397d7"
-  integrity sha512-vfBmhDpKafglh0EldBEbVuoe7DyAavGSLWhuSm5ZSEKQnHhBf0xAAwybbNH1IkrJNGnS/VG4I5yxig1pCEXE4g==
-  dependencies:
-    follow-redirects "^1.15.0"
-    form-data "^4.0.0"
-    proxy-from-env "^1.1.0"
 
 axios@1.6.2:
   version "1.6.2"
