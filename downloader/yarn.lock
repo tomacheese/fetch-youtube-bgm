@@ -14,10 +14,10 @@
   dependencies:
     regenerator-runtime "^0.14.0"
 
-"@book000/node-utils@1.11.14":
-  version "1.11.14"
-  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.11.14.tgz#92bfb6a657ee698a5e8894b4620bb5ac17a0f3dc"
-  integrity sha512-D/hokb/B4kahFPBqYxAmcGHnpZk+vVZWQxACm6THN5S58yAjTmyI5ScdaibPxvVkUEi5Le6+Jt7y6dBXylG5Kg==
+"@book000/node-utils@1.11.15":
+  version "1.11.15"
+  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.11.15.tgz#44b4e1ba40249bfbd86c8d1864fd52b480d5d4ab"
+  integrity sha512-vmn9i2T7zryVhPa0/Qxk4GgM3V/Nii2MVsYaqGrcLGRGu1xF3LQnhcVen98/gvyBPTYJU8fDsyRP7/pvV65WTA==
   dependencies:
     axios "1.6.2"
     cycle "1.0.3"
