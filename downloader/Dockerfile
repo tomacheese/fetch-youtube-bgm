@@ -38,6 +38,7 @@ COPY package.json .
 COPY yarn.lock .
 RUN echo network-timeout 600000 > .yarnrc && \
   yarn install --frozen-lockfile && \
+  yarn add sharp && \
   yarn cache clean
 
 # renovate: datasource=github-tags depName=yt-dlp/yt-dlp versioning=loose
