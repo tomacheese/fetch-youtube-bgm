@@ -36,6 +36,8 @@ WORKDIR /app
 
 COPY package.json .
 COPY yarn.lock .
+
+# hadolint ignore=DL3016
 RUN echo network-timeout 600000 > .yarnrc && \
   yarn install --frozen-lockfile && \
   npm install --force @img/sharp-linux-x64 && \
