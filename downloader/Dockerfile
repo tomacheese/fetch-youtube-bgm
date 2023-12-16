@@ -36,9 +36,11 @@ WORKDIR /app
 
 COPY package.json .
 COPY yarn.lock .
+
+# hadolint ignore=DL3016
 RUN echo network-timeout 600000 > .yarnrc && \
   yarn install --frozen-lockfile && \
-  yarn add sharp && \
+  npm install --force @img/sharp-linux-x64 && \
   yarn cache clean
 
 # renovate: datasource=github-tags depName=yt-dlp/yt-dlp versioning=loose
