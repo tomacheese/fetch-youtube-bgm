@@ -16,7 +16,7 @@
     "lintfix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore . --fix"
   },
   "devDependencies": {
-    "@mdi/font": "7.3.67",
+    "@mdi/font": "7.4.47",
     "@nuxtjs/eslint-config-typescript": "12.1.0",
     "@types/node": "20.10.5",
     "eslint": "8.56.0",
