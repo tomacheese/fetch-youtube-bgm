@@ -22,7 +22,7 @@
     "eslint": "8.56.0",
     "eslint-plugin-nuxt": "4.0.0",
     "nuxt": "3.9.0",
-    "sass": "1.69.6",
+    "sass": "1.69.7",
     "vite-plugin-eslint": "1.8.1",
     "vue-tsc": "1.8.27",
     "vuetify": "3.4.9"
