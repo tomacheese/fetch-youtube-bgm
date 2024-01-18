@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@book000/node-utils": "1.12.24",
-    "@types/node": "20.11.2",
+    "@types/node": "20.11.3",
     "@types/sharp": "0.32.0",
     "@typescript-eslint/eslint-plugin": "6.18.1",
     "@typescript-eslint/parser": "6.18.1",
