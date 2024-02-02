@@ -7,15 +7,15 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@book000/node-utils@1.12.31":
-  version "1.12.31"
-  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.12.31.tgz#ae851eab3046f7613fbad11e1684332bee54a642"
-  integrity sha512-sdMxC3GNBc0xR/BGeL8kM3yynJ74WlZZKyI+OHFSBfEdkoUCHH02jx9Oqvrp9HXfM9jL+nc1d6JidP4+xXGl8w==
+"@book000/node-utils@1.12.43":
+  version "1.12.43"
+  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.12.43.tgz#ac320b95caf09343b967e9719aff1565af95f8fa"
+  integrity sha512-Ev3DGFIVx3P5iDJiGpV6kiaHth7O6A/g6fKejfjELauPVVVbDUtgScyFek+zHX1Ydx0E6/SU0tt4ZoT1F+V8+Q==
   dependencies:
-    axios "1.6.5"
+    axios "1.6.7"
     cycle "1.0.3"
     form-data "4.0.0"
-    jsonc-parser "3.2.0"
+    jsonc-parser "3.2.1"
     logform "2.6.0"
     moment-timezone "0.5.44"
     winston "3.11.0"
@@ -559,6 +559,15 @@ axios@1.6.5:
   version "1.6.5"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.5.tgz#2c090da14aeeab3770ad30c3a1461bc970fb0cd8"
   integrity sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==
+  dependencies:
+    follow-redirects "^1.15.4"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
+axios@1.6.7:
+  version "1.6.7"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.7.tgz#7b48c2e27c96f9c68a2f8f31e2ab19f59b06b0a7"
+  integrity sha512-/hDJGff6/c7u0hDkvkGxR/oy6CbCs8ziCsC7SqmhjfozqiJGc8Z11wrv9z9lYfY4K8l+H9TpjcMDX0xOZmx+RA==
   dependencies:
     follow-redirects "^1.15.4"
     form-data "^4.0.0"
@@ -1658,10 +1667,10 @@ json5@^1.0.2:
   dependencies:
     minimist "^1.2.0"
 
-jsonc-parser@3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/jsonc-parser/-/jsonc-parser-3.2.0.tgz#31ff3f4c2b9793f89c67212627c51c6394f88e76"
-  integrity sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==
+jsonc-parser@3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/jsonc-parser/-/jsonc-parser-3.2.1.tgz#031904571ccf929d7670ee8c547545081cb37f1a"
+  integrity sha512-AilxAyFOAcK5wA1+LeaySVBrHsGQvUFCDWXKpZjzaL0PqW+xfBOttn8GNtWKFWqneyMZj41MWF9Kl6iPWLwgOA==
 
 keyv@^4.5.3:
   version "4.5.4"
