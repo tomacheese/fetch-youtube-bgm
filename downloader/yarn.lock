@@ -7,17 +7,17 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@book000/node-utils@1.12.53":
-  version "1.12.53"
-  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.12.53.tgz#83cde9d7666765cd13cc68425d0d983a9bb86844"
-  integrity sha512-kRHP3D810HBbmy6CJUxwAWhk7iLizQJ9VyCWUWLVNxQrrYXbLZ5N2HTksBYyk3K6Ph21eKtTojq5tC6Jn6V2bg==
+"@book000/node-utils@1.12.54":
+  version "1.12.54"
+  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.12.54.tgz#272be310722ca0e6f17c882067b0000631a25703"
+  integrity sha512-7Y0nT5lslrh1AG9kayHrM46wD8cSmdIBKwFIDQHr01So98jF2/hsEocNYfASazHRyHKZnq+HDvlegwqmAC3TgQ==
   dependencies:
     axios "1.6.7"
     cycle "1.0.3"
     form-data "4.0.0"
     jsonc-parser "3.2.1"
     logform "2.6.0"
-    moment-timezone "0.5.44"
+    moment-timezone "0.5.45"
     winston "3.11.0"
     winston-daily-rotate-file "4.7.1"
 
@@ -1797,10 +1797,10 @@ mkdirp@^1.0.4:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
-moment-timezone@0.5.44:
-  version "0.5.44"
-  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.44.tgz#a64a4e47b68a43deeab5ae4eb4f82da77cdf595f"
-  integrity sha512-nv3YpzI/8lkQn0U6RkLd+f0W/zy/JnoR5/EyPz/dNkPTBjA2jNLCVxaiQ8QpeLymhSZvX0wCL5s27NQWdOPwAw==
+moment-timezone@0.5.45:
+  version "0.5.45"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.45.tgz#cb685acd56bac10e69d93c536366eb65aa6bcf5c"
+  integrity sha512-HIWmqA86KcmCAhnMAN0wuDOARV/525R2+lOLotuGFzn4HO+FH+/645z2wx0Dt3iDv6/p61SIvKnDstISainhLQ==
   dependencies:
     moment "^2.29.4"
 
