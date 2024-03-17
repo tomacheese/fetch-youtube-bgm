@@ -21,7 +21,7 @@
     "@types/node": "20.11.28",
     "eslint": "8.57.0",
     "eslint-plugin-nuxt": "4.0.0",
-    "nuxt": "3.10.3",
+    "nuxt": "3.11.0",
     "sass": "1.72.0",
     "vite-plugin-eslint": "1.8.1",
     "vue-tsc": "2.0.6",
