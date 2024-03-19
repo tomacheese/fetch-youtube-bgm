@@ -14,8 +14,7 @@ export interface Config {
 }
 
 export function getConfig() {
-  const config = JSON.parse(
-    fs.readFileSync('./config.json').toString(),
-  ) as Config
+  const path = process.env.CONFIG_PATH || './data/config.json'
+  const config = JSON.parse(fs.readFileSync(path).toString()) as Config
   return config
 }

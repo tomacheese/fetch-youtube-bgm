@@ -151,7 +151,10 @@ class ParallelProcessVideo {
 
     // 音量を正規化
     logger.info(`🔊 Normalizing volume of ${id}`)
-    normalizeVolume(`/tmp/download-movies/${id}.mp3`)
+    const normalizeResult = normalizeVolume(`/tmp/download-movies/${id}.mp3`)
+    for (const line of normalizeResult.toString().split('\n')) {
+      logger.info(`  > ${line}`)
+    }
 
     // ID3タグを付与
     logger.info(`📃 Adding ID3 tag for ${track.vid}`)
@@ -279,6 +282,22 @@ async function main() {
   const config = getConfig()
   const playlistId = config.playlistId
 
+  const runnerCountForDownload = process.env.RUNNER_COUNT_FOR_DOWNLOAD
+    ? parseInt(process.env.RUNNER_COUNT_FOR_DOWNLOAD, 10)
+    : 3
+  const runnerCountForProcessing = process.env.RUNNER_COUNT_FOR_PROCESSING
+    ? parseInt(process.env.RUNNER_COUNT_FOR_PROCESSING, 10)
+    : 3
+
+  logger.info('📝 Configuration:')
+  logger.info(`  - Playlist ID: ${playlistId}`)
+  logger.info(`  - Discord: ${config.discord ? 'Enabled' : 'Disabled'}`)
+  logger.info(
+    `  - Using normalize volume app: ${process.env.NORMALIZE_VOLUME_APP || 'mp3gain'}`,
+  )
+  logger.info(`  - Runner count for download: ${runnerCountForDownload}`)
+  logger.info(`  - Runner count for processing: ${runnerCountForProcessing}`)
+
   logger.info('📁 Recreating directories...')
   recreateDirectories()
 
@@ -291,10 +310,10 @@ async function main() {
   logger.info(`🎥 Found ${ids.length} videos. Downloading...`)
 
   // プレイリスト動画をダウンロード
-  await new ParallelDownloadVideo(ids).runAll()
+  await new ParallelDownloadVideo(ids).runAll(runnerCountForDownload)
 
   // ダウンロードしたプレイリスト動画を処理
-  await new ParallelProcessVideo(ids).runAll()
+  await new ParallelProcessVideo(ids).runAll(runnerCountForProcessing)
 
   // プレイリストにない音楽ファイルを削除
   logger.info('🗑️ Deleting playlist removed tracks...')

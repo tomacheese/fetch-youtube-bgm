@@ -1,4 +1,4 @@
-FROM buildpack-deps:bullseye as builder
+FROM buildpack-deps:bullseye as echogen-builder
 
 WORKDIR /build
 
@@ -24,24 +24,37 @@ FROM node:20 as runner
 # hadolint ignore=DL3008
 RUN apt-get update && \
   apt-get upgrade -y && \
-  apt-get install --no-install-recommends -y software-properties-common && \
-  apt-get update && \
-  apt-get install --no-install-recommends -y ffmpeg curl python3 mp3gain libboost-dev libtag1-dev zlib1g-dev \
+  apt-get install --no-install-recommends -y \
+  curl \
+  ffmpeg \
+  gir1.2-gstreamer-1.0 \
+  gstreamer1.0-plugins-bad \
+  gstreamer1.0-plugins-base \
+  gstreamer1.0-plugins-good \
+  gstreamer1.0-plugins-ugly \
+  libboost-dev \
+  libtag1-dev \
+  mp3gain \
+  python3 \
+  python3-dev \
+  python3-gi \
+  python3-pip \
+  zlib1g-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /usr/local/bin/echoprint-codegen /usr/local/bin/echoprint-codegen
+COPY --from=echogen-builder /usr/local/bin/echoprint-codegen /usr/local/bin/echoprint-codegen
 
 WORKDIR /app
 
-COPY package.json .
-COPY yarn.lock .
+COPY package.json yarn.lock requirements.txt ./
 
 # hadolint ignore=DL3016
 RUN echo network-timeout 600000 > .yarnrc && \
   yarn install --frozen-lockfile && \
   npm install --force @img/sharp-linux-x64 && \
-  yarn cache clean
+  yarn cache clean && \
+  pip install --no-cache-dir --upgrade --break-system-packages --requirement requirements.txt
 
 # renovate: datasource=github-tags depName=yt-dlp/yt-dlp versioning=loose
 ENV YT_DLP_VERSION=2024.03.10
@@ -55,5 +68,8 @@ COPY src src
 COPY tsconfig.json .
 
 ENV LOG_DIR /data/logs
+ENV CONFIG_PATH /data/config.json
+ENV NORMALIZE_VOLUME_APP mp3gain
+# ENV NORMALIZE_VOLUME_APP rgain3
 
 ENTRYPOINT [ "/app/entrypoint.sh" ]

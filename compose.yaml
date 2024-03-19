@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   downloader:
     build: downloader
@@ -7,9 +5,6 @@ services:
       - type: bind
         source: ./data
         target: /data
-      - type: bind
-        source: ./config.json
-        target: /app/config.json
     init: true
 
   viewer:
