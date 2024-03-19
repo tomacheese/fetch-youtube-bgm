@@ -203,7 +203,19 @@ export async function getClippedArtwork(vid: string) {
 }
 
 export function normalizeVolume(file: string) {
-  execSync(`mp3gain -r -c -p "${file}"`)
+  const envApp = process.env.NORMALIZE_VOLUME_APP || 'mp3gain'
+
+  // 89dbになるように音量を調整
+  if (envApp === 'mp3gain') {
+    // -r: apply Track gain automatically (all files set to equal loudness)
+    // -c: ignore clipping warning when applying gain
+    // -p: preserve original file timestamp
+    return execSync(`mp3gain -r -c -p "${file}"`)
+  }
+  if (envApp === 'rgain3') {
+    return execSync(`replaygain "${file}"`)
+  }
+  throw new Error(`Unknown normalize volume app: ${envApp}`)
 }
 
 export async function removeCacheDir() {
