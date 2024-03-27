@@ -25,6 +25,6 @@
     "sass": "1.72.0",
     "vite-plugin-eslint": "1.8.1",
     "vue-tsc": "2.0.7",
-    "vuetify": "3.5.11"
+    "vuetify": "3.5.12"
   }
 }
