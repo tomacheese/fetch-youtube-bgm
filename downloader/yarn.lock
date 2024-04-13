@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@book000/node-utils@1.12.123":
-  version "1.12.123"
-  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.12.123.tgz#018d704960b2d3a5d56d1ef8fb8a87029ac6dc3b"
-  integrity sha512-i2b35J7rO/0ZfA/vkMnGKefNqdAfa3/j0eA0EV4YvbkQWgpZNjiQA0+SBlOr6nQV+UK9osZEv9aKQMXjLCYE6w==
+"@book000/node-utils@1.12.124":
+  version "1.12.124"
+  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.12.124.tgz#93ab09c8fed696d08e18a673afe6d27006edef71"
+  integrity sha512-9QEU35K25CiwcLDt/q2ubtO96SkF0iBka4GkekplWy7xCN9nKSttCDocV+gDDqiEk8Ah35f6G3yl9FnmJngh1Q==
   dependencies:
     axios "1.6.8"
     cycle "1.0.3"
