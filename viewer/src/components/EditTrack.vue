@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { VForm } from 'vuetify/components'
-import { Track } from '../models/track'
-import { YouTubeOembed } from '../models/youtube-oembed'
+import type { Track } from '../models/track';
+import type { YouTubeOembed } from '../models/youtube-oembed';
 import { getReadableError } from '../server/utils/readable-error'
 
 // --- emits
 
-// eslint-disable-next-line func-call-spacing
 const emit = defineEmits<{
   (e: 'close'): void
 }>()
@@ -94,7 +93,6 @@ function submitForm() {
     }
     loading.value = true
     useFetch(`/api/tracks/${editingTrack.value.vid}`, {
-      // @ts-ignore
       method: 'PATCH',
       body: JSON.stringify(editingTrack.value)
     })
@@ -128,7 +126,6 @@ function deleteTrack() {
   }
   loading.value = true
   useFetch(`/api/tracks/${editingTrack.value.vid}`, {
-    // @ts-ignore
     method: 'DELETE'
   })
     .then((response) => {
@@ -231,8 +228,8 @@ onMounted(() => {
     <v-snackbar v-model="isSaved" color="success">
       <v-icon>mdi-check</v-icon>
       Track saved. Close this dialog after 3 seconds.
-      <template #action="{ attrs }">
-        <v-btn text v-bind="attrs" @click="isSaved = false">
+      <template #actions>
+        <v-btn variant="text" @click="isSaved = false">
           Close
         </v-btn>
       </template>
@@ -240,8 +237,8 @@ onMounted(() => {
     <v-snackbar v-model="isDeleted" color="success">
       <v-icon>mdi-check</v-icon>
       Track deleted. Close this dialog after 3 seconds.
-      <template #action="{ attrs }">
-        <v-btn text v-bind="attrs" @click="isSaved = false">
+      <template #actions>
+        <v-btn variant="text" @click="isSaved = false">
           Close
         </v-btn>
       </template>
@@ -249,8 +246,8 @@ onMounted(() => {
     <v-snackbar v-model="isSaveFailed" color="error">
       <v-icon>mdi-close</v-icon>
       Failed to save track: {{ failedMessage }}
-      <template #action="{ attrs }">
-        <v-btn text v-bind="attrs" @click="isSaveFailed = false">
+      <template #actions>
+        <v-btn variant="text" @click="isSaveFailed = false">
           Close
         </v-btn>
       </template>
@@ -258,8 +255,8 @@ onMounted(() => {
     <v-snackbar v-model="isSaveFailed" color="error">
       <v-icon>mdi-close</v-icon>
       Failed to delete track: {{ failedMessage }}
-      <template #action="{ attrs }">
-        <v-btn text v-bind="attrs" @click="isSaveFailed = false">
+      <template #actions>
+        <v-btn variant="text" @click="isSaveFailed = false">
           Close
         </v-btn>
       </template>
@@ -267,8 +264,8 @@ onMounted(() => {
     <v-snackbar v-model="isFetchFailed" color="error">
       <v-icon>mdi-close</v-icon>
       Failed to fetch youtube video: {{ failedMessage }}
-      <template #action="{ attrs }">
-        <v-btn text v-bind="attrs" @click="isFetchFailed = false">
+      <template #actions>
+        <v-btn variant="text" @click="isFetchFailed = false">
           Close
         </v-btn>
       </template>

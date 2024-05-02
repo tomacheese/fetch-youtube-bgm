@@ -1,5 +1,5 @@
 import { TrackManager } from '../../utils/track-manager'
-import { Track } from '~~/src/models/track'
+import type { Track } from '~~/src/models/track'
 
 export default defineEventHandler((event) => {
   if (!event.context.params) {

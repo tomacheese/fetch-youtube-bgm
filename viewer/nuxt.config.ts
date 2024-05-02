@@ -69,7 +69,7 @@ export default defineNuxtConfig({
     '@mdi/font/css/materialdesignicons.min.css'
   ],
 
-  experimental: {
-    inlineSSRStyles: false
-  }
+  modules: [
+    '@nuxt/eslint'
+  ],
 })

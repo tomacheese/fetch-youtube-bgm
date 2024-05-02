@@ -76,7 +76,7 @@ export async function sendDiscordMessage(
     const response = await axios.post(
       config.discord.webhook_url,
       {
-        content: `${text}`,
+        content: text,
         embeds: embed ? [embed] : undefined,
       },
       {
@@ -93,7 +93,7 @@ export async function sendDiscordMessage(
     const response = await axios.post(
       `https://discord.com/api/channels/${config.discord.channel_id}/messages`,
       {
-        content: `${text}`,
+        content: text,
         embeds: embed ? [embed] : undefined,
       },
       {

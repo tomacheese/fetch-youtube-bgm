@@ -1,4 +1,4 @@
-import { FetchError } from 'ofetch'
+import type { FetchError } from 'ofetch'
 
 export async function getReadableError(error: FetchError | null): Promise<string> {
   if (!error) {
