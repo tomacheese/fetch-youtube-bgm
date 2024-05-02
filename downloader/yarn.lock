@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@book000/node-utils@1.13.21":
-  version "1.13.21"
-  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.13.21.tgz#09e358a4c90b6f6e8ab6787c78e85eff463710ab"
-  integrity sha512-VukjVu43vSsPyhU9dr/bs6+AqHnCRAzPdObOveN14knXmJ/byJpf9lhmWc5vOYXZ6L7/Xl/kO32rcgC5qJqkHQ==
+"@book000/node-utils@1.13.22":
+  version "1.13.22"
+  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.13.22.tgz#349988f140856e00b9cc135b281c3fa666cd096a"
+  integrity sha512-GVvBIyGpRu4ijtyjDRU2a02Y6r2mhn7puticQz82olWmPWiWP14HZY2BToISHo4y5WnvEeC4rksN1434O/H/Lg==
   dependencies:
     axios "1.6.8"
     cycle "1.0.3"
