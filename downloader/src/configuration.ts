@@ -1,9 +1,9 @@
-import fs from 'fs'
+import fs from 'node:fs'
 
 export interface Config {
   playlistId: string
   /** Discord webhook URL or bot token */
-  discord: {
+  discord?: {
     /** Discord webhook URL (required if using webhook) */
     webhook_url?: string
     /** Discord bot token (required if using bot) */
@@ -14,7 +14,7 @@ export interface Config {
 }
 
 export function getConfig() {
-  const path = process.env.CONFIG_PATH || './data/config.json'
+  const path = process.env.CONFIG_PATH ?? './data/config.json'
   const config = JSON.parse(fs.readFileSync(path).toString()) as Config
   return config
 }

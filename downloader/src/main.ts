@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import { getConfig } from './configuration'
 import { sendDiscordMessage } from './discord'
 import {
@@ -29,7 +29,7 @@ class ParallelDownloadVideo {
     this.videoCount = ids.length
   }
 
-  public async runAll(runnerCount: number = 3) {
+  public async runAll(runnerCount = 3) {
     const runners = []
     for (let i = 0; i < runnerCount; i++) {
       runners.push(this.runner(i))
@@ -64,7 +64,7 @@ class ParallelDownloadVideo {
     )
     // 3回までリトライする
     for (let i = 0; i < 3; i++) {
-      const result = await downloadVideo(id)
+      const result = downloadVideo(id)
       if (result) {
         const filesize = fs.statSync(`/tmp/download-movies/${id}.mp3`).size
         const humanFileSize = getHumanReadableSize(filesize)
@@ -90,7 +90,7 @@ class ParallelProcessVideo {
     this.videoCount = ids.length
   }
 
-  public async runAll(runnerCount: number = 3) {
+  public async runAll(runnerCount = 3) {
     const runners = []
     for (let i = 0; i < runnerCount; i++) {
       runners.push(this.runner(i))
@@ -146,7 +146,7 @@ class ParallelProcessVideo {
     const track = getTrack(id)
     if (!track.track) {
       // トラック情報がない場合は、デフォルト値を設定
-      await addTrack(id, videoInfo)
+      addTrack(id, videoInfo)
     }
 
     // 音量を正規化
@@ -161,7 +161,7 @@ class ParallelProcessVideo {
     addId3Tag(track)
 
     // トピック(YouTube Music)の場合、アートワークの更新をする
-    if (videoInfo && videoInfo.artist.endsWith(' - Topic')) {
+    if (videoInfo?.artist.endsWith(' - Topic')) {
       const artwork = await getClippedArtwork(id)
       if (artwork) {
         logger.info(`🎨 Updating artwork for ${id}`)
@@ -204,27 +204,27 @@ class ParallelProcessVideo {
 
     logger.info(`✅ Successfully processed ${id}`)
 
-    const baseUrl = process.env.BASE_URL || undefined
+    const baseUrl = process.env.BASE_URL ?? undefined
     const editUrl = baseUrl ? `${baseUrl}?vid=${id}` : undefined
 
     await sendDiscordMessage(config, '', {
       title: `Downloaded ${id}`,
       url: editUrl,
-      color: 0x00ff00,
+      color: 0x00_ff_00,
       fields: [
         {
           name: 'Title',
-          value: track.track || '*Unknown*',
+          value: track.track ?? '*Unknown*',
           inline: true,
         },
         {
           name: 'Artist',
-          value: track.artist || '*Unknown*',
+          value: track.artist ?? '*Unknown*',
           inline: true,
         },
         {
           name: 'Album',
-          value: track.album || '*Unknown*',
+          value: track.album ?? '*Unknown*',
           inline: true,
         },
         {
@@ -242,7 +242,7 @@ class ParallelProcessVideo {
  *
  * @param ids プレイリストに含まれる動画 ID
  */
-async function deleteRemovedTracks(ids: string[]) {
+function deleteRemovedTracks(ids: string[]) {
   const logger = Logger.configure('deleteRemovedTracks')
   const files = fs.readdirSync('/data/tracks/')
   for (const file of files) {
@@ -262,7 +262,7 @@ async function deleteRemovedTracks(ids: string[]) {
 /**
  * m3u8 プレイリストファイルを作成する
  */
-async function createPlaylistFile() {
+function createPlaylistFile() {
   const logger = Logger.configure('createPlaylistFile')
   // 相対パスで表記された m3u8 プレイリストを作成
   const files = fs.readdirSync('/data/tracks/')
@@ -283,17 +283,17 @@ async function main() {
   const playlistId = config.playlistId
 
   const runnerCountForDownload = process.env.RUNNER_COUNT_FOR_DOWNLOAD
-    ? parseInt(process.env.RUNNER_COUNT_FOR_DOWNLOAD, 10)
+    ? Number.parseInt(process.env.RUNNER_COUNT_FOR_DOWNLOAD, 10)
     : 3
   const runnerCountForProcessing = process.env.RUNNER_COUNT_FOR_PROCESSING
-    ? parseInt(process.env.RUNNER_COUNT_FOR_PROCESSING, 10)
+    ? Number.parseInt(process.env.RUNNER_COUNT_FOR_PROCESSING, 10)
     : 3
 
   logger.info('📝 Configuration:')
   logger.info(`  - Playlist ID: ${playlistId}`)
   logger.info(`  - Discord: ${config.discord ? 'Enabled' : 'Disabled'}`)
   logger.info(
-    `  - Using normalize volume app: ${process.env.NORMALIZE_VOLUME_APP || 'mp3gain'}`,
+    `  - Using normalize volume app: ${process.env.NORMALIZE_VOLUME_APP ?? 'mp3gain'}`,
   )
   logger.info(`  - Runner count for download: ${runnerCountForDownload}`)
   logger.info(`  - Runner count for processing: ${runnerCountForProcessing}`)
@@ -302,10 +302,10 @@ async function main() {
   recreateDirectories()
 
   logger.info('🗑️ Deleting yt-dlp cache...')
-  await removeCacheDir()
+  removeCacheDir()
 
   logger.info(`📚 Getting playlist videos for ${playlistId}`)
-  const ids = await getPlaylistVideoIds(playlistId)
+  const ids = getPlaylistVideoIds(playlistId)
 
   logger.info(`🎥 Found ${ids.length} videos. Downloading...`)
 
@@ -317,18 +317,18 @@ async function main() {
 
   // プレイリストにない音楽ファイルを削除
   logger.info('🗑️ Deleting playlist removed tracks...')
-  await deleteRemovedTracks(ids)
+  deleteRemovedTracks(ids)
 
   // ダウンロードした音楽ファイルを元にプレイリストファイルを作成
   logger.info('📝 Creating playlist file...')
-  await createPlaylistFile()
+  createPlaylistFile()
 
   logger.info('🎉 Successfully finished!')
 }
 
 ;(async () => {
-  await main().catch(async (err) => {
+  await main().catch((error: unknown) => {
     const logger = Logger.configure('main')
-    logger.error('Error', err)
+    logger.error('Error', error as Error)
   })
 })()

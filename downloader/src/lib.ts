@@ -1,6 +1,6 @@
 import axios, { AxiosProxyConfig } from 'axios'
-import { execSync } from 'child_process'
-import fs from 'fs'
+import { execSync } from 'node:child_process'
+import fs from 'node:fs'
 import NodeID3 from 'node-id3'
 import { Logger } from '@book000/node-utils'
 import sharp from 'sharp'
@@ -13,9 +13,7 @@ interface Track {
   albumArtist: string | null
 }
 
-type TrackFile = {
-  [vid: string]: Omit<Track, 'vid'>
-}
+type TrackFile = Record<string, Omit<Track, 'vid'>>
 
 export interface YouTubeoEmbed {
   title: string
@@ -58,7 +56,7 @@ export function getDefinedTracks(): Track[] {
 export function getTrack(vid: string): Track {
   const tracks = getDefinedTracks()
   return (
-    tracks.find((track) => track.vid === vid) || {
+    tracks.find((track) => track.vid === vid) ?? {
       vid,
       track: null,
       artist: null,
@@ -68,10 +66,7 @@ export function getTrack(vid: string): Track {
   )
 }
 
-export async function addTrack(
-  vid: string,
-  information: VideoInformation | null,
-) {
+export function addTrack(vid: string, information: VideoInformation | null) {
   const prev = fs.existsSync('/data/tracks.json')
     ? (JSON.parse(fs.readFileSync('/data/tracks.json').toString()) as TrackFile)
     : {}
@@ -98,7 +93,7 @@ export function getFilename(track: Track) {
 }
 
 function parseHttpProxy(): AxiosProxyConfig | false {
-  const proxy = process.env.HTTPS_PROXY || process.env.HTTP_PROXY
+  const proxy = process.env.HTTPS_PROXY ?? process.env.HTTP_PROXY
   if (!proxy) return false
 
   const parsed = new URL(proxy)
@@ -106,7 +101,7 @@ function parseHttpProxy(): AxiosProxyConfig | false {
 
   return {
     host: parsed.hostname,
-    port: parseInt(parsed.port),
+    port: Number.parseInt(parsed.port),
     auth:
       parsed.username && parsed.password
         ? {
@@ -203,7 +198,7 @@ export async function getClippedArtwork(vid: string) {
 }
 
 export function normalizeVolume(file: string) {
-  const envApp = process.env.NORMALIZE_VOLUME_APP || 'mp3gain'
+  const envApp = process.env.NORMALIZE_VOLUME_APP ?? 'mp3gain'
 
   // 89dbになるように音量を調整
   if (envApp === 'mp3gain') {
@@ -218,7 +213,7 @@ export function normalizeVolume(file: string) {
   throw new Error(`Unknown normalize volume app: ${envApp}`)
 }
 
-export async function removeCacheDir() {
+export function removeCacheDir() {
   execSync('yt-dlp --rm-cache-dir')
 }
 
@@ -233,13 +228,13 @@ export function recreateDirectories() {
   }
 }
 
-export async function getPlaylistVideoIds(playlistId: string) {
-  const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy
+export function getPlaylistVideoIds(playlistId: string) {
+  const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
   const command = [
     'yt-dlp',
     '--ignore-config',
     httpsProxy ? '--proxy' : '',
-    httpsProxy || '',
+    httpsProxy ?? '',
     '--flat-playlist',
     '--print',
     'id',
@@ -248,19 +243,16 @@ export async function getPlaylistVideoIds(playlistId: string) {
   const result = execSync(command.join(' '), {
     cwd: '/tmp/download-movies/',
   })
-  return result
-    .toString()
-    .split('\n')
-    .filter((id) => id)
+  return result.toString().split('\n').filter(Boolean)
 }
 
-export async function downloadVideo(videoId: string): Promise<boolean> {
-  const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy
+export function downloadVideo(videoId: string): boolean {
+  const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
   const command = [
     'yt-dlp',
     '--ignore-config',
     httpsProxy ? '--proxy' : '',
-    httpsProxy || '',
+    httpsProxy ?? '',
     '-f',
     'ba',
     '-x',
@@ -276,7 +268,7 @@ export async function downloadVideo(videoId: string): Promise<boolean> {
       cwd: '/tmp/download-movies/',
     })
     return true
-  } catch (e) {
+  } catch {
     return false
   }
 }
@@ -284,7 +276,9 @@ export async function downloadVideo(videoId: string): Promise<boolean> {
 export function getEchoPrint(file: string) {
   const command = ['/usr/local/bin/echoprint-codegen', `"${file}"`, '10', '30']
   const result = execSync(command.join(' '))
-  const json = JSON.parse(result.toString())
+  const json: {
+    code: string
+  } = JSON.parse(result.toString())
   return json.code
 }
 

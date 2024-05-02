@@ -1,6 +1,7 @@
 import fs from 'fs'
-import { FileTrack, ITracksFile } from '~~/src/models/track'
+import type { FileTrack, ITracksFile } from '~~/src/models/track'
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class TrackManager {
   private static readonly tracksFile = process.env.TRACKS_FILE || 'data/tracks.json'
   private static readonly tracksDir = process.env.TRACKS_DIR || 'data/tracks/'
@@ -32,6 +33,7 @@ export class TrackManager {
     if (!tracks[vid]) {
       return
     }
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete tracks[vid]
     fs.writeFileSync(this.tracksFile, JSON.stringify(tracks, null, 2))
   }
