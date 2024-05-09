@@ -327,16 +327,16 @@
     "@babel/helper-validator-identifier" "^7.24.5"
     to-fast-properties "^2.0.0"
 
-"@book000/eslint-config@1.6.8":
-  version "1.6.8"
-  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.6.8.tgz#2a4436a0562fd4fb65f446db42436ae22989eb92"
-  integrity sha512-/TeTGh9F+cdmt2CaAzzN1LhpK7bof16yOe25spZCaINOCh0r2/vMEWeYuF1aTNv2A5Jd7cwV9lK8LCC+E9FuJA==
+"@book000/eslint-config@1.6.10":
+  version "1.6.10"
+  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.6.10.tgz#538fa7f7393d071d0dac557dc74844603869452d"
+  integrity sha512-d2b5k0FHwkqDEgM2kfWhPnNfL5hXFo9p2mvdcZSgC8/a0H7O0bLsudlvTdj1syY0R5OXK7UMkkIJE34OiZ8YbQ==
   dependencies:
     "@eslint/eslintrc" "3.0.2"
     "@typescript-eslint/parser" "7.8.0"
     eslint-config-prettier "9.1.0"
     eslint-plugin-unicorn "52.0.0"
-    globals "15.1.0"
+    globals "15.2.0"
     typescript-eslint "7.8.0"
 
 "@cloudflare/kv-asset-handler@^0.3.1":
@@ -3920,10 +3920,10 @@ global-directory@^4.0.1:
   dependencies:
     ini "4.1.1"
 
-globals@15.1.0:
-  version "15.1.0"
-  resolved "https://registry.yarnpkg.com/globals/-/globals-15.1.0.tgz#4e03d200c8362201636b8cdfaa316d6cef67ff1e"
-  integrity sha512-926gJqg+4mkxwYKiFvoomM4J0kWESfk3qfTvRL2/oc/tK/eTDBbrfcKnSa2KtfdxB5onoL7D3A3qIHQFpd4+UA==
+globals@15.2.0, globals@^15.1.0:
+  version "15.2.0"
+  resolved "https://registry.yarnpkg.com/globals/-/globals-15.2.0.tgz#fbcea7f8964a71d8c6e6867ddadb9788ae1083d8"
+  integrity sha512-FQ5YwCHZM3nCmtb5FzEWwdUc9K5d3V/w9mzcz8iGD1gC/aOTHc6PouYu0kkKipNJqHAT7m51sqzQjEjIP+cK0A==
 
 globals@^11.1.0:
   version "11.12.0"
@@ -3941,11 +3941,6 @@ globals@^14.0.0:
   version "14.0.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-14.0.0.tgz#898d7413c29babcf6bafe56fcadded858ada724e"
   integrity sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==
-
-globals@^15.1.0:
-  version "15.2.0"
-  resolved "https://registry.yarnpkg.com/globals/-/globals-15.2.0.tgz#fbcea7f8964a71d8c6e6867ddadb9788ae1083d8"
-  integrity sha512-FQ5YwCHZM3nCmtb5FzEWwdUc9K5d3V/w9mzcz8iGD1gC/aOTHc6PouYu0kkKipNJqHAT7m51sqzQjEjIP+cK0A==
 
 globalthis@^1.0.3:
   version "1.0.4"
