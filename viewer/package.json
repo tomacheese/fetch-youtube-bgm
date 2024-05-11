@@ -28,7 +28,7 @@
     "typescript": "5.4.5",
     "vite-plugin-eslint": "1.8.1",
     "vue-tsc": "2.0.17",
-    "vuetify": "3.6.4",
+    "vuetify": "3.6.5",
     "yarn-run-all": "3.1.1"
   }
 }
