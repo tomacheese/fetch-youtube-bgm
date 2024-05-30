@@ -136,13 +136,13 @@ export async function getVideoInformation(
 export function addId3Tag(track: Track) {
   const file = `/tmp/download-movies/${track.vid}.mp3`
   const prevBuffer = fs.readFileSync(file)
-  if (!track.track || !track.artist) {
-    return
-  }
+  const tags =
+    !track.track || !track.artist
+      ? {}
+      : { title: track.track, artist: track.artist }
   const newBuffer = NodeID3.update(
     {
-      title: track.track,
-      artist: track.artist.split(',').join('/'),
+      ...tags,
       fileUrl: `https://youtu.be/${track.vid}`,
     },
     prevBuffer,
