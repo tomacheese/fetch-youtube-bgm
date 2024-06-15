@@ -10,6 +10,8 @@ const tracks = ref<Track[]>([])
 const isHideDefinedArtist = ref(false)
 /** ダウンロード済みのみ表示か */
 const isOnlyDownloaded = ref(false)
+/** 検索テキスト */
+const searchText = ref('')
 /** 未確認の WebhookTrack 数 */
 const remainingWebhookTracks = ref(0)
 /** 編集中トラック情報 */
@@ -97,6 +99,19 @@ const filteredTracks = computed(() => {
     if (isOnlyDownloaded.value && !t.isDownloaded) {
       return false
     }
+    if (searchText.value) {
+      const search = searchText.value.toLowerCase()
+      if (
+        [
+          t.track,
+          t.artist,
+          t.album,
+          t.albumArtist
+        ].some((v) => v && v.toLowerCase().includes(search) === false)
+      ) {
+        return false
+      }
+    }
     return true
   })
 })
@@ -144,10 +159,19 @@ onMounted(async () => {
         </v-btn>
       </div>
 
-      <div class="mb-4">
+      <div class="mb-6">
         <v-btn :disabled="remainingWebhookTracks == 0" block size="large" class="py-7" @click="openCheckWebhookTracksDialog">
           CHECK WEBHOOK TRACKS ({{ remainingWebhookTracks }} REMAINING)
         </v-btn>
+      </div>
+
+      <div>
+        <v-text-field
+          v-model="searchText"
+          label="Search"
+          placeholder="Search by track, artist, album, albumArtist"
+          clearable
+        />
       </div>
 
       <v-row>
