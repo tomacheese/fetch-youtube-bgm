@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { VForm } from 'vuetify/components'
-import type { Track } from '../models/track';
+import type { EditingTrack } from '../models/track';
 import type { YouTubeOembed } from '../models/youtube-oembed';
 import { getReadableError } from '../server/utils/readable-error'
 
@@ -12,19 +12,21 @@ const emit = defineEmits<{
 
 // --- props
 /** トラック */
-const track = defineProps<{ track: Track }>()
+const track = defineProps<{ track: EditingTrack }>()
 
 // --- data
 /** ダイヤログ表示有無 */
 const isActiveDialog = ref(true)
 /** 編集中トラック情報 */
-const editingTrack = ref<Track>({
+const editingTrack = ref<EditingTrack>({
   vid: '',
   track: '',
   artist: '',
   album: '',
   albumArtist: '',
-  isDownloaded: false
+  isDownloaded: false,
+  isNew: true,
+  isWebhookTrack: false
 })
 /** 保存中か */
 const loading = ref(false)
@@ -38,6 +40,10 @@ const isDeleted = ref(false)
 const isDeleteFailed = ref(false)
 /** YouTubeからの動画情報取得失敗か */
 const isFetchFailed = ref(false)
+/** 残りの未確認 WebhookTrack 数 */
+const remainingWebhookTracks = ref(0)
+/** すべての WebhookTrack を確認した */
+const isAllWebhookTracksChecked = ref(false)
 /** 失敗理由 */
 const failedMessage = ref('')
 
@@ -85,9 +91,43 @@ function getVideoInfo() {
     })
 }
 
+function nextWebhookTrack() {
+  useFetch('/api/webhook-tracks/')
+    .then((response) => {
+      if (response.error.value) {
+        getReadableError(response.error.value).then((message) => {
+          failedMessage.value = message
+        })
+        isSaveFailed.value = true
+        return
+      }
+      if(!response.data.value) {
+        return
+      }
+      remainingWebhookTracks.value = response.data.value.length - 1
+      if (response.data.value.length === 0) {
+        isAllWebhookTracksChecked.value = true
+        setTimeout(() => {
+          isActiveDialog.value = false
+        }, 3000)
+        return
+      }
+      editingTrack.value = {
+        ...response.data.value[0],
+        isNew: false,
+        isWebhookTrack: true
+      }
+    })
+    .catch((error) => {
+      failedMessage.value = String(error)
+      isSaveFailed.value = true
+    })
+
+}
+
 /** トラックを保存する */
 function submitForm() {
-  form.value?.validate().then((result) => {
+  form.value?.validate().then((result: { valid: unknown; }) => {
     if (!result.valid) {
       return
     }
@@ -107,7 +147,11 @@ function submitForm() {
         isSaved.value = true
 
         setTimeout(() => {
-          isActiveDialog.value = false
+          if (!editingTrack.value.isWebhookTrack) {
+            isActiveDialog.value = false
+          } else {
+            nextWebhookTrack()
+          }
         }, 3000)
       })
       .catch((error) => {
@@ -120,8 +164,14 @@ function submitForm() {
   })
 }
 
+function reverseTrackAndArtist() {
+  const track = editingTrack.value.track
+  editingTrack.value.track = editingTrack.value.artist || ''
+  editingTrack.value.artist = track
+}
+
 function deleteTrack() {
-  if (!confirm('このトラックを削除しますか？')) {
+  if (!confirm('Do you want to delete this track?')) {
     return
   }
   loading.value = true
@@ -167,13 +217,18 @@ watch(isFetchFailed, (value, oldValue) => {
 
 watch(isActiveDialog, (value, oldValue) => {
   if (oldValue && !value) {
+    isAllWebhookTracksChecked.value = false
     emit('close')
   }
 })
 
 // --- onMounted
 onMounted(() => {
-  editingTrack.value = { ...track.track }
+  editingTrack.value = track.track
+
+  if(!editingTrack.value.vid && editingTrack.value.isWebhookTrack) {
+    nextWebhookTrack()
+  }
 })
 </script>
 
@@ -182,7 +237,11 @@ onMounted(() => {
     <v-dialog v-model="isActiveDialog" persistent>
       <v-form ref="form" class="scrollable-form">
         <v-card>
-          <v-card-title>Create or Edit track</v-card-title>
+          <v-card-title>
+            <span v-if="editingTrack.isNew">New Track</span>
+            <span v-else-if="editingTrack.isWebhookTrack">Check Webhook Track</span>
+            <span v-else>Edit Track</span>
+          </v-card-title>
 
           <v-card-text>
             <iframe
@@ -210,12 +269,16 @@ onMounted(() => {
             <v-btn color="orange" variant="tonal" @click="isActiveDialog = false">
               Cancel
             </v-btn>
+            <v-btn color="blue" variant="tonal" @click="reverseTrackAndArtist()">
+              Reverse Track & Artist
+            </v-btn>
             <v-btn color="error" variant="tonal" @click="deleteTrack()">
               Delete
             </v-btn>
             <v-spacer />
             <v-btn color="success" variant="tonal" :loading="loading" :disabled="isSaved" @click="submitForm()">
-              <span v-if="!isSaved">Save</span>
+              <span v-if="editingTrack.isWebhookTrack">Save & Next <span v-if="remainingWebhookTracks > 0">({{ remainingWebhookTracks }} remain)</span></span>
+              <span v-else-if="!isSaved">Save</span>
               <v-icon v-else>
                 mdi-check
               </v-icon>
@@ -227,9 +290,20 @@ onMounted(() => {
 
     <v-snackbar v-model="isSaved" color="success">
       <v-icon>mdi-check</v-icon>
-      Track saved. Close this dialog after 3 seconds.
+      Track saved.
+      <span v-if="!editingTrack.isWebhookTrack">Close this dialog after 3 seconds.</span>
+      <span v-else>Next track will be loading.</span>
       <template #actions>
         <v-btn variant="text" @click="isSaved = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="isAllWebhookTracksChecked" color="success">
+      <v-icon>mdi-check</v-icon>
+      All Webhook Tracks checked. Close this dialog after 3 seconds.
+      <template #actions>
+        <v-btn variant="text" @click="isAllWebhookTracksChecked = false">
           Close
         </v-btn>
       </template>

@@ -4,8 +4,13 @@ export interface Track {
   artist: string | null
   album: string | null
   albumArtist: string | null
-  isDownloaded: boolean
+  isDownloaded?: boolean
 }
+
+export type EditingTrack = {
+  isNew: boolean
+  isWebhookTrack: boolean
+} & Track
 
 export interface FileTrack {
   track: string

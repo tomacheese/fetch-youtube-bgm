@@ -22,5 +22,5 @@ export default defineEventHandler((event) => {
     artist: track.artist,
     album: track.album,
     albumArtist: track.albumArtist
-  } as Track
+  } satisfies Track
 })
