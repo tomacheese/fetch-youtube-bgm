@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
     artist,
     album,
     albumArtist
-  } = body as {
+  } = body satisfies {
       track: string | null | undefined
       artist: string | null | undefined
       album: string | null | undefined
@@ -46,6 +46,11 @@ export default defineEventHandler(async (event) => {
   }
 
   TrackManager.set(vid, newTrack)
+
+  if (WebhookTrackManager.getTrack(vid)) {
+    WebhookTrackManager.delete(vid)
+  }
+
   event.node.res.statusCode = 204
   return '' // empty body
 })

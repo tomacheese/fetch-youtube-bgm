@@ -12,5 +12,5 @@ export default defineEventHandler(() => {
       albumArtist: track.albumArtist,
       isDownloaded: downloadedTrackFiles.some(file => file.includes(vid))
     }
-  }) as Track[]
+  }) satisfies Track[]
 })

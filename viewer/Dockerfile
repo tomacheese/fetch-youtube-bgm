@@ -20,6 +20,7 @@ WORKDIR /app
 COPY --from=builder /build/.output/ /app/
 
 ENV TRACKS_FILE /data/tracks.json
+ENV WEBHOOK_TRACKS_FILE /data/webhook-tracks.json
 ENV TRACKS_DIR /data/tracks/
 
 ENV PORT 80

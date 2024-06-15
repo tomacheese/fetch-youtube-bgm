@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DarkModeSwitch from './components/DarkModeSwitch.vue'
-import { type Track } from './models/track'
+import { type EditingTrack, type Track } from './models/track'
 import { getReadableError } from './server/utils/readable-error'
 
 // --- data
@@ -10,8 +10,10 @@ const tracks = ref<Track[]>([])
 const isHideDefinedArtist = ref(false)
 /** ダウンロード済みのみ表示か */
 const isOnlyDownloaded = ref(false)
+/** 未確認の WebhookTrack 数 */
+const remainingWebhookTracks = ref(0)
 /** 編集中トラック情報 */
-const editingTrack = ref<Track>()
+const editingTrack = ref<EditingTrack>()
 
 // --- methods
 /** すべてのトラックを取得する */
@@ -26,6 +28,20 @@ async function fetchTracks() {
   }
   tracks.value = res.data.value
 }
+
+/** 未確認の WebhookTrack 数を取得する */
+async function fetchRemainingWebhookTracks() {
+  const res = await useFetch('/api/webhook-tracks/')
+  if (res.error.value) {
+    alert(`Failed to get webhook tracks: ${await getReadableError(res.error.value)}`)
+  }
+  if (!res.data.value) {
+    alert('Failed to get webhook tracks: data is null')
+    return
+  }
+  remainingWebhookTracks.value = res.data.value.length
+}
+
 /** トラック編集画面を開く */
 function openEditDialog(track: Track | null) {
   if (!track) {
@@ -35,15 +51,41 @@ function openEditDialog(track: Track | null) {
       artist: '',
       album: '',
       albumArtist: '',
-      isDownloaded: false
+      isDownloaded: false,
+      isNew: true,
+      isWebhookTrack: false
     }
   } else {
-    editingTrack.value = track
+    editingTrack.value = {
+      vid: track.vid,
+      track: track.track,
+      artist: track.artist,
+      album: track.album,
+      albumArtist: track.albumArtist,
+      isDownloaded: track.isDownloaded,
+      isNew: false,
+      isWebhookTrack: false
+    }
   }
 }
+
+function openCheckWebhookTracksDialog() {
+  editingTrack.value = {
+    vid: '',
+    track: '',
+    artist: '',
+    album: '',
+    albumArtist: '',
+    isDownloaded: false,
+    isNew: false,
+    isWebhookTrack: true
+  }
+}
+
 function closeEditTrack() {
   editingTrack.value = undefined
   fetchTracks()
+  fetchRemainingWebhookTracks()
 }
 
 // --- computed
@@ -62,6 +104,13 @@ const filteredTracks = computed(() => {
 // --- mounted
 onMounted(async () => {
   await fetchTracks()
+  await fetchRemainingWebhookTracks()
+
+  // 1分ごとに再取得する
+  setInterval(() => {
+    fetchTracks()
+    fetchRemainingWebhookTracks()
+  }, 60000)
 
   // ?vid=xxx があれば編集画面を開く
   const vid = new URLSearchParams(location.search).get('vid')
@@ -81,17 +130,23 @@ onMounted(async () => {
     <v-container fluid>
       <div class="d-flex align-center justify-space-between">
         <div class="d-flex align-center">
-          <v-switch v-model="isHideDefinedArtist" label="アーティスト定義済みを非表示" />
-          <v-switch v-model="isOnlyDownloaded" class="mx-2" label="ダウンロード済みのみ表示" />
+          <v-switch v-model="isHideDefinedArtist" label="Hide artist defined" />
+          <v-switch v-model="isOnlyDownloaded" class="mx-2" label="Show only downloaded" />
         </div>
         <v-spacer />
         <DownloadBtn class="mx-2" />
         <DarkModeSwitch />
       </div>
 
-      <div class="mb-4">
+      <div class="mb-2">
         <v-btn block size="large" class="py-7" @click="openEditDialog(null)">
           ADD NEW TRACK
+        </v-btn>
+      </div>
+
+      <div class="mb-4">
+        <v-btn :disabled="remainingWebhookTracks == 0" block size="large" class="py-7" @click="openCheckWebhookTracksDialog">
+          CHECK WEBHOOK TRACKS ({{ remainingWebhookTracks }} REMAINING)
         </v-btn>
       </div>
 
