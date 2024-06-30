@@ -332,10 +332,10 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
-"@book000/eslint-config@1.7.9":
-  version "1.7.9"
-  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.7.9.tgz#ac4aa2fe0599ac8caedd9aca1f3248028ba34de0"
-  integrity sha512-fwFtbxITpVotrL33N/as6b98hehsDJkTuo8OO0jF3OELTdyb17hshgF2w5QrHMuEmMQ3YEC8PGR04gSLuQNDsg==
+"@book000/eslint-config@1.7.11":
+  version "1.7.11"
+  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.7.11.tgz#0ef9be4f50bd8812b0e71fe1d21b9e219cae1b84"
+  integrity sha512-lUr8T4hmEIhScof7M1rARvSCTkQf1VOuYiaveCKRe/RFujpGONLfgb9buX/0svaWxE4rhiDj42hLT/6Ovd2L8g==
   dependencies:
     "@eslint/eslintrc" "3.1.0"
     "@typescript-eslint/parser" "7.14.1"
