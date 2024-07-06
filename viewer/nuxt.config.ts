@@ -72,4 +72,6 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint'
   ],
+
+  compatibilityDate: '2024-07-07',
 })

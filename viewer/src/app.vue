@@ -102,12 +102,7 @@ const filteredTracks = computed(() => {
     if (searchText.value) {
       const search = searchText.value.toLowerCase()
       if (
-        [
-          t.track,
-          t.artist,
-          t.album,
-          t.albumArtist
-        ].some((v) => v && v.toLowerCase().includes(search) === false)
+        ![t.track, t.artist, t.album, t.albumArtist].some((v) => v && v.toLowerCase().includes(search))
       ) {
         return false
       }
