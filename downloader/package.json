@@ -26,7 +26,7 @@
     "@book000/node-utils": "1.13.202",
     "@types/node": "20.14.13",
     "@types/sharp": "0.32.0",
-    "axios": "1.7.2",
+    "axios": "1.7.3",
     "eslint": "9.8.0",
     "eslint-config-standard": "17.1.0",
     "eslint-plugin-import": "2.29.1",
