@@ -1,4 +1,4 @@
-FROM buildpack-deps:bullseye as echogen-builder
+FROM buildpack-deps:bullseye AS echogen-builder
 
 WORKDIR /build
 
@@ -19,7 +19,7 @@ RUN cp echoprint-codegen /usr/local/bin/
 WORKDIR /build
 RUN rm -rf echoprint-codegen
 
-FROM node:20 as runner
+FROM node:20 AS runner
 
 # hadolint ignore=DL3008
 RUN apt-get update && \
@@ -67,9 +67,9 @@ RUN chmod +x entrypoint.sh
 COPY src src
 COPY tsconfig.json .
 
-ENV LOG_DIR /data/logs
-ENV CONFIG_PATH /data/config.json
-ENV NORMALIZE_VOLUME_APP mp3gain
-# ENV NORMALIZE_VOLUME_APP rgain3
+ENV LOG_DIR=/data/logs
+ENV CONFIG_PATH=/data/config.json
+ENV NORMALIZE_VOLUME_APP=mp3gain
+# ENV NORMALIZE_VOLUME_APP=rgain3
 
 ENTRYPOINT [ "/app/entrypoint.sh" ]
