@@ -1,4 +1,4 @@
-FROM node:20 as builder
+FROM node:20 AS builder
 
 WORKDIR /build
 
@@ -13,17 +13,17 @@ COPY src src
 
 RUN yarn build
 
-FROM node:20 as runner
+FROM node:20 AS runner
 
 WORKDIR /app
 
 COPY --from=builder /build/.output/ /app/
 
-ENV TRACKS_FILE /data/tracks.json
-ENV WEBHOOK_TRACKS_FILE /data/webhook-tracks.json
-ENV TRACKS_DIR /data/tracks/
+ENV TRACKS_FILE=/data/tracks.json
+ENV WEBHOOK_TRACKS_FILE=/data/webhook-tracks.json
+ENV TRACKS_DIR=/data/tracks/
 
-ENV PORT 80
+ENV PORT=80
 EXPOSE 80
 
 CMD ["node", "server/index.mjs"]
