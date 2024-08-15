@@ -7293,10 +7293,10 @@ vue@^3.4.32:
     "@vue/server-renderer" "3.4.37"
     "@vue/shared" "3.4.37"
 
-vuetify@3.6.15:
-  version "3.6.15"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.6.15.tgz#de7784289c5ffa64cd56de6f824816fbb6aacdf8"
-  integrity sha512-lg5Si+vX0hQpO4EzI9f+8JNVHbjV//E99yKif7OuWLENDk1TQx2tfqCdZvb5AnAeqyiqVJVgOQp4uYHgGjTFAw==
+vuetify@3.7.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.7.0.tgz#1230e97330b9112492aa25183809e483477b2c36"
+  integrity sha512-x+UaU4SPYNcJSE/voCTBFrNn0q9Spzx2EMfDdUj0NYgHGKb59OqnZte+AjaJaoOXy1AHYIGEpm5Ryk2BEfgWuw==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"
