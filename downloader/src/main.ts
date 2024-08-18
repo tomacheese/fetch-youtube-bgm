@@ -17,6 +17,7 @@ import {
   normalizeVolume,
   removeCacheDir,
   updateArtwork,
+  trimAndAddSilence,
 } from './lib'
 import { Logger } from '@book000/node-utils'
 
@@ -153,6 +154,19 @@ class ParallelProcessVideo {
     logger.info(`🔊 Normalizing volume of ${id}`)
     const normalizeResult = normalizeVolume(`/tmp/download-movies/${id}.mp3`)
     for (const line of normalizeResult.toString().split('\n')) {
+      logger.info(`  > ${line}`)
+    }
+
+    // 前後の空白を削除し、無音を追加
+    const secondsForSilence = 2
+    logger.info(
+      `🎵 Trim and add ${secondsForSilence} seconds of silence for ${id}`,
+    )
+    const trimAndAddSilenceResult = trimAndAddSilence(
+      `/tmp/download-movies/${id}.mp3`,
+      secondsForSilence,
+    )
+    for (const line of trimAndAddSilenceResult.toString().split('\n')) {
       logger.info(`  > ${line}`)
     }
 
