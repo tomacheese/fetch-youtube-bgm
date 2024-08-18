@@ -40,6 +40,10 @@ RUN apt-get update && \
   python3-gi \
   python3-pip \
   zlib1g-dev \
+  sox \
+  libsox-fmt-mp3 \
+  libmp3lame0 \
+  libmad0 \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 

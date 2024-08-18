@@ -213,6 +213,17 @@ export function normalizeVolume(file: string) {
   throw new Error(`Unknown normalize volume app: ${envApp}`)
 }
 
+export function trimAndAddSilence(file: string, duration: number) {
+  // "/tmp/download-movies/${id}.mp3" -> "/tmp/download-movies/${id}-trimmed.mp3"
+  const newFile = file.replace('.mp3', '-trimmed.mp3')
+  const result = execSync(
+    `sox "${file}" "${newFile}" silence 1 0.1 1% reverse silence 1 0.1 1% reverse pad ${duration} ${duration}`,
+  )
+  fs.unlinkSync(file)
+  fs.renameSync(newFile, file)
+  return result
+}
+
 export function removeCacheDir() {
   execSync('yt-dlp --rm-cache-dir')
 }
