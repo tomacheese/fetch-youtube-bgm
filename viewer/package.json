@@ -20,7 +20,7 @@
   "devDependencies": {
     "@book000/eslint-config": "1.7.45",
     "@mdi/font": "7.4.47",
-    "@nuxt/eslint": "0.5.2",
+    "@nuxt/eslint": "0.5.3",
     "@types/node": "20.16.1",
     "eslint": "9.9.1",
     "nuxt": "3.13.0",
