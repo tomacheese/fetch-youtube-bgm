@@ -86,10 +86,10 @@ export function addTrack(vid: string, information: VideoInformation | null) {
 export function getFilename(track: Track) {
   const { vid, track: title, artist } = track
 
-  const sanitizedFilename = titie.replaceAll("#", "")
+  const sanitizedFilename = title?.replaceAll('#', '')
 
-  if (title && artist) {
-    return `${title} - ${artist} (${vid}).mp3`
+  if (sanitizedFilename && artist) {
+    return `${sanitizedFilename} - ${artist} (${vid}).mp3`
   }
   return `${vid}.mp3`
 }
