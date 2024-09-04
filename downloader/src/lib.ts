@@ -102,8 +102,9 @@ export function getFilename(config: Config, track: Track) {
   const sanitizeChars = config.filename?.sanitizeChars ?? defaultSanitizeChars
 
   const sanitizedFilename = title
-    ? sanitizeChars.reduce(
-        (acc, char) => acc.replace(new RegExp(char, 'g'), ''),
+    ? // eslint-disable-next-line unicorn/no-array-reduce
+      sanitizeChars.reduce(
+        (acc, char) => acc.replaceAll(new RegExp(char, 'g'), ''),
         title,
       )
     : null
