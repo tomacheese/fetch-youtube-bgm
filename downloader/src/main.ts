@@ -18,6 +18,8 @@ import {
   removeCacheDir,
   updateArtwork,
   trimAndAddSilence,
+  isSetArtwork,
+  getArtworkData,
 } from './lib'
 import { Logger } from '@book000/node-utils'
 
@@ -174,12 +176,20 @@ class ParallelProcessVideo {
     logger.info(`📃 Adding ID3 tag for ${track.vid}`)
     addId3Tag(track)
 
-    // トピック(YouTube Music)の場合、アートワークの更新をする
+    // トピック(YouTube Music)の場合、リサイズしたアートワークへ更新をする
     if (videoInfo?.artist.endsWith(' - Topic')) {
       const artwork = await getClippedArtwork(id)
       if (artwork) {
-        logger.info(`🎨 Updating artwork for ${id}`)
+        logger.info(`🎨 Updating clipped artwork for ${id}`)
         updateArtwork(id, artwork)
+      }
+    }
+    // アートワークが設定されていない場合、設定
+    else if (!isSetArtwork(`/tmp/download-movies/${id}.mp3`)) {
+      logger.info(`🎨 Setting artwork for ${id}`)
+      const artwork = await getArtworkData(id)
+      if (artwork) {
+        updateArtwork(id, Buffer.from(artwork))
       }
     }
 

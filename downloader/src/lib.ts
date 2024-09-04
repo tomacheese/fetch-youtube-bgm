@@ -193,24 +193,32 @@ export function updateArtwork(vid: string, image: Buffer) {
   fs.writeFileSync(file, newBuffer)
 }
 
+export function isSetArtwork(file: string) {
+  const buffer = fs.readFileSync(file)
+  const tags = NodeID3.read(buffer)
+  return !!tags.image
+}
+
 export function getId3TagFileUrl(file: string) {
   const buffer = fs.readFileSync(file)
   const tags = NodeID3.read(buffer)
   return tags.fileUrl
 }
 
-export async function getClippedArtwork(vid: string) {
-  const logger = Logger.configure('getClippedArtwork')
+export async function getArtworkData(vid: string) {
+  const logger = Logger.configure('getArtwork')
   const url = `https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`
 
   let response
-  const firstResponse = await axios.get(url, {
+  const firstResponse = await axios.get<ArrayBuffer>(url, {
     responseType: 'arraybuffer',
     validateStatus: () => true,
   })
-  if (firstResponse.status !== 200) {
+  if (firstResponse.status === 200) {
+    response = firstResponse
+  } else {
     // retry
-    const secondResponse = await axios.get(url, {
+    const secondResponse = await axios.get<ArrayBuffer>(url, {
       responseType: 'arraybuffer',
       validateStatus: () => true,
     })
@@ -221,11 +229,15 @@ export async function getClippedArtwork(vid: string) {
       return null
     }
     response = secondResponse
-  } else {
-    response = firstResponse
   }
 
-  return await sharp(response.data)
+  return response.data
+}
+
+export async function getClippedArtwork(vid: string) {
+  const artworkData = await getArtworkData(vid)
+  if (!artworkData) return null
+  return await sharp(artworkData)
     .extract({
       left: 280,
       top: 0,
