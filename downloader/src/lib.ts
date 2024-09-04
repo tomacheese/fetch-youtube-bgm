@@ -106,7 +106,10 @@ export function getFilename(config: Config, track: Track) {
       sanitizeChars.reduce(
         (acc, char) =>
           acc.replaceAll(
-            new RegExp(char.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`), 'g'),
+            new RegExp(
+              char.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`),
+              'g',
+            ),
             '',
           ),
         title,
