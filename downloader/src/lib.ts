@@ -200,16 +200,31 @@ export function getId3TagFileUrl(file: string) {
 }
 
 export async function getClippedArtwork(vid: string) {
-  const response = await axios.get(
-    `https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`,
-    {
+  const logger = Logger.configure('getClippedArtwork')
+  const url = `https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`
+
+  let response
+  const firstResponse = await axios.get(url, {
+    responseType: 'arraybuffer',
+    validateStatus: () => true,
+  })
+  if (firstResponse.status !== 200) {
+    // retry
+    const secondResponse = await axios.get(url, {
       responseType: 'arraybuffer',
       validateStatus: () => true,
-    },
-  )
-  if (response.status !== 200) {
-    return null
+    })
+    if (secondResponse.status !== 200) {
+      logger.warn(
+        `🚫 Failed to get artwork for ${vid} (${firstResponse.status} / ${secondResponse.status})`,
+      )
+      return null
+    }
+    response = secondResponse
+  } else {
+    response = firstResponse
   }
+
   return await sharp(response.data)
     .extract({
       left: 280,
