@@ -11,6 +11,9 @@ export interface Config {
     /** Discord channel ID (required if using bot) */
     channel_id?: string
   }
+  filename?: {
+    sanitizeChars?: string[]
+  }
 }
 
 export function getConfig() {

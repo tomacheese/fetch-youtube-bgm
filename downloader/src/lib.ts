@@ -4,6 +4,7 @@ import fs from 'node:fs'
 import NodeID3 from 'node-id3'
 import { Logger } from '@book000/node-utils'
 import sharp from 'sharp'
+import { Config } from './configuration'
 
 interface Track {
   vid: string
@@ -83,10 +84,30 @@ export function addTrack(vid: string, information: VideoInformation | null) {
   fs.writeFileSync('/data/tracks.json', JSON.stringify(next))
 }
 
-export function getFilename(track: Track) {
+export function getFilename(config: Config, track: Track) {
   const { vid, track: title, artist } = track
 
-  const sanitizedFilename = title?.replaceAll('#', '')
+  const defaultSanitizeChars = [
+    '/',
+    '\\',
+    '?',
+    '%',
+    '*',
+    ':',
+    '|',
+    '"',
+    '<',
+    '>',
+  ]
+  const sanitizeChars = config.filename?.sanitizeChars ?? defaultSanitizeChars
+
+  const sanitizedFilename = title
+    ? // eslint-disable-next-line unicorn/no-array-reduce
+      sanitizeChars.reduce(
+        (acc, char) => acc.replaceAll(new RegExp(char, 'g'), ''),
+        title,
+      )
+    : null
 
   if (sanitizedFilename && artist) {
     return `${sanitizedFilename} - ${artist} (${vid}).mp3`
