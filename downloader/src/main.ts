@@ -183,12 +183,18 @@ class ParallelProcessVideo {
       }
     }
 
-    const filename = getFilename(track)
+    const filename = getFilename(config, track)
 
-    // タイトルが定義されている場合、古いファイル名（{videoId}.mp3）のファイルを削除
-    if (filename !== `${id}.mp3` && fs.existsSync(`/data/tracks/${id}.mp3`)) {
-      logger.info(`🗑️ Deleting old file: ${id}.mp3`)
-      fs.unlinkSync(`/data/tracks/${id}.mp3`)
+    // 異なるファイル名で同じIDが含まれているファイルを探し、削除
+    const oldEqualFilename = fs.readdirSync('/data/tracks/').filter((file) => {
+      const fileUrl = getId3TagFileUrl(`/data/tracks/${file}`)
+      return file !== filename && fileUrl && fileUrl.split('/').pop() === id
+    })
+    if (oldEqualFilename.length > 0) {
+      for (const oldFile of oldEqualFilename) {
+        logger.info(`🗑️ Deleting old file: ${oldFile}`)
+        fs.unlinkSync(`/data/tracks/${oldFile}`)
+      }
     }
 
     // 音声指紋を元にファイル内容が異なるかを確認
