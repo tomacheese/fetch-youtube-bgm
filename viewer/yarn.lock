@@ -293,15 +293,15 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
-"@book000/eslint-config@1.7.63":
-  version "1.7.63"
-  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.7.63.tgz#4e11c0e6e62c62bb4b580a8af5c9c759c2ea9912"
-  integrity sha512-RoP5QhTFnsJWSnKyOcbpHN+JOK3+1vaob4E5VeF8bdYcYCeyIaMZQ7JgBSD0IT0ZCO2vnqdFbn3g8IH/gUBzew==
+"@book000/eslint-config@1.7.64":
+  version "1.7.64"
+  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.7.64.tgz#61cbc4de9be5fbc28544590996bb1ca8825222c1"
+  integrity sha512-zPtFqGN4Z74YwKrS0yK01tIoRZWTzoyH3cjxxlEKD88Ds4gvRHgQFwCwjA0LcKmD3c69Nrs0dC8lT09q4RFVKQ==
   dependencies:
     "@eslint/eslintrc" "3.1.0"
     "@typescript-eslint/parser" "8.8.0"
     eslint-config-prettier "9.1.0"
-    eslint-plugin-unicorn "55.0.0"
+    eslint-plugin-unicorn "56.0.0"
     globals "15.10.0"
     typescript-eslint "8.8.0"
 
@@ -2562,7 +2562,7 @@ copy-anything@^3.0.2:
   dependencies:
     is-what "^4.1.8"
 
-core-js-compat@^3.37.0:
+core-js-compat@^3.37.0, core-js-compat@^3.38.1:
   version "3.38.1"
   resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.38.1.tgz#2bc7a298746ca5a7bcb9c164bcb120f2ebc09a09"
   integrity sha512-JRH6gfXxGmrzF3tZ57lFx97YARxCXPaMzPo6jELZhv88pBH5VXpQ+y0znKGlFnzuaihqhLbefxSJxWJMPtfDzw==
@@ -3287,7 +3287,29 @@ eslint-plugin-regexp@^2.6.0:
     regexp-ast-analysis "^0.7.1"
     scslre "^0.3.0"
 
-eslint-plugin-unicorn@55.0.0, eslint-plugin-unicorn@^55.0.0:
+eslint-plugin-unicorn@56.0.0:
+  version "56.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-56.0.0.tgz#9fd3ebe6f478571734541fa745026b743175b59e"
+  integrity sha512-aXpddVz/PQMmd69uxO98PA4iidiVNvA0xOtbpUoz1WhBd4RxOQQYqN618v68drY0hmy5uU2jy1bheKEVWBjlPw==
+  dependencies:
+    "@babel/helper-validator-identifier" "^7.24.7"
+    "@eslint-community/eslint-utils" "^4.4.0"
+    ci-info "^4.0.0"
+    clean-regexp "^1.0.0"
+    core-js-compat "^3.38.1"
+    esquery "^1.6.0"
+    globals "^15.9.0"
+    indent-string "^4.0.0"
+    is-builtin-module "^3.2.1"
+    jsesc "^3.0.2"
+    pluralize "^8.0.0"
+    read-pkg-up "^7.0.1"
+    regexp-tree "^0.1.27"
+    regjsparser "^0.10.0"
+    semver "^7.6.3"
+    strip-indent "^3.0.0"
+
+eslint-plugin-unicorn@^55.0.0:
   version "55.0.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-55.0.0.tgz#e2aeb397914799895702480970e7d148df5bcc7b"
   integrity sha512-n3AKiVpY2/uDcGrS3+QsYDkjPfaOrNrsfQxU9nt5nitd9KuvVXrfAvgCO9DYPSfap+Gqjw9EOrXIsBp5tlHZjA==
