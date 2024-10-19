@@ -149,6 +149,9 @@ export async function getVideoInformation(
   const logger = Logger.configure('getVideoInformation')
   const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${vid}&format=json`
   const response = await axios.get<YouTubeoEmbed>(url, {
+    headers: {
+      'Accept-Language': 'ja-JP',
+    },
     proxy: parseHttpProxy(),
     validateStatus: () => true,
   })
@@ -303,6 +306,8 @@ export function getPlaylistVideoIds(playlistId: string) {
     '--ignore-config',
     httpsProxy ? '--proxy' : '',
     httpsProxy ?? '',
+    '--add-header',
+    'Accept-Language:ja-JP',
     '--flat-playlist',
     '--print',
     'id',
@@ -327,6 +332,8 @@ export function downloadVideo(videoId: string): boolean {
     '--audio-format',
     'mp3',
     '--embed-thumbnail',
+    '--add-header',
+    'Accept-Language:ja-JP',
     '-o',
     '"%(id)s.%(ext)s"',
     `https://youtu.be/${videoId}`,
