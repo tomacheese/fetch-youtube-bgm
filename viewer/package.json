@@ -18,7 +18,7 @@
     "fix:eslint": "eslint . -c eslint.config.mjs --fix"
   },
   "devDependencies": {
-    "@book000/eslint-config": "1.7.74",
+    "@book000/eslint-config": "1.7.75",
     "@mdi/font": "7.4.47",
     "@nuxt/eslint": "0.6.0",
     "@types/node": "20.16.13",
