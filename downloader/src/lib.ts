@@ -101,7 +101,7 @@ export function getFilename(config: Config, track: Track) {
   ]
   const sanitizeChars = config.filename?.sanitizeChars ?? defaultSanitizeChars
 
-  const sanitizedFilename = title
+  const sanitizedTitle = title
     ? // eslint-disable-next-line unicorn/no-array-reduce
       sanitizeChars.reduce(
         (acc, char) =>
@@ -116,8 +116,23 @@ export function getFilename(config: Config, track: Track) {
       )
     : null
 
-  if (sanitizedFilename && artist) {
-    return `${sanitizedFilename} - ${artist} (${vid}).mp3`
+  const sanitizedArtist = artist
+    ? // eslint-disable-next-line unicorn/no-array-reduce
+      sanitizeChars.reduce(
+        (acc, char) =>
+          acc.replaceAll(
+            new RegExp(
+              char.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`),
+              "g"
+            ),
+            ""
+          ),
+        artist
+      )
+    : null;
+
+  if (sanitizedTitle && sanitizedArtist) {
+    return `${sanitizedTitle} - ${sanitizedArtist} (${vid}).mp3`;
   }
   return `${vid}.mp3`
 }
