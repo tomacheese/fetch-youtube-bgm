@@ -123,16 +123,16 @@ export function getFilename(config: Config, track: Track) {
           acc.replaceAll(
             new RegExp(
               char.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`),
-              "g"
+              'g',
             ),
-            ""
+            '',
           ),
-        artist
+        artist,
       )
-    : null;
+    : null
 
   if (sanitizedTitle && sanitizedArtist) {
-    return `${sanitizedTitle} - ${sanitizedArtist} (${vid}).mp3`;
+    return `${sanitizedTitle} - ${sanitizedArtist} (${vid}).mp3`
   }
   return `${vid}.mp3`
 }
