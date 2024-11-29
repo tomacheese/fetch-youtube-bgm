@@ -22,7 +22,7 @@
     "@mdi/font": "7.4.47",
     "@nuxt/eslint": "0.7.2",
     "@types/node": "22.10.1",
-    "eslint": "9.15.0",
+    "eslint": "9.16.0",
     "nuxt": "3.14.1592",
     "sass": "1.81.0",
     "typescript": "5.7.2",
