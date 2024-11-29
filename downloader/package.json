@@ -27,7 +27,7 @@
     "@types/node": "22.10.1",
     "@types/sharp": "0.32.0",
     "axios": "1.7.8",
-    "eslint": "9.15.0",
+    "eslint": "9.16.0",
     "eslint-config-standard": "17.1.0",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-n": "17.14.0",
