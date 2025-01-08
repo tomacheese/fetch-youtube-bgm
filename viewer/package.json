@@ -25,7 +25,7 @@
     "eslint": "9.17.0",
     "nuxt": "3.15.1",
     "sass": "1.83.1",
-    "typescript": "5.7.2",
+    "typescript": "5.7.3",
     "vite-plugin-eslint": "1.8.1",
     "vue-tsc": "1.8.27",
     "vuetify": "3.7.6",
