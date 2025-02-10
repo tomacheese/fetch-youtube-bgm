@@ -55,11 +55,6 @@ export default defineNuxtConfig({
     strict: true
   },
 
-  vite: {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    plugins: [isDev ? require('vite-plugin-eslint')() : undefined]
-  },
-
   build: {
     transpile: ['vuetify']
   },

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DarkModeSwitch from './components/DarkModeSwitch.vue'
-import { type EditingTrack, type Track } from './models/track'
+import type { EditingTrack, Track } from './models/track'
 import { getReadableError } from './server/utils/readable-error'
 
 // --- data
