@@ -192,6 +192,7 @@ export function addId3Tag(track: Track) {
     {
       ...tags,
       fileUrl: `https://youtu.be/${track.vid}`,
+      generalObject: [],
     },
     prevBuffer,
   )
@@ -212,6 +213,7 @@ export function updateArtwork(vid: string, image: Buffer) {
         description: 'Cover',
         imageBuffer: image,
       },
+      generalObject: [],
     },
     prevBuffer,
   )
