@@ -161,11 +161,13 @@ class ParallelProcessVideo {
     }
 
     // 登録されているトラック情報を取得
-    const track = getTrack(id)
+    const track = await getTrack(id)
     if (!track.track) {
       // トラック情報がない場合は、デフォルト値を設定
       addTrack(id, videoInfo)
     }
+    logger.info(`🎵 ${track.track}`)
+    logger.info(`🎤 ${track.artist}`)
 
     // 音量を正規化
     logger.info(`🔊 Normalizing volume of ${id}`)

@@ -5,6 +5,7 @@ import NodeID3 from 'node-id3'
 import { Logger } from '@book000/node-utils'
 import sharp from 'sharp'
 import { Config } from './configuration'
+import { MusicBrainz } from './musicbrainz'
 
 interface Track {
   vid: string
@@ -54,17 +55,31 @@ export function getDefinedTracks(): Track[] {
   return []
 }
 
-export function getTrack(vid: string): Track {
+export async function getTrack(vid: string): Promise<Track> {
   const tracks = getDefinedTracks()
-  return (
-    tracks.find((track) => track.vid === vid) ?? {
+  const definedTrack = tracks.find((track) => track.vid === vid)
+  if (definedTrack) {
+    return definedTrack
+  }
+
+  const musicbrainzInfo = await MusicBrainz.getTrackInfo(vid)
+  if (musicbrainzInfo) {
+    return {
       vid,
-      track: null,
-      artist: null,
+      track: musicbrainzInfo.title,
+      artist: musicbrainzInfo.artist,
       album: null,
       albumArtist: null,
     }
-  )
+  }
+
+  return {
+    vid,
+    track: null,
+    artist: null,
+    album: null,
+    albumArtist: null,
+  }
 }
 
 export function addTrack(vid: string, information: VideoInformation | null) {
@@ -72,7 +87,7 @@ export function addTrack(vid: string, information: VideoInformation | null) {
     ? (JSON.parse(fs.readFileSync('/data/tracks.json').toString()) as TrackFile)
     : {}
   const newTrack = {
-    track: information ? information.title : null,
+    track: information?.title ?? null,
     artist: null,
     album: null,
     albumArtist: null,

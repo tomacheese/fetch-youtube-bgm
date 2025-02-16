@@ -2,6 +2,7 @@ import type { FileTrack } from '~/models/track';
 import { TrackManager } from '../utils/track-manager';
 import { WebhookTrackManager } from '../utils/webhook-track-manager';
 import type { WebScrobblerWebhookBody } from '~/models/web-scrobbler';
+import { MusicBrainz } from '../utils/musicbrainz';
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -92,9 +93,18 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  // MusicBrainzから情報を取得
+  let trackName = track
+  let artistName = artist
+  const musicbrainzInfo = await MusicBrainz.getTrackInfo(vid)
+  if (musicbrainzInfo) {
+    trackName = musicbrainzInfo.title
+    artistName = musicbrainzInfo.artist
+  }
+
   const trackData = {
-    track,
-    artist,
+    track: trackName,
+    artist: artistName,
     album: null,
     albumArtist: null
   } satisfies FileTrack
