@@ -181,7 +181,11 @@ export async function getVideoInformation(
   }
 }
 
-export function addId3Tag(track: Track) {
+export function addId3Tag(
+  track: Track,
+  videoIndex: number,
+  videoCount: number,
+) {
   const file = `/tmp/download-movies/${track.vid}.mp3`
   const prevBuffer = fs.readFileSync(file)
   const tags =
@@ -192,6 +196,7 @@ export function addId3Tag(track: Track) {
     {
       ...tags,
       fileUrl: `https://youtu.be/${track.vid}`,
+      trackNumber: `${videoIndex}/${videoCount}`,
       generalObject: [],
     },
     prevBuffer,

@@ -113,7 +113,7 @@ class ParallelProcessVideo {
       }
       const videoIndex = this.videoCount - this.ids.length
       logger.info(`🎵 Processing ${id} (${videoIndex} / ${this.videoCount})`)
-      await this.processVideo(id)
+      await this.processVideo(id, videoIndex, this.videoCount)
     }
   }
 
@@ -126,19 +126,34 @@ class ParallelProcessVideo {
    * - Discord に通知
    *
    * @param id 動画 ID
+   * @param videoIndex 動画のインデックス
+   * @param videoCount 動画の総数
    */
-  private async processVideo(id: string) {
+  private async processVideo(
+    id: string,
+    videoIndex: number,
+    videoCount: number,
+  ) {
     const logger = Logger.configure(`ParallelProcessVideo.processVideo#${id}`)
     const config = getConfig()
 
-    let videoInfo = await getVideoInformation(id)
+    let videoInfo = null
+    try {
+      videoInfo = await getVideoInformation(id)
+    } catch (error) {
+      logger.error('Failed to get video information', error as Error)
+    }
     if (!videoInfo) {
       // retry
       logger.info(
         `❌ Failed to get video information. Retry after 5 seconds...`,
       )
       await new Promise((resolve) => setTimeout(resolve, 5000))
-      videoInfo = await getVideoInformation(id)
+      try {
+        videoInfo = await getVideoInformation(id)
+      } catch (error) {
+        logger.error('Failed to get video information (retry)', error as Error)
+      }
     }
     if (videoInfo) {
       logger.info(`📺 ${videoInfo.title}`)
@@ -174,7 +189,7 @@ class ParallelProcessVideo {
 
     // ID3タグを付与
     logger.info(`📃 Adding ID3 tag for ${track.vid}`)
-    addId3Tag(track)
+    addId3Tag(track, videoIndex, videoCount)
 
     // トピック(YouTube Music)の場合、リサイズしたアートワークへ更新をする
     if (videoInfo?.artist.endsWith(' - Topic')) {
