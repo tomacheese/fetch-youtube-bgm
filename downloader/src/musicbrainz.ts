@@ -211,7 +211,9 @@ export class MusicBrainz {
     })
 
     if (response.status !== 200) {
-      throw new Error(`Failed to fetch URL: ${endpointUrl}, Status: ${response.status}, Status Text: ${response.statusText}`)
+      throw new Error(
+        `Failed to fetch URL: ${endpointUrl}, Status: ${response.status}, Status Text: ${response.statusText}`,
+      )
     }
 
     return response.data
@@ -227,7 +229,9 @@ export class MusicBrainz {
     })
 
     if (response.status !== 200) {
-      throw new Error(`Failed to fetch URL from ${endpointUrl}: ${response.status} ${response.statusText}`)
+      throw new Error(
+        `Failed to fetch URL from ${endpointUrl}: ${response.status} ${response.statusText}`,
+      )
     }
 
     return response.data
