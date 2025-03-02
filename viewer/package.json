@@ -27,7 +27,7 @@
     "sass": "1.85.1",
     "typescript": "5.8.2",
     "vite-plugin-eslint": "1.8.1",
-    "vue-tsc": "2.2.6",
+    "vue-tsc": "2.2.8",
     "vuetify": "3.7.14",
     "yarn-run-all": "3.1.1"
   },
