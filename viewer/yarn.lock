@@ -7038,10 +7038,10 @@ vue@^3.5.13:
     "@vue/server-renderer" "3.5.13"
     "@vue/shared" "3.5.13"
 
-vuetify@3.7.16:
-  version "3.7.16"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.7.16.tgz#64ea3cd834f8c9fab6e5bc58f67a11daab06231d"
-  integrity sha512-Few/cBtgJYgdkzi0LWmVy67G5uc2+q7oWcadbcTUPAtEtGYNh2AM28h01Fk+ScJgfxkA077//ZDff1rh3jYG/w==
+vuetify@3.7.17:
+  version "3.7.17"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.7.17.tgz#75f43e6720027d71a1b38786c465b1ba73d76077"
+  integrity sha512-VUxCUwu5BT9/e0NVDAhA4Dhcx8bHeo5FtSAqraD1YdUJYxzgXQKwUUBhOLWB9UkHVNkulsfJtvZonHS3/7tRSw==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"
