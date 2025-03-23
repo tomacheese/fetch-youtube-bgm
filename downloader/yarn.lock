@@ -28,10 +28,10 @@
     globals "16.0.0"
     typescript-eslint "8.27.0"
 
-"@book000/node-utils@1.14.45":
-  version "1.14.45"
-  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.14.45.tgz#2b20facf8143de744bd50dd8cd20f10c0ef337a6"
-  integrity sha512-TapNbmn3kwyU7mIRjN2gGHQLOsTWytd82tV9QJv4td4Pn+3B5JHUx9dL3GLt7swsrIqfsev7Q9JbnZ+TbfDMLw==
+"@book000/node-utils@1.14.46":
+  version "1.14.46"
+  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.14.46.tgz#a4511b4ed0ed67269c38622a02a050140263e680"
+  integrity sha512-0yVbj2e8Q10UY0f8XeKg7IngAk6xbNqTKZ6bjIPpJaDMwgmf9niV1tF19shI2dhL+FDs57ypgXIquR03GV2bAA==
   dependencies:
     axios "1.8.4"
     cycle "1.0.3"
