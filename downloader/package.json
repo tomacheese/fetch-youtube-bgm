@@ -32,7 +32,7 @@
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-n": "17.17.0",
     "eslint-plugin-promise": "7.2.1",
-    "node-id3": "0.2.8",
+    "node-id3": "0.2.9",
     "prettier": "3.5.3",
     "sharp": "0.33.5",
     "ts-node": "10.9.2",
