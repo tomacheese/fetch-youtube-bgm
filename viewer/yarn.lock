@@ -251,10 +251,10 @@
     "@babel/helper-string-parser" "^7.25.9"
     "@babel/helper-validator-identifier" "^7.25.9"
 
-"@book000/eslint-config@1.8.59":
-  version "1.8.59"
-  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.8.59.tgz#2e62d6562e4aa2da7b5ffb1306382bede13ae02f"
-  integrity sha512-fmh6rIKFA1kt+Y2/OjIcdoRzjRNxtv18QflcW8Tlrpu1kmkxlawd55Cwp06GL6PRJ+psQHGzgP7U89uBoVZttA==
+"@book000/eslint-config@1.8.60":
+  version "1.8.60"
+  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.8.60.tgz#08ce9ec2b59c8672162b56eddf8a142f91b55b8a"
+  integrity sha512-eyuuqTIyx8Ayc7UpiWY2lvNs3nCJRuusHEVwk7JHQAlsfaeyK2lnrXudw9lRohd6RVyZYhIa3JzJZuLMtUUSPQ==
   dependencies:
     "@eslint/eslintrc" "3.3.1"
     "@typescript-eslint/parser" "8.31.0"
@@ -262,7 +262,7 @@
     eslint-plugin-import "2.31.0"
     eslint-plugin-n "17.17.0"
     eslint-plugin-promise "7.2.1"
-    eslint-plugin-unicorn "58.0.0"
+    eslint-plugin-unicorn "59.0.0"
     globals "16.0.0"
     typescript-eslint "8.31.0"
 
@@ -3800,7 +3800,30 @@ eslint-plugin-regexp@^2.7.0:
     regexp-ast-analysis "^0.7.1"
     scslre "^0.3.0"
 
-eslint-plugin-unicorn@58.0.0, eslint-plugin-unicorn@^58.0.0:
+eslint-plugin-unicorn@59.0.0:
+  version "59.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-59.0.0.tgz#11783a80ce81ab397cccbb1ce046a30eda9bb4b9"
+  integrity sha512-7IEeqkymGa7tr6wTWS4DolfXnfcE3QjcD0g7I+qCfV5GPMvVsFsLT7zTIYvnudqwAm5nWekdGIOTTXA93Sz9Ow==
+  dependencies:
+    "@babel/helper-validator-identifier" "^7.25.9"
+    "@eslint-community/eslint-utils" "^4.5.1"
+    "@eslint/plugin-kit" "^0.2.7"
+    ci-info "^4.2.0"
+    clean-regexp "^1.0.0"
+    core-js-compat "^3.41.0"
+    esquery "^1.6.0"
+    find-up-simple "^1.0.1"
+    globals "^16.0.0"
+    indent-string "^5.0.0"
+    is-builtin-module "^5.0.0"
+    jsesc "^3.1.0"
+    pluralize "^8.0.0"
+    regexp-tree "^0.1.27"
+    regjsparser "^0.12.0"
+    semver "^7.7.1"
+    strip-indent "^4.0.0"
+
+eslint-plugin-unicorn@^58.0.0:
   version "58.0.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-58.0.0.tgz#38c12a59537312eeb9cb1cd747afe038db4bda41"
   integrity sha512-fc3iaxCm9chBWOHPVjn+Czb/wHS0D2Mko7wkOdobqo9R2bbFObc4LyZaLTNy0mhZOP84nKkLhTUQxlLOZ7EjKw==
@@ -4133,7 +4156,7 @@ filter-obj@^5.0.0:
   resolved "https://registry.yarnpkg.com/filter-obj/-/filter-obj-5.1.0.tgz#5bd89676000a713d7db2e197f660274428e524ed"
   integrity sha512-qWeTREPoT7I0bifpPUXtxkZJ1XJzxWtfoWWkdVGqa+eCr3SHW/Ocp89o8vLvbUuQnadybJpjOKu4V+RwO6sGng==
 
-find-up-simple@^1.0.0:
+find-up-simple@^1.0.0, find-up-simple@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/find-up-simple/-/find-up-simple-1.0.1.tgz#18fb90ad49e45252c4d7fca56baade04fa3fca1e"
   integrity sha512-afd4O7zpqHeRyg4PfDQsXmlDe2PfdHtJt6Akt8jOWaApLOZk5JXs6VMR29lz03pRe9mpykrRCYIYxaJYcfpncQ==
