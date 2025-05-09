@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@book000/eslint-config": "1.8.66",
-    "@book000/node-utils": "1.15.13",
+    "@book000/node-utils": "1.15.15",
     "@types/node": "22.15.12",
     "@types/sharp": "0.32.0",
     "axios": "1.9.0",
