@@ -243,10 +243,10 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
-"@book000/eslint-config@1.8.69":
-  version "1.8.69"
-  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.8.69.tgz#1e8410773da25fd6f83df788b3b81cd86e6b49d0"
-  integrity sha512-LVpfCiN5/drPcUCyatUy5bAdIdEm06yH8IcCn3rF5JybkLtvBg9N4+JotvhE/55s7pCBRqfzYuGuAUyodFG1Mw==
+"@book000/eslint-config@1.8.70":
+  version "1.8.70"
+  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.8.70.tgz#a62ea6aefed7f8a0a7612642d3c049091498f35c"
+  integrity sha512-Q1mRe9ePBh1Bk+j/jqcmFmnSr1J3Lv69V6IZ1tVGoYxQKSkNKssvcTRt+1KRgmWtCkowTh5tSIhReV9FlFz66A==
   dependencies:
     "@eslint/eslintrc" "3.3.1"
     "@typescript-eslint/parser" "8.32.0"
@@ -1545,14 +1545,7 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
 
-"@types/node@*":
-  version "22.15.17"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.15.17.tgz#355ccec95f705b664e4332bb64a7f07db30b7055"
-  integrity sha512-wIX2aSZL5FE+MR0JlvF87BNVrtFWf6AE6rxSE9X7OwnVvoyCQjpzSRJ+M87se/4QCkCiebQAqrJ0y6fwIyi7nw==
-  dependencies:
-    undici-types "~6.21.0"
-
-"@types/node@22.15.17":
+"@types/node@*", "@types/node@22.15.17":
   version "22.15.17"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-22.15.17.tgz#355ccec95f705b664e4332bb64a7f07db30b7055"
   integrity sha512-wIX2aSZL5FE+MR0JlvF87BNVrtFWf6AE6rxSE9X7OwnVvoyCQjpzSRJ+M87se/4QCkCiebQAqrJ0y6fwIyi7nw==
