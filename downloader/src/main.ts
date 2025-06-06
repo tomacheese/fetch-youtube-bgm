@@ -83,7 +83,7 @@ class ParallelDownloadVideo {
           return true
         } catch (error) {
           logger.warn(`⚠️ Failed to get file stats for ${id}:`, error as Error)
-          return false
+          // ファイルステータス確認に失敗してもリトライを継続
         }
       }
       logger.info(`❌ Failed to download ${id}. Retry after 3 seconds...`)
