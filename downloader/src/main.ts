@@ -72,12 +72,14 @@ class ParallelDownloadVideo {
     const logger = Logger.configure(
       `ParallelDownloadVideo.runDownloadVideo#${id}`,
     )
+    const filePath = `${DOWNLOAD_TEMP_DIR}/${id}.mp3`
+
     // 3回までリトライする
     for (let i = 0; i < 3; i++) {
       const result = downloadVideo(id)
       if (result) {
         try {
-          const stats = await fsPromises.stat(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)
+          const stats = await fsPromises.stat(filePath)
           const humanFileSize = getHumanReadableSize(stats.size)
           logger.info(`✅ Successfully downloaded ${id} (${humanFileSize})`)
           return true
@@ -90,7 +92,7 @@ class ParallelDownloadVideo {
       await new Promise((resolve) => setTimeout(resolve, 3000))
     }
 
-    if (!fs.existsSync(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)) {
+    if (!fs.existsSync(filePath)) {
       logger.warn(`⚠️ Skipping ${id} due to download failure after 3 retries`)
       return false
     }
@@ -150,9 +152,10 @@ class ParallelProcessVideo {
   ) {
     const logger = Logger.configure(`ParallelProcessVideo.processVideo#${id}`)
     const config = getConfig()
+    const downloadedFilePath = `${DOWNLOAD_TEMP_DIR}/${id}.mp3`
 
     // ダウンロードファイルの存在確認
-    if (!fs.existsSync(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)) {
+    if (!fs.existsSync(downloadedFilePath)) {
       logger.warn(`⚠️ Downloaded file not found for ${id}, skipping processing`)
       return
     }
@@ -191,7 +194,7 @@ class ParallelProcessVideo {
 
     // 音量を正規化
     logger.info(`🔊 Normalizing volume of ${id}`)
-    const normalizeResult = normalizeVolume(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)
+    const normalizeResult = normalizeVolume(downloadedFilePath)
     for (const line of normalizeResult.toString().split('\n')) {
       logger.info(`  > ${line}`)
     }
@@ -202,7 +205,7 @@ class ParallelProcessVideo {
       `🎵 Trim and add ${secondsForSilence} seconds of silence for ${id}`,
     )
     const trimAndAddSilenceResult = trimAndAddSilence(
-      `${DOWNLOAD_TEMP_DIR}/${id}.mp3`,
+      downloadedFilePath,
       secondsForSilence,
     )
     for (const line of trimAndAddSilenceResult.toString().split('\n')) {
@@ -222,7 +225,7 @@ class ParallelProcessVideo {
       }
     }
     // アートワークが設定されていない場合、設定
-    else if (!isSetArtwork(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)) {
+    else if (!isSetArtwork(downloadedFilePath)) {
       logger.info(`🎨 Setting artwork for ${id}`)
       const artwork = await getArtworkData(id)
       if (artwork) {
@@ -249,7 +252,7 @@ class ParallelProcessVideo {
     if (
       fs.existsSync(`/data/tracks/${filename}`) &&
       getEchoPrint(`/data/tracks/${filename}`) ===
-        getEchoPrint(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)
+        getEchoPrint(downloadedFilePath)
     ) {
       logger.info(`⏭️ Skipping because the file is the same: ${id}`)
       return
@@ -257,7 +260,7 @@ class ParallelProcessVideo {
 
     // ファイルをコピー
     await new Promise<void>((resolve) => {
-      fs.createReadStream(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)
+      fs.createReadStream(downloadedFilePath)
         .pipe(fs.createWriteStream(`/data/tracks/${filename}`))
         .on('finish', () => {
           resolve()
@@ -265,8 +268,8 @@ class ParallelProcessVideo {
     })
 
     // 一時ファイルを削除
-    if (fs.existsSync(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)) {
-      fs.unlinkSync(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)
+    if (fs.existsSync(downloadedFilePath)) {
+      fs.unlinkSync(downloadedFilePath)
     }
 
     logger.info(`✅ Successfully processed ${id}`)
