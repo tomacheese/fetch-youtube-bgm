@@ -1,4 +1,4 @@
-import fs from 'node:fs'
+import fs, { promises as fsPromises } from 'node:fs'
 import { getConfig } from './configuration'
 import { sendDiscordMessage } from './discord'
 import {
@@ -22,6 +22,8 @@ import {
   getArtworkData,
 } from './lib'
 import { Logger } from '@book000/node-utils'
+
+const DOWNLOAD_TEMP_DIR = '/tmp/download-movies'
 
 class ParallelDownloadVideo {
   private readonly ids: string[]
@@ -75,16 +77,21 @@ class ParallelDownloadVideo {
     for (let i = 0; i < 3; i++) {
       const result = downloadVideo(id)
       if (result) {
-        const filesize = fs.statSync(`/tmp/download-movies/${id}.mp3`).size
-        const humanFileSize = getHumanReadableSize(filesize)
-        logger.info(`✅ Successfully downloaded ${id} (${humanFileSize})`)
-        return true
+        try {
+          const stats = await fsPromises.stat(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)
+          const humanFileSize = getHumanReadableSize(stats.size)
+          logger.info(`✅ Successfully downloaded ${id} (${humanFileSize})`)
+          return true
+        } catch (error) {
+          logger.warn(`⚠️ Failed to get file stats for ${id}:`, error as Error)
+          return false
+        }
       }
       logger.info(`❌ Failed to download ${id}. Retry after 3 seconds...`)
       await new Promise((resolve) => setTimeout(resolve, 3000))
     }
 
-    if (!fs.existsSync(`/tmp/download-movies/${id}.mp3`)) {
+    if (!fs.existsSync(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)) {
       logger.warn(`⚠️ Skipping ${id} due to download failure after 3 retries`)
       return false
     }
@@ -146,7 +153,7 @@ class ParallelProcessVideo {
     const config = getConfig()
 
     // ダウンロードファイルの存在確認
-    if (!fs.existsSync(`/tmp/download-movies/${id}.mp3`)) {
+    if (!fs.existsSync(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)) {
       logger.warn(`⚠️ Downloaded file not found for ${id}, skipping processing`)
       return
     }
@@ -185,7 +192,7 @@ class ParallelProcessVideo {
 
     // 音量を正規化
     logger.info(`🔊 Normalizing volume of ${id}`)
-    const normalizeResult = normalizeVolume(`/tmp/download-movies/${id}.mp3`)
+    const normalizeResult = normalizeVolume(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)
     for (const line of normalizeResult.toString().split('\n')) {
       logger.info(`  > ${line}`)
     }
@@ -196,7 +203,7 @@ class ParallelProcessVideo {
       `🎵 Trim and add ${secondsForSilence} seconds of silence for ${id}`,
     )
     const trimAndAddSilenceResult = trimAndAddSilence(
-      `/tmp/download-movies/${id}.mp3`,
+      `${DOWNLOAD_TEMP_DIR}/${id}.mp3`,
       secondsForSilence,
     )
     for (const line of trimAndAddSilenceResult.toString().split('\n')) {
@@ -216,7 +223,7 @@ class ParallelProcessVideo {
       }
     }
     // アートワークが設定されていない場合、設定
-    else if (!isSetArtwork(`/tmp/download-movies/${id}.mp3`)) {
+    else if (!isSetArtwork(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)) {
       logger.info(`🎨 Setting artwork for ${id}`)
       const artwork = await getArtworkData(id)
       if (artwork) {
@@ -243,7 +250,7 @@ class ParallelProcessVideo {
     if (
       fs.existsSync(`/data/tracks/${filename}`) &&
       getEchoPrint(`/data/tracks/${filename}`) ===
-        getEchoPrint(`/tmp/download-movies/${id}.mp3`)
+        getEchoPrint(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)
     ) {
       logger.info(`⏭️ Skipping because the file is the same: ${id}`)
       return
@@ -251,7 +258,7 @@ class ParallelProcessVideo {
 
     // ファイルをコピー
     await new Promise<void>((resolve) => {
-      fs.createReadStream(`/tmp/download-movies/${id}.mp3`)
+      fs.createReadStream(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)
         .pipe(fs.createWriteStream(`/data/tracks/${filename}`))
         .on('finish', () => {
           resolve()
@@ -259,8 +266,8 @@ class ParallelProcessVideo {
     })
 
     // 一時ファイルを削除
-    if (fs.existsSync(`/tmp/download-movies/${id}.mp3`)) {
-      fs.unlinkSync(`/tmp/download-movies/${id}.mp3`)
+    if (fs.existsSync(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)) {
+      fs.unlinkSync(`${DOWNLOAD_TEMP_DIR}/${id}.mp3`)
     }
 
     logger.info(`✅ Successfully processed ${id}`)
