@@ -26,19 +26,21 @@ import { Logger } from '@book000/node-utils'
 class ParallelDownloadVideo {
   private readonly ids: string[]
   private readonly videoCount: number
+  private readonly successfulIds: string[] = []
 
   constructor(ids: string[]) {
     this.ids = [...ids]
     this.videoCount = ids.length
   }
 
-  public async runAll(runnerCount = 3) {
+  public async runAll(runnerCount = 3): Promise<string[]> {
     const runners = []
     for (let i = 0; i < runnerCount; i++) {
       runners.push(this.runner(i))
     }
 
     await Promise.all(runners)
+    return this.successfulIds
   }
 
   private async runner(runnerId: number) {
@@ -52,7 +54,10 @@ class ParallelDownloadVideo {
       }
       const videoIndex = this.videoCount - this.ids.length
       logger.info(`📥 Downloading ${id} (${videoIndex} / ${this.videoCount})`)
-      await this.runDownloadVideo(id)
+      const success = await this.runDownloadVideo(id)
+      if (success) {
+        this.successfulIds.push(id)
+      }
     }
   }
 
@@ -60,8 +65,9 @@ class ParallelDownloadVideo {
    * 動画をダウンロードする
    *
    * @param id 動画 ID
+   * @returns ダウンロードに成功した場合は true、失敗した場合は false
    */
-  async runDownloadVideo(id: string) {
+  async runDownloadVideo(id: string): Promise<boolean> {
     const logger = Logger.configure(
       `ParallelDownloadVideo.runDownloadVideo#${id}`,
     )
@@ -72,15 +78,17 @@ class ParallelDownloadVideo {
         const filesize = fs.statSync(`/tmp/download-movies/${id}.mp3`).size
         const humanFileSize = getHumanReadableSize(filesize)
         logger.info(`✅ Successfully downloaded ${id} (${humanFileSize})`)
-        break
+        return true
       }
       logger.info(`❌ Failed to download ${id}. Retry after 3 seconds...`)
       await new Promise((resolve) => setTimeout(resolve, 3000))
     }
 
     if (!fs.existsSync(`/tmp/download-movies/${id}.mp3`)) {
-      throw new Error(`Failed to download ${id}`)
+      logger.warn(`⚠️ Skipping ${id} due to download failure after 3 retries`)
+      return false
     }
+    return true
   }
 }
 
@@ -136,6 +144,12 @@ class ParallelProcessVideo {
   ) {
     const logger = Logger.configure(`ParallelProcessVideo.processVideo#${id}`)
     const config = getConfig()
+
+    // ダウンロードファイルの存在確認
+    if (!fs.existsSync(`/tmp/download-movies/${id}.mp3`)) {
+      logger.warn(`⚠️ Downloaded file not found for ${id}, skipping processing`)
+      return
+    }
 
     let videoInfo = null
     try {
@@ -357,10 +371,25 @@ async function main() {
   logger.info(`🎥 Found ${ids.length} videos. Downloading...`)
 
   // プレイリスト動画をダウンロード
-  await new ParallelDownloadVideo(ids).runAll(runnerCountForDownload)
+  const successfullyDownloadedIds = await new ParallelDownloadVideo(ids).runAll(
+    runnerCountForDownload,
+  )
+
+  logger.info(
+    `📥 Successfully downloaded ${successfullyDownloadedIds.length}/${ids.length} videos`,
+  )
+
+  if (successfullyDownloadedIds.length === 0) {
+    logger.warn(
+      '⚠️ No videos were successfully downloaded. Skipping processing.',
+    )
+    return
+  }
 
   // ダウンロードしたプレイリスト動画を処理
-  await new ParallelProcessVideo(ids).runAll(runnerCountForProcessing)
+  await new ParallelProcessVideo(successfullyDownloadedIds).runAll(
+    runnerCountForProcessing,
+  )
 
   // プレイリストにない音楽ファイルを削除
   logger.info('🗑️ Deleting playlist removed tracks...')
