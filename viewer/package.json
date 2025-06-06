@@ -20,15 +20,15 @@
   "devDependencies": {
     "@book000/eslint-config": "1.8.77",
     "@mdi/font": "7.4.47",
-    "@nuxt/eslint": "1.4.0",
-    "@types/node": "22.15.18",
-    "eslint": "9.27.0",
-    "nuxt": "3.17.3",
-    "sass": "1.89.0",
+    "@nuxt/eslint": "1.4.1",
+    "@types/node": "22.15.29",
+    "eslint": "9.28.0",
+    "nuxt": "3.17.4",
+    "sass": "1.89.1",
     "typescript": "5.8.3",
     "vite-plugin-eslint": "1.8.1",
     "vue-tsc": "2.2.10",
-    "vuetify": "3.8.5",
+    "vuetify": "3.8.7",
     "yarn-run-all": "3.1.1"
   },
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
