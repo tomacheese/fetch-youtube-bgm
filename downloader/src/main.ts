@@ -25,6 +25,8 @@ import {
 import { Logger } from '@book000/node-utils'
 import { DOWNLOAD_TEMP_DIR } from './constants'
 
+const MAX_DOWNLOAD_RETRIES = 3
+
 class ParallelDownloadVideo {
   private readonly ids: string[]
   private readonly videoCount: number
@@ -35,6 +37,12 @@ class ParallelDownloadVideo {
     this.videoCount = ids.length
   }
 
+  /**
+   * すべての動画をダウンロードする
+   *
+   * @param runnerCount 並列実行数 (デフォルト: 3)
+   * @returns 成功したダウンロードの動画ID配列
+   */
   public async runAll(runnerCount = 3): Promise<string[]> {
     const runners = []
     for (let i = 0; i < runnerCount; i++) {
@@ -49,6 +57,7 @@ class ParallelDownloadVideo {
     const logger = Logger.configure(
       `ParallelDownloadVideo.runner#${runnerId.toString()}`,
     )
+    logger.info(`Starting download runner #${runnerId}`)
     while (this.ids.length > 0) {
       const id = this.ids.pop()
       if (!id) {
@@ -75,8 +84,8 @@ class ParallelDownloadVideo {
     )
     const filePath = path.join(DOWNLOAD_TEMP_DIR, `${id}.mp3`)
 
-    // 3回までリトライする
-    for (let i = 0; i < 3; i++) {
+    // MAX_DOWNLOAD_RETRIES回までリトライする
+    for (let i = 0; i < MAX_DOWNLOAD_RETRIES; i++) {
       const result = downloadVideo(id)
       if (result) {
         try {
@@ -96,7 +105,9 @@ class ParallelDownloadVideo {
     try {
       await fsPromises.access(filePath)
     } catch {
-      logger.warn(`⚠️ Skipping ${id} due to download failure after 3 retries`)
+      logger.warn(
+        `⚠️ Skipping ${id} due to download failure after ${MAX_DOWNLOAD_RETRIES} retries`,
+      )
       return false
     }
     return true
@@ -274,8 +285,7 @@ class ParallelProcessVideo {
 
     // 一時ファイルを削除
     try {
-      await fsPromises.access(downloadedFilePath)
-      fs.unlinkSync(downloadedFilePath)
+      await fsPromises.unlink(downloadedFilePath)
     } catch {
       // ファイルが存在しない場合は何もしない
     }
