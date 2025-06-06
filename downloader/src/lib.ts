@@ -4,6 +4,7 @@ import fs from 'node:fs'
 import NodeID3 from 'node-id3'
 import { Logger } from '@book000/node-utils'
 import sharp from 'sharp'
+import path from 'node:path'
 import { Config } from './configuration'
 import { MusicBrainz } from './musicbrainz'
 import { DOWNLOAD_TEMP_DIR } from './constants'
@@ -202,7 +203,7 @@ export function addId3Tag(
   videoIndex: number,
   videoCount: number,
 ) {
-  const file = `${DOWNLOAD_TEMP_DIR}/${track.vid}.mp3`
+  const file = path.join(DOWNLOAD_TEMP_DIR, `${track.vid}.mp3`)
   const prevBuffer = fs.readFileSync(file)
   const tags =
     !track.track || !track.artist
@@ -221,7 +222,7 @@ export function addId3Tag(
 }
 
 export function updateArtwork(vid: string, image: Buffer) {
-  const file = `${DOWNLOAD_TEMP_DIR}/${vid}.mp3`
+  const file = path.join(DOWNLOAD_TEMP_DIR, `${vid}.mp3`)
   const prevBuffer = fs.readFileSync(file)
   const newBuffer = NodeID3.update(
     {

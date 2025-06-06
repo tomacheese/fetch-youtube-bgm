@@ -1,4 +1,5 @@
 import fs, { promises as fsPromises } from 'node:fs'
+import path from 'node:path'
 import { getConfig } from './configuration'
 import { sendDiscordMessage } from './discord'
 import {
@@ -72,7 +73,7 @@ class ParallelDownloadVideo {
     const logger = Logger.configure(
       `ParallelDownloadVideo.runDownloadVideo#${id}`,
     )
-    const filePath = `${DOWNLOAD_TEMP_DIR}/${id}.mp3`
+    const filePath = path.join(DOWNLOAD_TEMP_DIR, `${id}.mp3`)
 
     // 3回までリトライする
     for (let i = 0; i < 3; i++) {
@@ -92,7 +93,9 @@ class ParallelDownloadVideo {
       await new Promise((resolve) => setTimeout(resolve, 3000))
     }
 
-    if (!fs.existsSync(filePath)) {
+    try {
+      await fsPromises.access(filePath)
+    } catch {
       logger.warn(`⚠️ Skipping ${id} due to download failure after 3 retries`)
       return false
     }
@@ -152,10 +155,12 @@ class ParallelProcessVideo {
   ) {
     const logger = Logger.configure(`ParallelProcessVideo.processVideo#${id}`)
     const config = getConfig()
-    const downloadedFilePath = `${DOWNLOAD_TEMP_DIR}/${id}.mp3`
+    const downloadedFilePath = path.join(DOWNLOAD_TEMP_DIR, `${id}.mp3`)
 
     // ダウンロードファイルの存在確認
-    if (!fs.existsSync(downloadedFilePath)) {
+    try {
+      await fsPromises.access(downloadedFilePath)
+    } catch {
       logger.warn(`⚠️ Downloaded file not found for ${id}, skipping processing`)
       return
     }
@@ -268,8 +273,11 @@ class ParallelProcessVideo {
     })
 
     // 一時ファイルを削除
-    if (fs.existsSync(downloadedFilePath)) {
+    try {
+      await fsPromises.access(downloadedFilePath)
       fs.unlinkSync(downloadedFilePath)
+    } catch {
+      // ファイルが存在しない場合は何もしない
     }
 
     logger.info(`✅ Successfully processed ${id}`)
