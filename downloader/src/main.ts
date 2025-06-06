@@ -22,8 +22,7 @@ import {
   getArtworkData,
 } from './lib'
 import { Logger } from '@book000/node-utils'
-
-const DOWNLOAD_TEMP_DIR = '/tmp/download-movies'
+import { DOWNLOAD_TEMP_DIR } from './constants'
 
 class ParallelDownloadVideo {
   private readonly ids: string[]
