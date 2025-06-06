@@ -4,8 +4,10 @@ import fs from 'node:fs'
 import NodeID3 from 'node-id3'
 import { Logger } from '@book000/node-utils'
 import sharp from 'sharp'
+import path from 'node:path'
 import { Config } from './configuration'
 import { MusicBrainz } from './musicbrainz'
+import { DOWNLOAD_TEMP_DIR } from './constants'
 
 interface Track {
   vid: string
@@ -201,7 +203,7 @@ export function addId3Tag(
   videoIndex: number,
   videoCount: number,
 ) {
-  const file = `/tmp/download-movies/${track.vid}.mp3`
+  const file = path.join(DOWNLOAD_TEMP_DIR, `${track.vid}.mp3`)
   const prevBuffer = fs.readFileSync(file)
   const tags =
     !track.track || !track.artist
@@ -220,7 +222,7 @@ export function addId3Tag(
 }
 
 export function updateArtwork(vid: string, image: Buffer) {
-  const file = `/tmp/download-movies/${vid}.mp3`
+  const file = path.join(DOWNLOAD_TEMP_DIR, `${vid}.mp3`)
   const prevBuffer = fs.readFileSync(file)
   const newBuffer = NodeID3.update(
     {
@@ -326,10 +328,10 @@ export function removeCacheDir() {
 }
 
 export function recreateDirectories() {
-  if (fs.existsSync('/tmp/download-movies/')) {
-    fs.rmSync('/tmp/download-movies/', { recursive: true })
+  if (fs.existsSync(DOWNLOAD_TEMP_DIR)) {
+    fs.rmSync(DOWNLOAD_TEMP_DIR, { recursive: true })
   }
-  fs.mkdirSync('/tmp/download-movies/', { recursive: true })
+  fs.mkdirSync(DOWNLOAD_TEMP_DIR, { recursive: true })
 
   if (!fs.existsSync('/data/tracks/')) {
     fs.mkdirSync('/data/tracks/', { recursive: true })
@@ -351,7 +353,7 @@ export function getPlaylistVideoIds(playlistId: string) {
     `https://www.youtube.com/playlist?list=${playlistId}`,
   ]
   const result = execSync(command.join(' '), {
-    cwd: '/tmp/download-movies/',
+    cwd: DOWNLOAD_TEMP_DIR,
   })
   return result.toString().split('\n').filter(Boolean)
 }
@@ -377,7 +379,7 @@ export function downloadVideo(videoId: string): boolean {
   ]
   try {
     execSync(command.join(' '), {
-      cwd: '/tmp/download-movies/',
+      cwd: DOWNLOAD_TEMP_DIR,
     })
     return true
   } catch {
