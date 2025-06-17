@@ -22,12 +22,12 @@
     globals "16.2.0"
     typescript-eslint "8.34.0"
 
-"@book000/node-utils@1.18.19":
-  version "1.18.19"
-  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.18.19.tgz#11afcba73a75a19254a13384722a1a23b20c652f"
-  integrity sha512-kroz+wmtO11QA/sDQ9fVcbkQp2Udx8vs8nLy/VQRP7hzE4AZQnyT91wcm689Q4no3nbKLO6r24HYBHe+qibP8g==
+"@book000/node-utils@1.18.20":
+  version "1.18.20"
+  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.18.20.tgz#f039808293665fcf829bbc728a042a7e023600d8"
+  integrity sha512-MbwGceXoRkZeQ5y3aW/kQGytkbycg0+PfNAYt4YAXV33hXB0vFiciSOlTSGNfPyrFeYKMLJz79V+HaahgmGGGw==
   dependencies:
-    axios "1.9.0"
+    axios "1.10.0"
     cycle "1.0.3"
     form-data "4.0.3"
     jsonc-parser "3.3.1"
@@ -658,6 +658,15 @@ available-typed-arrays@^1.0.7:
   integrity sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==
   dependencies:
     possible-typed-array-names "^1.0.0"
+
+axios@1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.10.0.tgz#af320aee8632eaf2a400b6a1979fa75856f38d54"
+  integrity sha512-/1xYAC4MP/HEG+3duIhFr4ZQXR4sQXOIe+o6sdqzeykGLx6Upp/1p8MHqhINOvGeP7xyNHe7tsiJByc4SSVUxw==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
 
 axios@1.9.0:
   version "1.9.0"
