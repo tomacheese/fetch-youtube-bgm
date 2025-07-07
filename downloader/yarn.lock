@@ -489,7 +489,7 @@
     semver "^7.6.0"
     ts-api-utils "^2.1.0"
 
-"@typescript-eslint/utils@8.35.1", "@typescript-eslint/utils@^8.26.1":
+"@typescript-eslint/utils@8.35.1":
   version "8.35.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-8.35.1.tgz#a9a0ceeb81c9d132f3f75537ad2ca7f6ca266523"
   integrity sha512-lhnwatFmOFcazAsUm3ZnZFpXSxiwoa1Lj50HphnDe1Et01NF4+hrdXONSUHIcbVu2eFb1bAf+5yjXkGVkXBKAQ==
@@ -1220,22 +1220,6 @@ eslint-plugin-import@2.32.0:
     semver "^6.3.1"
     string.prototype.trimend "^1.0.9"
     tsconfig-paths "^3.15.0"
-
-eslint-plugin-n@17.20.0:
-  version "17.20.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-n/-/eslint-plugin-n-17.20.0.tgz#000a7a39675d737824d704ae77b626c257b318ef"
-  integrity sha512-IRSoatgB/NQJZG5EeTbv/iAx1byOGdbbyhQrNvWdCfTnmPxUT0ao9/eGOeG7ljD8wJBsxwE8f6tES5Db0FRKEw==
-  dependencies:
-    "@eslint-community/eslint-utils" "^4.5.0"
-    "@typescript-eslint/utils" "^8.26.1"
-    enhanced-resolve "^5.17.1"
-    eslint-plugin-es-x "^7.8.0"
-    get-tsconfig "^4.8.1"
-    globals "^15.11.0"
-    ignore "^5.3.2"
-    minimatch "^9.0.5"
-    semver "^7.6.3"
-    ts-declaration-location "^1.0.6"
 
 eslint-plugin-n@17.21.0:
   version "17.21.0"
