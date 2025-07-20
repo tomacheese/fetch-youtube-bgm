@@ -12,4 +12,5 @@ on:
 jobs:
   add-reviewer:
     name: Add reviewer
+    if: ${{ !github.event.pull_request.draft }}
     uses: book000/templates/.github/workflows/reusable-add-reviewer.yml@master
