@@ -8090,10 +8090,10 @@ vue@^3.5.17:
     "@vue/server-renderer" "3.5.17"
     "@vue/shared" "3.5.17"
 
-vuetify@3.9.0:
-  version "3.9.0"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.9.0.tgz#e9412e9ba662fcd4b9946c589a984d157460943a"
-  integrity sha512-vjqyHP5gBFH4x0BAjdRAcS3FXY5OfHaKnC6Hhgln8tePZtKc3AUhF7BEJtcrD3l6XwL8gaYx/wMt+UP7X5EZJw==
+vuetify@3.9.1:
+  version "3.9.1"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.9.1.tgz#17c62b9701f7d63138186db97b9a845dee840783"
+  integrity sha512-jmUFx655w2ClUgRXjAabiGR2hLEr0QNQClpOYVMPvqzqTPqA+UG95h1/8wHCtm5Q4ccIFwvDSSEwC/eOA6fC1g==
 
 web-streams-polyfill@^3.0.3:
   version "3.3.3"
