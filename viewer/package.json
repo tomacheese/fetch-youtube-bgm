@@ -23,7 +23,7 @@
     "@nuxt/eslint": "1.7.1",
     "@types/node": "22.16.5",
     "eslint": "9.32.0",
-    "nuxt": "3.17.7",
+    "nuxt": "3.18.1",
     "sass": "1.89.2",
     "typescript": "5.9.2",
     "vite-plugin-eslint": "1.8.1",
