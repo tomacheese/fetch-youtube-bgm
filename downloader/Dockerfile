@@ -61,7 +61,7 @@ RUN echo network-timeout 600000 > .yarnrc && \
   pip install --no-cache-dir --upgrade --break-system-packages --requirement requirements.txt
 
 # renovate: datasource=github-tags depName=yt-dlp/yt-dlp versioning=loose
-ENV YT_DLP_VERSION=2025.08.22
+ENV YT_DLP_VERSION=2025.08.27
 RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/download/${YT_DLP_VERSION}/yt-dlp -o /usr/local/bin/yt-dlp && \
   chmod a+rx /usr/local/bin/yt-dlp
 
