@@ -16,8 +16,25 @@ const searchText = ref('')
 const remainingWebhookTracks = ref(0)
 /** 編集中トラック情報 */
 const editingTrack = ref<EditingTrack>()
+/** サムネイル解像度のフォールバック - vid ごとに現在の解像度インデックスを管理 */
+const thumbnailResolutionIndex = ref<Record<string, number>>({})
+const thumbnailResolutions = ['maxresdefault.jpg', 'sddefault.jpg', 'hqdefault.jpg', 'mqdefault.jpg', 'default.jpg']
 
 // --- methods
+/** サムネイルURL取得 */
+function getThumbnailUrl(vid: string) {
+  const index = thumbnailResolutionIndex.value[vid] || 0
+  return `https://i.ytimg.com/vi/${vid}/${thumbnailResolutions[index]}`
+}
+
+/** サムネイルエラーハンドリング */
+function handleThumbnailError(vid: string) {
+  const currentIndex = thumbnailResolutionIndex.value[vid] || 0
+  if (currentIndex < thumbnailResolutions.length - 1) {
+    thumbnailResolutionIndex.value[vid] = currentIndex + 1
+  }
+}
+
 /** すべてのトラックを取得する */
 async function fetchTracks() {
   const res = await useFetch('/api/tracks')
@@ -192,7 +209,10 @@ onMounted(async () => {
               </div>
 
               <v-avatar class="ma-3" size="100" rounded="0">
-                <v-img :src="`https://i.ytimg.com/vi/${item.vid}/maxresdefault.jpg`" />
+                <v-img 
+                  :src="getThumbnailUrl(item.vid)" 
+                  @error="handleThumbnailError(item.vid)" 
+                />
               </v-avatar>
             </div>
           </v-card>

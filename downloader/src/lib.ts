@@ -256,31 +256,45 @@ export function getId3TagFileUrl(file: string) {
 
 export async function getArtworkData(vid: string) {
   const logger = Logger.configure('getArtwork')
-  const url = `https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`
+  const resolutions = [
+    'maxresdefault.jpg',
+    'sddefault.jpg',
+    'hqdefault.jpg',
+    'mqdefault.jpg',
+    'default.jpg',
+  ]
 
-  let response
-  const firstResponse = await axios.get<ArrayBuffer>(url, {
-    responseType: 'arraybuffer',
-    validateStatus: () => true,
-  })
-  if (firstResponse.status === 200) {
-    response = firstResponse
-  } else {
-    // retry
-    const secondResponse = await axios.get<ArrayBuffer>(url, {
+  for (const resolution of resolutions) {
+    const url = `https://i.ytimg.com/vi/${vid}/${resolution}`
+
+    let response
+    const firstResponse = await axios.get<ArrayBuffer>(url, {
       responseType: 'arraybuffer',
       validateStatus: () => true,
     })
-    if (secondResponse.status !== 200) {
-      logger.warn(
-        `🚫 Failed to get artwork for ${vid} (${firstResponse.status} / ${secondResponse.status})`,
-      )
-      return null
+    if (firstResponse.status === 200) {
+      response = firstResponse
+    } else {
+      // retry
+      const secondResponse = await axios.get<ArrayBuffer>(url, {
+        responseType: 'arraybuffer',
+        validateStatus: () => true,
+      })
+      if (secondResponse.status !== 200) {
+        logger.warn(
+          `⏭️ Failed to get artwork for ${vid} at ${resolution} (${firstResponse.status} / ${secondResponse.status}), trying next resolution`,
+        )
+        continue
+      }
+      response = secondResponse
     }
-    response = secondResponse
+
+    logger.info(`✅ Got artwork for ${vid} at ${resolution}`)
+    return response.data
   }
 
-  return response.data
+  logger.warn(`🚫 Failed to get artwork for ${vid} at all resolutions`)
+  return null
 }
 
 export async function getClippedArtwork(vid: string) {
