@@ -281,7 +281,7 @@ export async function getArtworkData(vid: string) {
         validateStatus: () => true,
       })
       if (secondResponse.status !== 200) {
-        logger.info(
+        logger.warn(
           `⏭️ Failed to get artwork for ${vid} at ${resolution} (${firstResponse.status} / ${secondResponse.status}), trying next resolution`,
         )
         continue
