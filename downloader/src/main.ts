@@ -254,7 +254,7 @@ class ParallelProcessVideo {
     // 異なるファイル名で同じIDが含まれているファイルを探し、削除
     const oldEqualFilename = fs.readdirSync('/data/tracks/').filter((file) => {
       const fileUrl = getId3TagFileUrl(`/data/tracks/${file}`)
-      return file !== filename && fileUrl && fileUrl.split('/').pop() === id
+      return file !== filename && fileUrl?.split('/').pop() === id
     })
     if (oldEqualFilename.length > 0) {
       for (const oldFile of oldEqualFilename) {
