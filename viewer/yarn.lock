@@ -243,10 +243,10 @@
   resolved "https://registry.yarnpkg.com/@bomb.sh/tab/-/tab-0.0.11.tgz#6b738330aad937aa4cab2805bf5cba899889415f"
   integrity sha512-RSqyreeicYBALcMaNxIUJTBknftXsyW45VRq5gKDNwKroh0Re5SDoWwXZaphb+OTEzVdpm/BA8Uq6y0P+AtVYw==
 
-"@book000/eslint-config@1.12.37":
-  version "1.12.37"
-  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.12.37.tgz#123a5a70097cdb3667a18e7def8d6c98cc7518b5"
-  integrity sha512-u2pW0lJZZUsYotsROB6RbPt969GutRBiuJRclMu7kDYKLK3An/zZ6rkXi0cVuko6uBOyHh42sUOnJ9cGvf14Fg==
+"@book000/eslint-config@1.12.38":
+  version "1.12.38"
+  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.12.38.tgz#f30c7b1a5f944596724bfd21752df683689799bc"
+  integrity sha512-9Un9FLh3pE30pNqPi947Jhe+tjj0v5n5YFfLSVUkUh+lcxN8xv9SURjwO8lpMBROGjns1Rx1uaU621H//aObKw==
   dependencies:
     "@eslint/eslintrc" "3.3.3"
     "@typescript-eslint/parser" "8.53.0"
