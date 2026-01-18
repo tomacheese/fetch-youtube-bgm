@@ -13,7 +13,7 @@ export default withNuxt({
         math: 'always',
       },
     ],
-    'vue/component-tags-order': [
+    'vue/block-order': [
       'error',
       { order: ['script', 'template', 'style'] },
     ],
