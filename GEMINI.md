@@ -35,4 +35,6 @@
 - 既存のプロジェクトルールがある場合はそれを優先する。
 
 ## リポジトリ固有
-- 目的: Download playlist videos, convert to mp3 and add metadata.
+- 概要: Download playlist videos, convert to mp3 and add metadata.
+- 設定ファイル: `data/`
+- CI 定義: `.github/workflows/` を参照
