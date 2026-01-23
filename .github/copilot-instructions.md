@@ -38,3 +38,4 @@
 ## ドキュメント更新
 
 ## リポジトリ固有
+- 目的: Download playlist videos, convert to mp3 and add metadata.
