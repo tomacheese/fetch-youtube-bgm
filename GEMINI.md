@@ -32,15 +32,18 @@ Gemini CLI 向けのコンテキストと作業方針を定義する。
 
 ### downloader
 
+- `yarn install`: 依存関係のインストール
 - `yarn dev`: 開発実行
 - `yarn compile`: 型チェック
 - `yarn lint`: Lint 実行
+- `yarn fix`: 自動修正付き Lint 実行
 
 ### viewer
 
 - `yarn dev`: 開発実行
 - `yarn build`: ビルド
 - `yarn lint`: Lint 実行
+- `yarn fix`: Lint・フォーマット自動修正
 
 ## 注意事項
 
@@ -50,5 +53,5 @@ Gemini CLI 向けのコンテキストと作業方針を定義する。
 
 ## リポジトリ固有
 
-- 外部ツール（yt-dlp, ffmpeg, mp3gain）の動作を前提としている。
+- 外部ツール（yt-dlp, ffmpeg, mp3gain / rgain3）の動作を前提としている。
 - `data/config.json` がメインの設定ファイル。

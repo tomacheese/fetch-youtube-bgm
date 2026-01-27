@@ -32,4 +32,4 @@
 
 - このプロジェクトは `downloader` と `viewer` の 2 つの主要コンポーネントで構成されている。
 - データ共有は `/data` ディレクトリ以下の JSON ファイルで行われる。
-- 外部ツール（yt-dlp, ffmpeg, mp3gain）に依存している。
+- 外部ツール（yt-dlp, ffmpeg, mp3gain / rgain3）に依存している。

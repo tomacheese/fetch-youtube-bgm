@@ -94,7 +94,7 @@ yarn fix      # 自動修正
 ## テスト
 
 - 現在、自動テストコードは存在しない。
-- 変更後は `yarn lint` および `yarn compile` での型チェックを必須とする。
+- 変更後は `yarn lint` を実行し、型チェックは `yarn compile`（downloader のみ）によって行うことを必須とする（viewer には `compile` スクリプトは存在しない）。
 
 ## ドキュメント更新ルール
 

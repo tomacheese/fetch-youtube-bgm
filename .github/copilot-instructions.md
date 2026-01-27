@@ -82,7 +82,7 @@ yarn fix
 
 ## セキュリティ / 機密情報
 
-- `data/config.json` や `.env` に含まれる認証情報（Discord トークン等）を Git にコミットしない。
+- `data/config.json` に含まれる認証情報（Discord トークン等）を Git にコミットしない。
 - ログに個人情報や認証情報を出力しない。
 
 ## ドキュメント更新
