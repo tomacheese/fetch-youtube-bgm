@@ -243,10 +243,10 @@
   resolved "https://registry.yarnpkg.com/@bomb.sh/tab/-/tab-0.0.11.tgz#6b738330aad937aa4cab2805bf5cba899889415f"
   integrity sha512-RSqyreeicYBALcMaNxIUJTBknftXsyW45VRq5gKDNwKroh0Re5SDoWwXZaphb+OTEzVdpm/BA8Uq6y0P+AtVYw==
 
-"@book000/eslint-config@1.12.42":
-  version "1.12.42"
-  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.12.42.tgz#ba620f38c234eb8fa9590566dae5a3fd94919f76"
-  integrity sha512-aahvlLR0LW4s9mJtGOV/O8fA2YfxmsTU1AVaQCrrfiYsXBfmTH++u/Tm3/vUNJ5dwMaugMPbBv9k+YTJZzlgkQ==
+"@book000/eslint-config@1.13.0":
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.13.0.tgz#4aa4d8e39578c4b64781c105ef0cbd0892dac42c"
+  integrity sha512-6QhZ/ocrmbxbCqTMjCxngUyU0g2mbI0en6X1FVBLw+vuPKHGNNkbYKSu3k6Hv7ZD3xZSnggS35AEpLPPVvwT6Q==
   dependencies:
     "@eslint/eslintrc" "3.3.3"
     "@typescript-eslint/parser" "8.53.1"
@@ -4135,7 +4135,7 @@ global-directory@^4.0.1:
   dependencies:
     ini "4.1.1"
 
-globals@17.1.0:
+globals@17.1.0, globals@^17.1.0:
   version "17.1.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-17.1.0.tgz#03448e667caa3914312a7937eef48c4a59dc6859"
   integrity sha512-8HoIcWI5fCvG5NADj4bDav+er9B9JMj2vyL2pI8D0eismKyUvPLTSs+Ln3wqhwcp306i73iyVnEKx3F6T47TGw==
@@ -4154,11 +4154,6 @@ globals@^16.4.0:
   version "16.5.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-16.5.0.tgz#ccf1594a437b97653b2be13ed4d8f5c9f850cac1"
   integrity sha512-c/c15i26VrJ4IRt5Z89DnIzCGDn9EcebibhAOjw5ibqEHsE1wLUgkPn9RDmNcUKyU87GeaL633nyJ+pplFR2ZQ==
-
-globals@^17.1.0:
-  version "17.1.0"
-  resolved "https://registry.yarnpkg.com/globals/-/globals-17.1.0.tgz#03448e667caa3914312a7937eef48c4a59dc6859"
-  integrity sha512-8HoIcWI5fCvG5NADj4bDav+er9B9JMj2vyL2pI8D0eismKyUvPLTSs+Ln3wqhwcp306i73iyVnEKx3F6T47TGw==
 
 globalthis@^1.0.4:
   version "1.0.4"
