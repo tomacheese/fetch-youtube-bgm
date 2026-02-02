@@ -906,7 +906,33 @@
     pathe "^2.0.3"
     unimport "^5.6.0"
 
-"@nuxt/kit@3.21.0", "@nuxt/kit@^3.15.4":
+"@nuxt/kit@4.3.0", "@nuxt/kit@^4.2.1", "@nuxt/kit@^4.2.2", "@nuxt/kit@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@nuxt/kit/-/kit-4.3.0.tgz#2ea76259a2ba5b27d6ae6998202957123616665e"
+  integrity sha512-cD/0UU9RQmlnTbmyJTDyzN8f6CzpziDLv3tFQCnwl0Aoxt3KmFu4k/XA4Sogxqj7jJ/3cdX1kL+Lnsh34sxcQQ==
+  dependencies:
+    c12 "^3.3.3"
+    consola "^3.4.2"
+    defu "^6.1.4"
+    destr "^2.0.5"
+    errx "^0.1.0"
+    exsolve "^1.0.8"
+    ignore "^7.0.5"
+    jiti "^2.6.1"
+    klona "^2.0.6"
+    mlly "^1.8.0"
+    ohash "^2.0.11"
+    pathe "^2.0.3"
+    pkg-types "^2.3.0"
+    rc9 "^2.1.2"
+    scule "^1.3.0"
+    semver "^7.7.3"
+    tinyglobby "^0.2.15"
+    ufo "^1.6.3"
+    unctx "^2.5.0"
+    untyped "^2.0.0"
+
+"@nuxt/kit@^3.15.4":
   version "3.21.0"
   resolved "https://registry.yarnpkg.com/@nuxt/kit/-/kit-3.21.0.tgz#4267fab25e29101ef488bf18350cada4ebdddc76"
   integrity sha512-KMTLK/dsGaQioZzkYUvgfN9le4grNW54aNcA1jqzgVZLcFVy4jJfrJr5WZio9NT2EMfajdoZ+V28aD7BRr4Zfw==
@@ -933,39 +959,13 @@
     unctx "^2.5.0"
     untyped "^2.0.0"
 
-"@nuxt/kit@^4.2.1", "@nuxt/kit@^4.2.2", "@nuxt/kit@^4.3.0":
+"@nuxt/nitro-server@4.3.0":
   version "4.3.0"
-  resolved "https://registry.yarnpkg.com/@nuxt/kit/-/kit-4.3.0.tgz#2ea76259a2ba5b27d6ae6998202957123616665e"
-  integrity sha512-cD/0UU9RQmlnTbmyJTDyzN8f6CzpziDLv3tFQCnwl0Aoxt3KmFu4k/XA4Sogxqj7jJ/3cdX1kL+Lnsh34sxcQQ==
-  dependencies:
-    c12 "^3.3.3"
-    consola "^3.4.2"
-    defu "^6.1.4"
-    destr "^2.0.5"
-    errx "^0.1.0"
-    exsolve "^1.0.8"
-    ignore "^7.0.5"
-    jiti "^2.6.1"
-    klona "^2.0.6"
-    mlly "^1.8.0"
-    ohash "^2.0.11"
-    pathe "^2.0.3"
-    pkg-types "^2.3.0"
-    rc9 "^2.1.2"
-    scule "^1.3.0"
-    semver "^7.7.3"
-    tinyglobby "^0.2.15"
-    ufo "^1.6.3"
-    unctx "^2.5.0"
-    untyped "^2.0.0"
-
-"@nuxt/nitro-server@3.21.0":
-  version "3.21.0"
-  resolved "https://registry.yarnpkg.com/@nuxt/nitro-server/-/nitro-server-3.21.0.tgz#2804063b01d83b2503402a8b28a2953e21ca3280"
-  integrity sha512-lM+PPyJf6NpWC7EqcttnNgkh1aGFlb2q1YnyHX/C9OSvF2XUXbSkNKhVclZtYSyZ6aUQSek9P1MRKcaEh7bgpw==
+  resolved "https://registry.yarnpkg.com/@nuxt/nitro-server/-/nitro-server-4.3.0.tgz#0afa63bfde89001ce158b7ab1209afc584dddd87"
+  integrity sha512-NkI8q8211BTLfQr6m24PjBp9GGyKWJMxRGSqe5WGgpQD5BpSnlvM8l1HaaP4xn9/P4v1Hp/LxX+vYElY2fw/zw==
   dependencies:
     "@nuxt/devalue" "^2.0.2"
-    "@nuxt/kit" "3.21.0"
+    "@nuxt/kit" "4.3.0"
     "@unhead/vue" "^2.1.2"
     "@vue/shared" "^3.5.27"
     consola "^3.4.2"
@@ -992,10 +992,10 @@
     vue-bundle-renderer "^2.2.0"
     vue-devtools-stub "^0.1.0"
 
-"@nuxt/schema@3.21.0":
-  version "3.21.0"
-  resolved "https://registry.yarnpkg.com/@nuxt/schema/-/schema-3.21.0.tgz#f60bce9b7ef3c26adafbfb64d372cd29e74fbb70"
-  integrity sha512-s4cDCQrlG3RbUXowTDlQVR/tsWW2Wd2PQ0Pw/QV5x2Mzp26VH0XyGZ3zYkaDPt23BsjrbF/XA4Bhut5YREfxbg==
+"@nuxt/schema@4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@nuxt/schema/-/schema-4.3.0.tgz#611d07f495729d7487eb99258cbe20246bfa0a7b"
+  integrity sha512-+Ps3exseMFH3MOapbBmDdpaHpPV7wqcB6+Ir9w8h91771HwMOWrQomAZpqDvw7FtFraoD5Xw7dhSKDhkwJRSmQ==
   dependencies:
     "@vue/shared" "^3.5.27"
     defu "^6.1.4"
@@ -1021,12 +1021,12 @@
     rc9 "^2.1.2"
     std-env "^3.8.1"
 
-"@nuxt/vite-builder@3.21.0":
-  version "3.21.0"
-  resolved "https://registry.yarnpkg.com/@nuxt/vite-builder/-/vite-builder-3.21.0.tgz#4cfb5343a8223292e7a4387a39d1076e5af165c5"
-  integrity sha512-XxwadSMlpvtjDstTtUHdXhLAGldZlWNmPhfAGo5PhsrXhidrjHcODXTGnh9iC1mbVu8xML78/m2rhB9MFHSCyw==
+"@nuxt/vite-builder@4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@nuxt/vite-builder/-/vite-builder-4.3.0.tgz#8d273985a8d44b16bfd92bab2eee66175ad934fe"
+  integrity sha512-qOVevlukWUztfJ9p/OtujRxwaXIsnoTo2ZW4pPY1zQcuR1DtBtBsiePLzftoDz1VGx9JF5GAx9YyrgTn/EmcWQ==
   dependencies:
-    "@nuxt/kit" "3.21.0"
+    "@nuxt/kit" "4.3.0"
     "@rollup/plugin-replace" "^6.0.3"
     "@vitejs/plugin-vue" "^6.0.3"
     "@vitejs/plugin-vue-jsx" "^5.1.3"
@@ -1037,16 +1037,13 @@
     esbuild "^0.27.2"
     escape-string-regexp "^5.0.0"
     exsolve "^1.0.8"
-    externality "^1.0.2"
     get-port-please "^3.2.0"
     jiti "^2.6.1"
     knitwork "^1.3.0"
     magic-string "^0.30.21"
     mlly "^1.8.0"
     mocked-exports "^0.1.1"
-    ohash "^2.0.11"
     pathe "^2.0.3"
-    perfect-debounce "^2.0.0"
     pkg-types "^2.3.0"
     postcss "^8.5.6"
     rollup-plugin-visualizer "^6.0.5"
@@ -3234,7 +3231,7 @@ encodeurl@^2.0.0:
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-2.0.0.tgz#7b8ea898077d7e409d3ac45474ea38eaf0857a58"
   integrity sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg==
 
-enhanced-resolve@^5.14.1, enhanced-resolve@^5.17.1:
+enhanced-resolve@^5.17.1:
   version "5.18.4"
   resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-5.18.4.tgz#c22d33055f3952035ce6a144ce092447c525f828"
   integrity sha512-LgQMM4WXU3QI+SYgEc2liRgznaD5ojbmY3sb8LxyguVkIg5FxdpTkvk72te2R38/TGKxH634oLxXRGY6d7AP+Q==
@@ -3819,16 +3816,6 @@ exsolve@^1.0.5, exsolve@^1.0.7, exsolve@^1.0.8:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/exsolve/-/exsolve-1.0.8.tgz#7f5e34da61cd1116deda5136e62292c096f50613"
   integrity sha512-LmDxfWXwcTArk8fUEnOfSZpHOJ6zOMUJKOtFLFqJLoKJetuQG874Uc7/Kki7zFLzYybmZhp1M7+98pfMqeX8yA==
-
-externality@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/externality/-/externality-1.0.2.tgz#a027f8cfd995c42fd35a8d794cfc224d4a5840c0"
-  integrity sha512-LyExtJWKxtgVzmgtEHyQtLFpw1KFhQphF9nTG8TpAIVkiI/xQ3FJh75tRFLYl4hkn7BNIIdLJInuDAavX35pMw==
-  dependencies:
-    enhanced-resolve "^5.14.1"
-    mlly "^1.3.0"
-    pathe "^1.1.1"
-    ufo "^1.1.2"
 
 fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
@@ -5126,7 +5113,7 @@ mitt@^3.0.1:
   resolved "https://registry.yarnpkg.com/mitt/-/mitt-3.0.1.tgz#ea36cf0cc30403601ae074c8f77b7092cdab36d1"
   integrity sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==
 
-mlly@^1.3.0, mlly@^1.7.1, mlly@^1.7.2, mlly@^1.7.4, mlly@^1.8.0:
+mlly@^1.7.1, mlly@^1.7.2, mlly@^1.7.4, mlly@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/mlly/-/mlly-1.8.0.tgz#e074612b938af8eba1eaf43299cbc89cb72d824e"
   integrity sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==
@@ -5343,19 +5330,19 @@ nth-check@^2.0.1, nth-check@^2.1.1:
   dependencies:
     boolbase "^1.0.0"
 
-nuxt@3.21.0:
-  version "3.21.0"
-  resolved "https://registry.yarnpkg.com/nuxt/-/nuxt-3.21.0.tgz#efc0d9fc4978b8f4e3fb136ba974ac9d9b8076f6"
-  integrity sha512-K3vX68M0lXbqzvehWb+y6/YqAF+m7MEQQ3mtbcm34ynzB6OpFOJoZV9scBzFd5LehLoYl55CSNpY5vsupyJw7Q==
+nuxt@4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/nuxt/-/nuxt-4.3.0.tgz#233e4fe523c86222707e10391ecc009c8fdd8bf9"
+  integrity sha512-99Iw3E3L5/2QtJyV4errZ0axkX/S9IAFK0AHm0pmRHkCu37OFn8mz2P4/CYTt6B/TG3mcKbXAVaeuF2FsAc1cA==
   dependencies:
     "@dxup/nuxt" "^0.3.2"
     "@nuxt/cli" "^3.32.0"
     "@nuxt/devtools" "^3.1.1"
-    "@nuxt/kit" "3.21.0"
-    "@nuxt/nitro-server" "3.21.0"
-    "@nuxt/schema" "3.21.0"
+    "@nuxt/kit" "4.3.0"
+    "@nuxt/nitro-server" "4.3.0"
+    "@nuxt/schema" "4.3.0"
     "@nuxt/telemetry" "^2.6.6"
-    "@nuxt/vite-builder" "3.21.0"
+    "@nuxt/vite-builder" "4.3.0"
     "@unhead/vue" "^2.1.2"
     "@vue/shared" "^3.5.27"
     c12 "^3.3.3"
@@ -7199,7 +7186,7 @@ typescript@5.9.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.9.3.tgz#5b4f59e15310ab17a216f5d6cf53ee476ede670f"
   integrity sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==
 
-ufo@^1.1.2, ufo@^1.5.4, ufo@^1.6.1, ufo@^1.6.3:
+ufo@^1.5.4, ufo@^1.6.1, ufo@^1.6.3:
   version "1.6.3"
   resolved "https://registry.yarnpkg.com/ufo/-/ufo-1.6.3.tgz#799666e4e88c122a9659805e30b9dc071c3aed4f"
   integrity sha512-yDJTmhydvl5lJzBmy/hyOAA0d+aqCBuwl818haVdYCRrWV84o7YyeVm4QlVHStqNrrJSTb6jKuFAVqAFsr+K3Q==
