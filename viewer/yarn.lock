@@ -542,10 +542,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@eslint/js@^9.39.2":
-  version "9.39.2"
-  resolved "https://registry.yarnpkg.com/@eslint/js/-/js-9.39.2.tgz#2d4b8ec4c3ea13c1b3748e0c97ecd766bdd80599"
-  integrity sha512-q1mjIoW1VX4IvSocvM/vbTiveKC4k9eLrajNEuSsmjymSDEbpGddtpfOoN7YGAqBK3NG+uqo8ia4PDTt8buCYA==
+"@eslint/js@^10.0.1":
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/@eslint/js/-/js-10.0.1.tgz#1e8a876f50117af8ab67e47d5ad94d38d6622583"
+  integrity sha512-zeR9k5pd4gxjZ0abRoIaxdc7I3nDktoXZk2qOv9gCNWx3mVwEn32VRhyLaRsDiJjTs0xq/T8mfPtyuXu7GWBcA==
 
 "@eslint/object-schema@^3.0.1":
   version "3.0.1"
@@ -837,24 +837,24 @@
     which "^5.0.0"
     ws "^8.18.3"
 
-"@nuxt/eslint-config@1.14.0":
-  version "1.14.0"
-  resolved "https://registry.yarnpkg.com/@nuxt/eslint-config/-/eslint-config-1.14.0.tgz#da034f2b40607d9d42e3dd2d1ab9d3625a249be2"
-  integrity sha512-WRSbCVR8eeOhKYkW5s79VleXvn9/Le81MFirTEpOyYyMQgHi2J5R5cmHWcx5A+Wugs8yDpW1Xn+7g8RWKpuTgA==
+"@nuxt/eslint-config@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@nuxt/eslint-config/-/eslint-config-1.15.0.tgz#cf099b1db6170a8770fad4982d103edeefa496ff"
+  integrity sha512-tYTlE8O960pX8MLlbdIMIlXg/0ZVGU1aeoMyv0RfW10f9k7j92FillQbnS9UNfo+kyNF+ZSdcy8mZXmK1T1uVg==
   dependencies:
     "@antfu/install-pkg" "^1.1.0"
     "@clack/prompts" "^1.0.0"
-    "@eslint/js" "^9.39.2"
-    "@nuxt/eslint-plugin" "1.14.0"
-    "@stylistic/eslint-plugin" "^5.7.1"
-    "@typescript-eslint/eslint-plugin" "^8.54.0"
-    "@typescript-eslint/parser" "^8.54.0"
+    "@eslint/js" "^10.0.1"
+    "@nuxt/eslint-plugin" "1.15.0"
+    "@stylistic/eslint-plugin" "^5.8.0"
+    "@typescript-eslint/eslint-plugin" "^8.55.0"
+    "@typescript-eslint/parser" "^8.55.0"
     eslint-config-flat-gitignore "^2.1.0"
     eslint-flat-config-utils "^3.0.1"
     eslint-merge-processors "^2.0.0"
     eslint-plugin-import-lite "^0.5.0"
     eslint-plugin-import-x "^4.16.1"
-    eslint-plugin-jsdoc "^62.5.3"
+    eslint-plugin-jsdoc "^62.5.4"
     eslint-plugin-regexp "^3.0.0"
     eslint-plugin-unicorn "^62.0.0"
     eslint-plugin-vue "^10.7.0"
@@ -864,24 +864,24 @@
     pathe "^2.0.3"
     vue-eslint-parser "^10.2.0"
 
-"@nuxt/eslint-plugin@1.14.0":
-  version "1.14.0"
-  resolved "https://registry.yarnpkg.com/@nuxt/eslint-plugin/-/eslint-plugin-1.14.0.tgz#ca65ad8a3bf8e14d76b393d7e084797b151a53c9"
-  integrity sha512-NT53GrmGaCQVXzScKSPe8scflxOZeFLONmmwHYh8sUKlnNZyFoxsmnN/AiZcDKDZ+OUjWhBrirDgDIXTTdM6xg==
+"@nuxt/eslint-plugin@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@nuxt/eslint-plugin/-/eslint-plugin-1.15.0.tgz#25b61029b1e80b8a1d70d49a5ccb58c193c03946"
+  integrity sha512-OMuzK4QBDO5Ibtu5HgrzSr6NGNz2bhX3AEkb7BW8qNv07k86RL9yald1CICHUEvZM1yxuHjKQRTDICRIe+REUQ==
   dependencies:
-    "@typescript-eslint/types" "^8.54.0"
-    "@typescript-eslint/utils" "^8.54.0"
+    "@typescript-eslint/types" "^8.55.0"
+    "@typescript-eslint/utils" "^8.55.0"
 
-"@nuxt/eslint@1.14.0":
-  version "1.14.0"
-  resolved "https://registry.yarnpkg.com/@nuxt/eslint/-/eslint-1.14.0.tgz#864c48d377ae54838cf1771334007e8183fb2df8"
-  integrity sha512-3gSJhCYAR7AV5k2xKJwfjXbr7kvpeaJhGZQ4E45hJQnnUjLIeWPDAqHlKaYKro/pYcXQJ0sIDPJHWJbsF5Ty8g==
+"@nuxt/eslint@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@nuxt/eslint/-/eslint-1.15.0.tgz#5e831da0f83c4f82338e8e67ebc6f4fa21c31b4e"
+  integrity sha512-kSxc3ZHAgzmwZbr7SHYb8SARSSok96CeMxDHLn3eAQqVZKIfDy7UB3KF6sOQxeqI4SP4wGbloRYMBCjzy4ZbjQ==
   dependencies:
     "@eslint/config-inspector" "^1.4.2"
     "@nuxt/devtools-kit" "^3.1.1"
-    "@nuxt/eslint-config" "1.14.0"
-    "@nuxt/eslint-plugin" "1.14.0"
-    "@nuxt/kit" "^4.3.0"
+    "@nuxt/eslint-config" "1.15.0"
+    "@nuxt/eslint-plugin" "1.15.0"
+    "@nuxt/kit" "^4.3.1"
     chokidar "^5.0.0"
     eslint-flat-config-utils "^3.0.1"
     eslint-typegen "^2.3.0"
@@ -918,7 +918,7 @@
     unctx "^2.5.0"
     untyped "^2.0.0"
 
-"@nuxt/kit@^4.2.1", "@nuxt/kit@^4.2.2", "@nuxt/kit@^4.3.0":
+"@nuxt/kit@^4.2.1", "@nuxt/kit@^4.2.2", "@nuxt/kit@^4.3.1":
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/@nuxt/kit/-/kit-4.3.1.tgz#e65f49b11a2ecb56c32a7173b3826f0eeee2b682"
   integrity sha512-UjBFt72dnpc+83BV3OIbCT0YHLevJtgJCHpxMX0YRKWLDhhbcDdUse87GtsQBrjvOzK7WUNUYLDS/hQLYev5rA==
@@ -1716,7 +1716,7 @@
   resolved "https://registry.yarnpkg.com/@speed-highlight/core/-/core-1.2.14.tgz#5d7fe87410d2d779bd0b7680f7a706466f363314"
   integrity sha512-G4ewlBNhUtlLvrJTb88d2mdy2KRijzs4UhnlrOSRT4bmjh/IqNElZa3zkrZ+TC47TwtlDWzVLFADljF1Ijp5hA==
 
-"@stylistic/eslint-plugin@^5.7.1":
+"@stylistic/eslint-plugin@^5.8.0":
   version "5.8.0"
   resolved "https://registry.yarnpkg.com/@stylistic/eslint-plugin/-/eslint-plugin-5.8.0.tgz#e3986833ebb9476310eb9d03a7483c046b0f57ad"
   integrity sha512-WNPVF/FfBAjyi3OA7gok8swRiImNLKI4dmV3iK/GC/0xSJR7eCzBFsw9hLZVgb1+MYNLy7aDsjohxN1hA/FIfQ==
@@ -1789,7 +1789,7 @@
     natural-compare "^1.4.0"
     ts-api-utils "^2.4.0"
 
-"@typescript-eslint/eslint-plugin@^8.54.0":
+"@typescript-eslint/eslint-plugin@^8.55.0":
   version "8.55.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-8.55.0.tgz#086d2ef661507b561f7b17f62d3179d692a0765f"
   integrity sha512-1y/MVSz0NglV1ijHC8OT49mPJ4qhPYjiK08YUQVbIOyu+5k862LKUHFkpKHWu//zmr7hDR2rhwUm6gnCGNmGBQ==
@@ -1814,7 +1814,7 @@
     "@typescript-eslint/visitor-keys" "8.54.0"
     debug "^4.4.3"
 
-"@typescript-eslint/parser@^8.54.0":
+"@typescript-eslint/parser@^8.55.0":
   version "8.55.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-8.55.0.tgz#6eace4e9e95f178d3447ed1f17f3d6a5dfdb345c"
   integrity sha512-4z2nCSBfVIMnbuu8uinj+f0o4qOeggYJLbjpPHka3KH1om7e+H9yLKTYgksTaHcGco+NClhhY2vyO3HsMH1RGw==
@@ -1941,7 +1941,7 @@
     "@typescript-eslint/types" "8.54.0"
     "@typescript-eslint/typescript-estree" "8.54.0"
 
-"@typescript-eslint/utils@8.55.0", "@typescript-eslint/utils@^8.54.0":
+"@typescript-eslint/utils@8.55.0", "@typescript-eslint/utils@^8.55.0":
   version "8.55.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-8.55.0.tgz#c1744d94a3901deb01f58b09d3478d811f96d619"
   integrity sha512-BqZEsnPGdYpgyEIkDC1BadNY8oMwckftxBT+C8W0g1iKPdeqKZBtTfnvcq0nf60u7MkjFO8RBvpRGZBPw4L2ow==
@@ -3603,7 +3603,7 @@ eslint-plugin-import@2.32.0:
     string.prototype.trimend "^1.0.9"
     tsconfig-paths "^3.15.0"
 
-eslint-plugin-jsdoc@^62.5.3:
+eslint-plugin-jsdoc@^62.5.4:
   version "62.5.4"
   resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-62.5.4.tgz#2f8bcb3260fcd59b4d5a424e6c761f105e0eacab"
   integrity sha512-U+Q5ppErmC17VFQl542eBIaXcuq975BzoIHBXyx7UQx/i4gyHXxPiBkonkuxWyFA98hGLALLUuD+NJcXqSGKxg==
