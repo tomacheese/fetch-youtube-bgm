@@ -243,15 +243,15 @@
   resolved "https://registry.yarnpkg.com/@bomb.sh/tab/-/tab-0.0.12.tgz#68d9babce5d49df8c201fa993f1157ba3f61c2f0"
   integrity sha512-dYRwg4MqfHR5/BcTy285XOGRhjQFmNpaJBZ0tl2oU+RY595MQ5ApTF6j3OvauPAooHL6cfoOZMySQrOQztT8RQ==
 
-"@book000/eslint-config@1.13.6":
-  version "1.13.6"
-  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.13.6.tgz#fecd1413e4fee303893a2fcf7b70a522e1f72fca"
-  integrity sha512-NhBkg5BOvJ8Ap+/bA2m+6rQ+BnrCSrAfK4k28EbNYyGG+qSp4DmU5cgMLCf0fDdfVLKVwq508O/zlZQMmncOhA==
+"@book000/eslint-config@1.13.10":
+  version "1.13.10"
+  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.13.10.tgz#641f8c021a5c9058066870d0cd16fd518c6e4b70"
+  integrity sha512-Nn9OocbjKrLC8+zdGvKHYWaE8yoGSwLTtNq+tibidDh/3ZwkCa+Vi4WPUduJYyiywGDm9WIm9kVt9XypxGARBw==
   dependencies:
     "@typescript-eslint/parser" "8.56.1"
     eslint-config-prettier "10.1.8"
-    eslint-plugin-unicorn "62.0.0"
-    globals "17.2.0"
+    eslint-plugin-unicorn "63.0.0"
+    globals "17.3.0"
     neostandard "0.12.2"
     typescript-eslint "8.56.1"
 
@@ -510,13 +510,6 @@
     tinyglobby "^0.2.15"
     ws "^8.18.3"
 
-"@eslint/core@^0.17.0":
-  version "0.17.0"
-  resolved "https://registry.yarnpkg.com/@eslint/core/-/core-0.17.0.tgz#77225820413d9617509da9342190a2019e78761c"
-  integrity sha512-yL/sLrpmtDaFEiUj1osRP4TI2MDz1AddJL+jZ7KSqvBuliN4xqYY54IfdN8qD8Toa6g1iloph1fxQNkjOxrrpQ==
-  dependencies:
-    "@types/json-schema" "^7.0.15"
-
 "@eslint/core@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@eslint/core/-/core-1.1.0.tgz#51f5cd970e216fbdae6721ac84491f57f965836d"
@@ -533,14 +526,6 @@
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@eslint/object-schema/-/object-schema-3.0.2.tgz#c59c6a94aa4b428ed7f1615b6a4495c0a21f7a22"
   integrity sha512-HOy56KJt48Bx8KmJ+XGQNSUMT/6dZee/M54XyUyuvTvPXJmsERRvBchsUVx1UMe1WwIH49XLAczNC7V2INsuUw==
-
-"@eslint/plugin-kit@^0.4.0":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@eslint/plugin-kit/-/plugin-kit-0.4.1.tgz#9779e3fd9b7ee33571a57435cf4335a1794a6cb2"
-  integrity sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==
-  dependencies:
-    "@eslint/core" "^0.17.0"
-    levn "^0.4.1"
 
 "@eslint/plugin-kit@^0.6.0":
   version "0.6.0"
@@ -3626,31 +3611,7 @@ eslint-plugin-regexp@^3.0.0:
     regexp-ast-analysis "^0.7.1"
     scslre "^0.3.0"
 
-eslint-plugin-unicorn@62.0.0:
-  version "62.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-62.0.0.tgz#7027feb2ffde9c25df3d2067e0f4e579a9ec5019"
-  integrity sha512-HIlIkGLkvf29YEiS/ImuDZQbP12gWyx5i3C6XrRxMvVdqMroCI9qoVYCoIl17ChN+U89pn9sVwLxhIWj5nEc7g==
-  dependencies:
-    "@babel/helper-validator-identifier" "^7.28.5"
-    "@eslint-community/eslint-utils" "^4.9.0"
-    "@eslint/plugin-kit" "^0.4.0"
-    change-case "^5.4.4"
-    ci-info "^4.3.1"
-    clean-regexp "^1.0.0"
-    core-js-compat "^3.46.0"
-    esquery "^1.6.0"
-    find-up-simple "^1.0.1"
-    globals "^16.4.0"
-    indent-string "^5.0.0"
-    is-builtin-module "^5.0.0"
-    jsesc "^3.1.0"
-    pluralize "^8.0.0"
-    regexp-tree "^0.1.27"
-    regjsparser "^0.13.0"
-    semver "^7.7.3"
-    strip-indent "^4.1.1"
-
-eslint-plugin-unicorn@^63.0.0:
+eslint-plugin-unicorn@63.0.0, eslint-plugin-unicorn@^63.0.0:
   version "63.0.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-unicorn/-/eslint-plugin-unicorn-63.0.0.tgz#db210b87bb66f0f15ab675ba13d9f1fb61016b22"
   integrity sha512-Iqecl9118uQEXYh7adylgEmGfkn5es3/mlQTLLkd4pXkIk9CTGrAbeUux+YljSa2ohXCBmQQ0+Ej1kZaFgcfkA==
@@ -4201,10 +4162,10 @@ global-directory@^4.0.1:
   dependencies:
     ini "4.1.1"
 
-globals@17.2.0:
-  version "17.2.0"
-  resolved "https://registry.yarnpkg.com/globals/-/globals-17.2.0.tgz#41d29408d6f5408457d2ef965d29215e3026779f"
-  integrity sha512-tovnCz/fEq+Ripoq+p/gN1u7l6A7wwkoBT9pRCzTHzsD/LvADIzXZdjmRymh5Ztf0DYC3Rwg5cZRYjxzBmzbWg==
+globals@17.3.0, globals@^17.3.0:
+  version "17.3.0"
+  resolved "https://registry.yarnpkg.com/globals/-/globals-17.3.0.tgz#8b96544c2fa91afada02747cc9731c002a96f3b9"
+  integrity sha512-yMqGUQVVCkD4tqjOJf3TnrvaaHDMYp4VlUSObbkIiuCPe/ofdMBFIAcBbCSRFWOnos6qRiTVStDwqPLUclaxIw==
 
 globals@^15.11.0, globals@^15.15.0:
   version "15.15.0"
@@ -4215,11 +4176,6 @@ globals@^16.4.0:
   version "16.5.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-16.5.0.tgz#ccf1594a437b97653b2be13ed4d8f5c9f850cac1"
   integrity sha512-c/c15i26VrJ4IRt5Z89DnIzCGDn9EcebibhAOjw5ibqEHsE1wLUgkPn9RDmNcUKyU87GeaL633nyJ+pplFR2ZQ==
-
-globals@^17.3.0:
-  version "17.3.0"
-  resolved "https://registry.yarnpkg.com/globals/-/globals-17.3.0.tgz#8b96544c2fa91afada02747cc9731c002a96f3b9"
-  integrity sha512-yMqGUQVVCkD4tqjOJf3TnrvaaHDMYp4VlUSObbkIiuCPe/ofdMBFIAcBbCSRFWOnos6qRiTVStDwqPLUclaxIw==
 
 globalthis@^1.0.4:
   version "1.0.4"
