@@ -93,8 +93,8 @@ class ParallelDownloadVideo {
           const humanFileSize = getHumanReadableSize(stats.size)
           logger.info(`✅ Successfully downloaded ${id} (${humanFileSize})`)
           return true
-        } catch (error) {
-          logger.warn(`⚠️ Failed to get file stats for ${id}:`, error as Error)
+        } catch (err) {
+          logger.warn(`⚠️ Failed to get file stats for ${id}:`, err as Error)
           // ファイルステータス確認に失敗してもリトライを継続
         }
       }
@@ -179,8 +179,8 @@ class ParallelProcessVideo {
     let videoInfo = null
     try {
       videoInfo = await getVideoInformation(id)
-    } catch (error) {
-      logger.error('Failed to get video information', error as Error)
+    } catch (err) {
+      logger.error('Failed to get video information', err as Error)
     }
     if (!videoInfo) {
       // retry
@@ -190,8 +190,8 @@ class ParallelProcessVideo {
       await new Promise((resolve) => setTimeout(resolve, 5000))
       try {
         videoInfo = await getVideoInformation(id)
-      } catch (error) {
-        logger.error('Failed to get video information (retry)', error as Error)
+      } catch (err) {
+        logger.error('Failed to get video information (retry)', err as Error)
       }
     }
     if (videoInfo) {
@@ -430,8 +430,8 @@ async function main() {
 }
 
 ;(async () => {
-  await main().catch((error: unknown) => {
+  await main().catch((err: unknown) => {
     const logger = Logger.configure('main')
-    logger.error('Error', error as Error)
+    logger.error('Error', err as Error)
   })
 })()
