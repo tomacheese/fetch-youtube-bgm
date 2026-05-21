@@ -2218,10 +2218,10 @@
   resolved "https://registry.yarnpkg.com/@vue/devtools-shared/-/devtools-shared-8.1.0.tgz#58bc97d235987b60ca81e6018718c46281163a0b"
   integrity sha512-h8uCb4Qs8UT8VdTT5yjY6tOJ//qH7EpxToixR0xqejR55t5OdISIg7AJ7eBkhBs8iu1qG5gY3QQNN1DF1EelAA==
 
-"@vue/language-core@3.2.9":
-  version "3.2.9"
-  resolved "https://registry.yarnpkg.com/@vue/language-core/-/language-core-3.2.9.tgz#903dde38a614f6263ace162c9edc2cd479e6c69b"
-  integrity sha512-ie0ojt/0fU/GfIogh+zgHbaYRPlt9S+cLOxcWwF7nTSFh897BVgnFKL2byT4kpp1mlqYWZ2psGwSniyE2xsxYw==
+"@vue/language-core@3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@vue/language-core/-/language-core-3.3.0.tgz#252832898386a5716cba64b4406442ee31162ad4"
+  integrity sha512-EyUxq1b8Yoxk6hQ6X33BIRnfFLb9Rbm9w/8G8y6uMxlQu7CW7yy9JS/z54xSpIvBvVWX6Lt5v1aBGwmrqD4aJw==
   dependencies:
     "@volar/language-core" "2.4.28"
     "@vue/compiler-dom" "^3.5.0"
@@ -7704,13 +7704,13 @@ vue-router@^4.6.4:
   dependencies:
     "@vue/devtools-api" "^6.6.4"
 
-vue-tsc@3.2.9:
-  version "3.2.9"
-  resolved "https://registry.yarnpkg.com/vue-tsc/-/vue-tsc-3.2.9.tgz#94998ec126c37eef1729daa62331713c30b52d95"
-  integrity sha512-qm8/nbo+9eZc1SCndm9wT+gq23pM+wRIdHY0wjm83B3lIginHTwcdrLUyTrKjDWXbMVNjKegNrnymhpdqnCL3A==
+vue-tsc@3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/vue-tsc/-/vue-tsc-3.3.0.tgz#34fe72e08e805a8e858e80726d6768f3b346832e"
+  integrity sha512-kY8RcoTOENASi0P1GLPvJgA2+hoGF+t8We1UGgmnAb1r/GjTUMSE3zz+WGfjPORZNnBHdAt67sVPhBLXWunkeg==
   dependencies:
     "@volar/typescript" "2.4.28"
-    "@vue/language-core" "3.2.9"
+    "@vue/language-core" "3.3.0"
 
 vue@^3.5.30:
   version "3.5.30"
