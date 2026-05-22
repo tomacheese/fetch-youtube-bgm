@@ -19,7 +19,7 @@ RUN cp echoprint-codegen /usr/local/bin/
 WORKDIR /build
 RUN rm -rf echoprint-codegen
 
-FROM node:20 AS runner
+FROM node:24 AS runner
 
 # hadolint ignore=DL3008
 RUN apt-get update && \
