@@ -2922,10 +2922,15 @@ commander@^2.20.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
 
-comment-parser@1.4.6, comment-parser@^1.4.0, comment-parser@^1.4.1:
+comment-parser@1.4.6:
   version "1.4.6"
   resolved "https://registry.yarnpkg.com/comment-parser/-/comment-parser-1.4.6.tgz#49a6b1d53fa563324f7577ab8c0b26db4e7d1f9a"
   integrity sha512-ObxuY6vnbWTN6Od72xfwN9DbzC7Y2vv8u1Soi9ahRKL37gb6y1qk6/dgjs+3JWuXJHWvsg3BXIwzd/rkmAwavg==
+
+comment-parser@^1.4.0, comment-parser@^1.4.1:
+  version "1.4.7"
+  resolved "https://registry.yarnpkg.com/comment-parser/-/comment-parser-1.4.7.tgz#f0e05275a94253814fddd4c22fcf2cc4a117116e"
+  integrity sha512-0h+uSNtQGW3D98eQt3jJ8L06Fves8hncB4V/PKdw/Qb8Hnk19VaKuTr55UNRYiSoVa7WwrFls+rh3ux9agmkeQ==
 
 commondir@^1.0.1:
   version "1.0.1"
@@ -7231,9 +7236,9 @@ tinyclip@^0.1.12:
   integrity sha512-Ae3OVUqifDw0wBriIBS7yVaW44Dp6eSHQcyq4Igc7eN2TJH/2YsicswaW+J/OuMvhpDPOKEgpAZCjkb4hpoyeA==
 
 tinyexec@^1.0.1, tinyexec@^1.1.1, tinyexec@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/tinyexec/-/tinyexec-1.1.2.tgz#11feef204b706d4668ca4013db29f3bd64f5c4dc"
-  integrity sha512-dAqSqE/RabpBKI8+h26GfLq6Vb3JVXs30XYQjdMjaj/c2tS8IYYMbIzP599KtRj7c57/wYApb3QjgRgXmrCukA==
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/tinyexec/-/tinyexec-1.2.2.tgz#b66edf362dcad61174bc9ce4f3ee279e2448a721"
+  integrity sha512-M/Q0B2cp4K7kynaT/vnED1j8TlLY+Pp7C6Wl2bl/7u/F0mUVwdyOpwomQb8JpYLitHUssAJRmLZdMCGsrx7i+g==
 
 tinyglobby@^0.2.15, tinyglobby@^0.2.16:
   version "0.2.16"
@@ -7905,9 +7910,9 @@ wrap-ansi@^9.0.0:
     strip-ansi "^7.1.0"
 
 ws@^8.19.0:
-  version "8.20.1"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-8.20.1.tgz#91a9ae2b312ccf98e0a85ec499b48cef45ab0ddb"
-  integrity sha512-It4dO0K5v//JtTXuPkfEOaI3uUN87iYPnqo/ZzqCoG3g8uhA66QUMs/SrM0YK7/NAu+r4LMh/9dq2A7k+rHs+w==
+  version "8.21.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.21.0.tgz#012e413fc07429945121b0c153158c4343086951"
+  integrity sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g==
 
 wsl-utils@^0.1.0:
   version "0.1.0"
