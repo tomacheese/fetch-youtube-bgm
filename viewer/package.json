@@ -24,7 +24,7 @@
     "@types/node": "24.12.4",
     "eslint": "10.4.0",
     "nuxt": "3.21.6",
-    "sass": "1.99.0",
+    "sass": "1.100.0",
     "typescript": "6.0.3",
     "vite-plugin-eslint": "1.8.1",
     "vue-tsc": "3.3.1",
