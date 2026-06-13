@@ -21,7 +21,7 @@
     "@book000/eslint-config": "1.14.54",
     "@mdi/font": "7.4.47",
     "@nuxt/eslint": "1.15.2",
-    "@types/node": "24.13.0",
+    "@types/node": "24.13.1",
     "eslint": "10.4.1",
     "nuxt": "4.4.7",
     "sass": "1.100.0",
