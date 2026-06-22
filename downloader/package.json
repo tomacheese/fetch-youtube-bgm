@@ -34,7 +34,7 @@
     "eslint-plugin-promise": "7.3.0",
     "node-id3": "0.2.9",
     "prettier": "3.8.4",
-    "sharp": "0.35.1",
+    "sharp": "0.35.2",
     "ts-node": "10.9.2",
     "ts-node-dev": "2.0.0",
     "typescript": "6.0.3",
