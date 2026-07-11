@@ -23,7 +23,7 @@
 - 言語: TypeScript
 - ランタイム: Node.js 24.18.0(`.node-version`)
 - パッケージマネージャー: yarn 1.x (Classic, `1.22.22`)
-- フレームワーク: downloader は Node.js (ts-node / ts-node-dev)、viewer は Nuxt 3 + Vuetify 3。
+- フレームワーク: downloader は Node.js (ts-node / ts-node-dev)、viewer は Nuxt 4 + Vuetify 4。
 - Lint / Format: ESLint (`@book000/eslint-config`) + Prettier。
 - 外部ツール(実行環境に必須): `yt-dlp`, `ffmpeg`, `mp3gain` / `rgain3`(Python)。
 - `downloader` と `viewer` は独立した yarn プロジェクトであり、共有ワークスペースのルート `package.json` は無い。依存関係は各ディレクトリで個別に `yarn install` する。
@@ -81,7 +81,7 @@ yarn fix      # 自動修正
 ### アーキテクチャサマリー
 
 - `downloader`: YouTube からのダウンロード、変換、メタデータ管理を行うバックエンドサービス。
-- `viewer`: ダウンロードされた楽曲のメタデータを編集するための Nuxt 3 フロントエンド。
+- `viewer`: ダウンロードされた楽曲のメタデータを編集するための Nuxt 4 フロントエンド。
 - 両者は `/data` ディレクトリを共有ボリュームとして使用し、JSON ファイル経由でデータを共有する。
 
 ### 主要ディレクトリ
@@ -95,7 +95,7 @@ yarn fix      # 自動修正
 ## 実装パターン
 
 - `downloader`: クラスベースのサービス構成。`@book000/node-utils` を活用。
-- `viewer`: Nuxt 3 (Composition API) + Vuetify 3。
+- `viewer`: Nuxt 4 (Composition API) + Vuetify 4。
 
 ## テスト
 
