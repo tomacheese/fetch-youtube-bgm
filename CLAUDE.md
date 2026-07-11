@@ -16,7 +16,17 @@
 
 - 目的: YouTube プレイリストから動画をダウンロードし、メタデータを付与して MP3 に変換する。
 - 主な機能:
-  - プレイリスト同期、MP3 変換、タグ付与、音量調整、Web UI による編集。
+  - プレイリスト同期、MP3 変換、タグ付与、音量調整、Web UI による編集、Discord 通知。
+
+## 技術スタック
+
+- 言語: TypeScript
+- ランタイム: Node.js 24.18.0(`.node-version`)
+- パッケージマネージャー: yarn 1.x (Classic, `1.22.22`)
+- フレームワーク: downloader は Node.js (ts-node / ts-node-dev)、viewer は Nuxt 3 + Vuetify 3。
+- Lint / Format: ESLint (`@book000/eslint-config`) + Prettier。
+- 外部ツール(実行環境に必須): `yt-dlp`, `ffmpeg`, `mp3gain` / `rgain3`(Python)。
+- `downloader` と `viewer` は独立した yarn プロジェクトであり、共有ワークスペースのルート `package.json` は無い。依存関係は各ディレクトリで個別に `yarn install` する。
 
 ## 重要ルール
 
@@ -43,11 +53,6 @@
 - エラーメッセージの絵文字統一: 既存のメッセージに絵文字がある場合、それに従う。
 - TypeScript: `skipLibCheck` の使用は禁止。
 - JSDoc: 関数やインターフェースには日本語で記載する。
-
-## 相談ルール
-
-- Codex CLI: 実装レビュー、局所設計、整合性確認。
-- Gemini CLI: 外部仕様、最新情報の確認。
 
 ## 開発コマンド
 
@@ -85,6 +90,7 @@ yarn fix      # 自動修正
 - `viewer/src/`: ビューアー（Nuxt）のソースコード。
 - `viewer/src/server/api/`: ビューアーのバックエンド API。
 - `data/`: 設定ファイル、ログ、楽曲データ、MP3 ファイルが格納される（Git 管理外）。
+- `data/config.json`: メインの設定ファイル（`playlistId`、Discord Webhook / Bot トークン等）。
 
 ## 実装パターン
 
@@ -95,6 +101,11 @@ yarn fix      # 自動修正
 
 - 現在、自動テストコードは存在しない。
 - 変更後は `yarn lint` を実行し、型チェックは `yarn compile`（downloader のみ）によって行うことを必須とする（viewer には `compile` スクリプトは存在しない）。
+
+## セキュリティ / 機密情報
+
+- `data/config.json` の認証情報（Discord トークン / Webhook URL 等）を Git にコミットしない。
+- ログに認証情報や個人情報を出力しない。
 
 ## ドキュメント更新ルール
 

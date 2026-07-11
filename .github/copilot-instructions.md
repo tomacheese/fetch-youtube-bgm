@@ -1,95 +1,40 @@
 # GitHub Copilot Instructions
 
+GitHub Copilot のコードレビュー機能向けの指示書。レビュー観点に絞って記述する（開発手順は `CLAUDE.md` を参照し、ここでは複製しない）。
+
 ## プロジェクト概要
 
-- 目的: YouTube プレイリストから動画をダウンロードし、メタデータを付与して MP3 に変換する。
-- 主な機能:
-  - YouTube プレイリストからの動画ダウンロードと MP3 変換。
-  - Web UI によるメタデータ（タイトル、アーティスト、アルバム等）の編集。
-  - Discord への通知機能。
-  - mp3gain / rgain3 による音量調整。
-  - Web Scrobbler 形式の JSON エクスポート。
-- 対象ユーザー: YouTube の BGM をローカルで MP3 管理したいユーザー。
-
-## 共通ルール
-
-- 会話は日本語で行う。
-- PR とコミットは [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) に従う。
-  - `<type>(<scope>): <description>` 形式。
-  - `<description>` は日本語で記載。
-- 日本語と英数字の間には半角スペースを入れる。
+- YouTube プレイリストから動画をダウンロードし、MP3 変換・メタデータ付与・音量調整・Discord 通知を行う。
+- `downloader`（Node.js / ts-node）と `viewer`（Nuxt 3 + Vuetify 3）の 2 コンポーネント構成。両者は `/data` を共有し JSON 経由でデータをやり取りする。
 
 ## 技術スタック
 
 - 言語: TypeScript
-- フレームワーク:
-  - downloader: Node.js (ts-node, ts-node-dev)
-  - viewer: Nuxt.js (Vue.js 3, Vuetify 3)
-- パッケージマネージャー: yarn (v1.22.22)
-- 外部ツール: yt-dlp, ffmpeg, mp3gain, rgain3 (Python)
+- ランタイム: Node.js 24 / パッケージマネージャー: yarn 1.x (Classic)
+- Lint: ESLint (`@book000/eslint-config`)、Format: Prettier（`downloader` の lint で強制）
+- 外部ツール: `yt-dlp`, `ffmpeg`, `mp3gain` / `rgain3`
 
-## 開発コマンド
+## レビュー時の重点確認
 
-### downloader
-
-```bash
-# 依存関係のインストール
-yarn install
-
-# 開発
-yarn dev
-
-# コンパイル (型チェック)
-yarn compile
-
-# Lint
-yarn lint
-
-# Fix
-yarn fix
-```
-
-### viewer
-
-```bash
-# 依存関係のインストール
-yarn install
-
-# 開発
-yarn dev
-
-# ビルド
-yarn build
-
-# Lint
-yarn lint
-
-# Fix
-yarn fix
-```
+- 認証情報のハードコードやコミット混入（Discord トークン・Webhook URL）。`data/config.json` は Git 管理外。
+- ログへの認証情報・個人情報の出力。
+- 外部プロセス（`yt-dlp`, `ffmpeg`, `mp3gain` / `rgain3`）呼び出し時のエラーハンドリングと入力の取り扱い。
+- エラーメッセージは英語、コメント・JSDoc は日本語、で統一されているか。
+- TypeScript で `skipLibCheck` を有効化していないか（禁止）。
+- `downloader` の型安全性は `yarn compile`（`tsc`）で担保される前提。型エラーを握りつぶしていないか。
 
 ## コーディング規約
 
-- フォーマット: Prettier
-- Linter: ESLint (Config: @book000/eslint-config)
-- TypeScript: `skipLibCheck` の使用は禁止。
-- ドキュメント: 関数やインターフェースには日本語で JSDoc を記載する。
+- Prettier / ESLint (`@book000/eslint-config`) に従う。フォーマットや lint で機械的に検出できる差分は、レビューでの指摘対象としない。
+- 関数・インターフェースには日本語で JSDoc を記載する。
 
-## テスト方針
+## コミット規約
 
-- 現在、明示的なテストコード（Jest 等）は含まれていない。
-- `yarn compile` (downloader) による型チェックを CI で実施。
+- [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) に従う。`<type>(<scope>): <description>` 形式、`<description>` は日本語。
 
-## セキュリティ / 機密情報
+## 指摘すべきでない既知パターン
 
-- `data/config.json` に含まれる認証情報（Discord トークン等）を Git にコミットしない。
-- ログに個人情報や認証情報を出力しない。
-
-## ドキュメント更新
-
-- 機能追加・変更時には `README.md` を更新する。
-
-## リポジトリ固有
-
-- データの保存先は `/data` ディレクトリ（Docker ボリューム）に統一されている。
-- YouTube の動画取得には `yt-dlp` を使用し、Google API 認証は不要。
+- 自動テスト（Jest 等）は未整備。テストの欠如そのものは指摘しない。
+- 日本語のコメント・ドキュメントは意図的なもの。英語化を促さない。
+- yarn 1.x (Classic) を意図的に使用している。npm / pnpm / yarn Berry への移行を促さない。
+- `downloader` と `viewer` はワークスペース統合しておらず、ルート `package.json` は存在しない。単一 `package.json` への統合を促さない。
