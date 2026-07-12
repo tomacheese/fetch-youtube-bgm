@@ -237,6 +237,19 @@ export class MusicBrainz {
     return response.data
   }
 
+  private static findReleaseIdInRelationLists(
+    relationLists: IRelationList[],
+  ): string | null {
+    for (const relationList of relationLists) {
+      for (const relation of relationList.relations) {
+        if (relation.release) {
+          return relation.release.id
+        }
+      }
+    }
+    return null
+  }
+
   public static async getTrackInfo(
     vid: string,
   ): Promise<VideoInformation | null> {
@@ -256,15 +269,7 @@ export class MusicBrainz {
       if (urlMatch.resource === url) {
         const relations = urlMatch['relation-list']
         if (relations) {
-          for (const relationList of relations) {
-            for (const relation of relationList.relations) {
-              if (!relation.release) {
-                continue
-              }
-              releaseId = relation.release.id
-              break
-            }
-          }
+          releaseId = this.findReleaseIdInRelationLists(relations)
         }
       }
     }

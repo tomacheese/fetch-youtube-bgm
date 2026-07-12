@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Config } from './configuration'
+import { Config } from './config'
 
 export interface DiscordEmbedFooter {
   text: string

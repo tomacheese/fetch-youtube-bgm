@@ -5,7 +5,7 @@ import NodeID3 from 'node-id3'
 import { Logger } from '@book000/node-utils'
 import sharp from 'sharp'
 import path from 'node:path'
-import { Config } from './configuration'
+import { Config } from './config'
 import { MusicBrainz } from './musicbrainz'
 import { DOWNLOAD_TEMP_DIR } from './constants'
 
@@ -45,14 +45,14 @@ export function getDefinedTracks(): Track[] {
     const result = JSON.parse(
       fs.readFileSync('/data/tracks.json').toString(),
     ) as TrackFile
-    const ret = []
+    const returnValue = []
     for (const vid in result) {
-      ret.push({
+      returnValue.push({
         vid,
         ...result[vid],
       })
     }
-    return ret
+    return returnValue
   }
   return []
 }
@@ -85,7 +85,7 @@ export async function getTrack(vid: string): Promise<Track> {
 }
 
 export function addTrack(vid: string, information: VideoInformation | null) {
-  const prev = fs.existsSync('/data/tracks.json')
+  const previous = fs.existsSync('/data/tracks.json')
     ? (JSON.parse(fs.readFileSync('/data/tracks.json').toString()) as TrackFile)
     : {}
   const newTrack = {
@@ -95,7 +95,7 @@ export function addTrack(vid: string, information: VideoInformation | null) {
     albumArtist: null,
   }
   const next = {
-    ...prev,
+    ...previous,
     [vid]: newTrack,
   }
   fs.writeFileSync('/data/tracks.json', JSON.stringify(next))
@@ -121,8 +121,8 @@ export function getFilename(config: Config, track: Track) {
   const sanitizedTitle = title
     ? // eslint-disable-next-line unicorn/no-array-reduce
       sanitizeChars.reduce(
-        (acc, char) =>
-          acc.replaceAll(
+        (accumulator, char) =>
+          accumulator.replaceAll(
             new RegExp(
               char.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`),
               'g',
@@ -136,8 +136,8 @@ export function getFilename(config: Config, track: Track) {
   const sanitizedArtist = artist
     ? // eslint-disable-next-line unicorn/no-array-reduce
       sanitizeChars.reduce(
-        (acc, char) =>
-          acc.replaceAll(
+        (accumulator, char) =>
+          accumulator.replaceAll(
             new RegExp(
               char.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`),
               'g',
@@ -204,7 +204,7 @@ export function addId3Tag(
   videoCount: number,
 ) {
   const file = path.join(DOWNLOAD_TEMP_DIR, `${track.vid}.mp3`)
-  const prevBuffer = fs.readFileSync(file)
+  const previousBuffer = fs.readFileSync(file)
   const tags =
     !track.track || !track.artist
       ? {}
@@ -216,14 +216,14 @@ export function addId3Tag(
       trackNumber: `${videoIndex}/${videoCount}`,
       generalObject: [],
     },
-    prevBuffer,
+    previousBuffer,
   )
   fs.writeFileSync(file, newBuffer)
 }
 
 export function updateArtwork(vid: string, image: Buffer) {
   const file = path.join(DOWNLOAD_TEMP_DIR, `${vid}.mp3`)
-  const prevBuffer = fs.readFileSync(file)
+  const previousBuffer = fs.readFileSync(file)
   const newBuffer = NodeID3.update(
     {
       image: {
@@ -237,7 +237,7 @@ export function updateArtwork(vid: string, image: Buffer) {
       },
       generalObject: [],
     },
-    prevBuffer,
+    previousBuffer,
   )
   fs.writeFileSync(file, newBuffer)
 }
@@ -311,19 +311,19 @@ export async function getClippedArtwork(vid: string) {
 }
 
 export function normalizeVolume(file: string) {
-  const envApp = process.env.NORMALIZE_VOLUME_APP ?? 'mp3gain'
+  const environmentApp = process.env.NORMALIZE_VOLUME_APP ?? 'mp3gain'
 
   // 89dbになるように音量を調整
-  if (envApp === 'mp3gain') {
+  if (environmentApp === 'mp3gain') {
     // -r: apply Track gain automatically (all files set to equal loudness)
     // -c: ignore clipping warning when applying gain
     // -p: preserve original file timestamp
     return execSync(`mp3gain -r -c -p "${file}"`)
   }
-  if (envApp === 'rgain3') {
+  if (environmentApp === 'rgain3') {
     return execSync(`replaygain "${file}"`)
   }
-  throw new Error(`Unknown normalize volume app: ${envApp}`)
+  throw new Error(`Unknown normalize volume app: ${environmentApp}`)
 }
 
 export function trimAndAddSilence(file: string, duration: number) {
@@ -337,7 +337,7 @@ export function trimAndAddSilence(file: string, duration: number) {
   return result
 }
 
-export function removeCacheDir() {
+export function removeCacheDirectory() {
   execSync('yt-dlp --rm-cache-dir')
 }
 
@@ -372,7 +372,7 @@ export function getPlaylistVideoIds(playlistId: string) {
   return result.toString().split('\n').filter(Boolean)
 }
 
-export function downloadVideo(videoId: string): boolean {
+export function didDownloadVideo(videoId: string): boolean {
   const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
   const command = [
     'yt-dlp',
@@ -412,6 +412,6 @@ export function getEchoPrint(file: string) {
 
 export function getHumanReadableSize(bytes: number) {
   const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-  const i = Math.floor(Math.log(bytes) / Math.log(1024))
-  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${units[i]}`
+  const index = Math.floor(Math.log(bytes) / Math.log(1024))
+  return `${(bytes / Math.pow(1024, index)).toFixed(2)} ${units[index]}`
 }

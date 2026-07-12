@@ -1,12 +1,12 @@
 import fs, { promises as fsPromises } from 'node:fs'
 import path from 'node:path'
-import { getConfig } from './configuration'
+import { getConfig } from './config'
 import { sendDiscordMessage } from './discord'
 import {
   addId3Tag,
   addTrack,
   recreateDirectories,
-  downloadVideo,
+  didDownloadVideo,
   getClippedArtwork,
   getEchoPrint,
   getFilename,
@@ -16,12 +16,12 @@ import {
   getTrack,
   getVideoInformation,
   normalizeVolume,
-  removeCacheDir,
+  removeCacheDirectory,
   updateArtwork,
   trimAndAddSilence,
   isSetArtwork,
   getArtworkData,
-} from './lib'
+} from './library'
 import { Logger } from '@book000/node-utils'
 import { DOWNLOAD_TEMP_DIR } from './constants'
 
@@ -45,8 +45,8 @@ class ParallelDownloadVideo {
    */
   public async runAll(runnerCount = 3): Promise<string[]> {
     const runners = []
-    for (let i = 0; i < runnerCount; i++) {
-      runners.push(this.runner(i))
+    for (let index = 0; index < runnerCount; index++) {
+      runners.push(this.runner(index))
     }
 
     await Promise.all(runners)
@@ -65,8 +65,8 @@ class ParallelDownloadVideo {
       }
       const videoIndex = this.videoCount - this.ids.length
       logger.info(`📥 Downloading ${id} (${videoIndex} / ${this.videoCount})`)
-      const success = await this.runDownloadVideo(id)
-      if (success) {
+      const isSuccess = await this.runDownloadVideo(id)
+      if (isSuccess) {
         this.successfulIds.push(id)
       }
     }
@@ -85,9 +85,9 @@ class ParallelDownloadVideo {
     const filePath = path.join(DOWNLOAD_TEMP_DIR, `${id}.mp3`)
 
     // MAX_DOWNLOAD_RETRIES回までリトライする
-    for (let i = 0; i < MAX_DOWNLOAD_RETRIES; i++) {
-      const result = downloadVideo(id)
-      if (result) {
+    for (let index = 0; index < MAX_DOWNLOAD_RETRIES; index++) {
+      const isSuccess = didDownloadVideo(id)
+      if (isSuccess) {
         try {
           const stats = await fsPromises.stat(filePath)
           const humanFileSize = getHumanReadableSize(stats.size)
@@ -125,8 +125,8 @@ class ParallelProcessVideo {
 
   public async runAll(runnerCount = 3) {
     const runners = []
-    for (let i = 0; i < runnerCount; i++) {
-      runners.push(this.runner(i))
+    for (let index = 0; index < runnerCount; index++) {
+      runners.push(this.runner(index))
     }
 
     await Promise.all(runners)
@@ -371,10 +371,10 @@ async function main() {
   const playlistId = config.playlistId
 
   const runnerCountForDownload = process.env.RUNNER_COUNT_FOR_DOWNLOAD
-    ? Number.parseInt(process.env.RUNNER_COUNT_FOR_DOWNLOAD, 10)
+    ? Number(process.env.RUNNER_COUNT_FOR_DOWNLOAD)
     : 3
   const runnerCountForProcessing = process.env.RUNNER_COUNT_FOR_PROCESSING
-    ? Number.parseInt(process.env.RUNNER_COUNT_FOR_PROCESSING, 10)
+    ? Number(process.env.RUNNER_COUNT_FOR_PROCESSING)
     : 3
 
   logger.info('📝 Configuration:')
@@ -390,7 +390,7 @@ async function main() {
   recreateDirectories()
 
   logger.info('🗑️ Deleting yt-dlp cache...')
-  removeCacheDir()
+  removeCacheDirectory()
 
   logger.info(`📚 Getting playlist videos for ${playlistId}`)
   const ids = getPlaylistVideoIds(playlistId)
@@ -430,8 +430,10 @@ async function main() {
 }
 
 ;(async () => {
-  await main().catch((error: unknown) => {
+  try {
+    await main()
+  } catch (error) {
     const logger = Logger.configure('main')
     logger.error('Error', error as Error)
-  })
+  }
 })()
