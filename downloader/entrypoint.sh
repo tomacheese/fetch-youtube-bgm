@@ -4,8 +4,6 @@ while :
 do
   yarn build || true
 
-  echo "Waiting..."
-
-  # wait 1 hour
-  sleep 3600
+  echo "Process exited. Restarting in 10 seconds..."
+  sleep 10
 done
