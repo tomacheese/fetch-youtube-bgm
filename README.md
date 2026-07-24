@@ -51,6 +51,8 @@ services:
     environment:
       - TZ=<Timezone>
       - BASE_URL=http://<ServerHost>:<ViewerPort>
+      # - DETECTION_INTERVAL_SECONDS=300 # Optional: interval (seconds) for detecting new videos in the playlist. Default: 300 (5 minutes)
+      # - PIPELINE_INTERVAL_SECONDS=3600 # Optional: interval (seconds) for the full download/processing pipeline. Default: 3600 (1 hour)
     volumes:
       - type: bind
         source: ./data
