@@ -447,6 +447,55 @@ export function getVideoMetadata(videoId: string): VideoMetadata | null {
   }
 }
 
+type VideoMetadataFile = Record<string, VideoMetadata>
+
+const VIDEO_METADATA_STORE_PATH = '/data/video-metadata.json'
+
+/**
+ * 動画メタデータの専用ストアを読み込む
+ *
+ * @returns 動画 ID をキーとしたメタデータの一覧。ファイルが存在しない場合は空オブジェクト
+ */
+export function getVideoMetadataStore(): VideoMetadataFile {
+  if (fs.existsSync(VIDEO_METADATA_STORE_PATH)) {
+    return JSON.parse(
+      fs.readFileSync(VIDEO_METADATA_STORE_PATH).toString(),
+    ) as VideoMetadataFile
+  }
+  return {}
+}
+
+/**
+ * 動画メタデータの専用ストアに単一動画のエントリを追加・更新する
+ *
+ * @param vid 動画 ID
+ * @param metadata 保存するメタデータ
+ */
+export function updateVideoMetadata(vid: string, metadata: VideoMetadata) {
+  const store = getVideoMetadataStore()
+  const next = {
+    ...store,
+    [vid]: metadata,
+  }
+  fs.writeFileSync(VIDEO_METADATA_STORE_PATH, JSON.stringify(next))
+}
+
+/**
+ * 動画メタデータの専用ストアから、現在のプレイリストに存在しない動画のエントリを削除する
+ *
+ * @param currentIds 現在のプレイリストに含まれる動画 ID の一覧
+ */
+export function pruneVideoMetadataStore(currentIds: string[]) {
+  const store = getVideoMetadataStore()
+  const next: VideoMetadataFile = {}
+  for (const vid in store) {
+    if (currentIds.includes(vid)) {
+      next[vid] = store[vid]
+    }
+  }
+  fs.writeFileSync(VIDEO_METADATA_STORE_PATH, JSON.stringify(next))
+}
+
 export function getEchoPrint(file: string) {
   const command = ['/usr/local/bin/echoprint-codegen', `"${file}"`, '10', '30']
   const result = execSync(command.join(' '))
