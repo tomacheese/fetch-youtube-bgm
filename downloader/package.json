@@ -33,7 +33,7 @@
     "eslint-plugin-n": "18.2.2",
     "eslint-plugin-promise": "7.3.0",
     "node-id3": "0.2.9",
-    "prettier": "3.9.5",
+    "prettier": "3.9.6",
     "sharp": "0.35.3",
     "ts-node": "10.9.2",
     "ts-node-dev": "2.0.0",
