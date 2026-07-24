@@ -342,10 +342,6 @@ export function trimAndAddSilence(file: string, duration: number) {
   return result
 }
 
-export function removeCacheDir() {
-  execSync('yt-dlp --rm-cache-dir')
-}
-
 export function recreateDirectories() {
   if (fs.existsSync(DOWNLOAD_TEMP_DIR)) {
     fs.rmSync(DOWNLOAD_TEMP_DIR, { recursive: true })
