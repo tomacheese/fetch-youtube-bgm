@@ -1,13 +1,16 @@
 import axios, { AxiosProxyConfig } from 'axios'
-import { execSync } from 'node:child_process'
+import { exec, execSync } from 'node:child_process'
 import fs from 'node:fs'
 import NodeID3 from 'node-id3'
 import { Logger } from '@book000/node-utils'
 import sharp from 'sharp'
 import path from 'node:path'
+import { promisify } from 'node:util'
 import { Config } from './configuration'
 import { MusicBrainz } from './musicbrainz'
 import { DOWNLOAD_TEMP_DIR } from './constants'
+
+const execAsync = promisify(exec)
 
 interface Track {
   vid: string
@@ -408,7 +411,9 @@ export function downloadVideo(videoId: string): boolean {
  * @param videoId 動画 ID
  * @returns 取得できたメタデータ。コマンド自体が失敗した場合は null
  */
-export function getVideoMetadata(videoId: string): VideoMetadata | null {
+export async function getVideoMetadata(
+  videoId: string,
+): Promise<VideoMetadata | null> {
   const logger = Logger.configure('getVideoMetadata')
   const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
   const command = [
@@ -424,13 +429,12 @@ export function getVideoMetadata(videoId: string): VideoMetadata | null {
     `https://youtu.be/${videoId}`,
   ]
   try {
-    const result = execSync(command.join(' '), {
+    // execSync だと呼び出し中 Node プロセス全体がブロックされ、複数動画分の
+    // yt-dlp 呼び出しを並列実行できないため、ここだけ非同期の exec を使う
+    const { stdout } = await execAsync(command.join(' '), {
       cwd: DOWNLOAD_TEMP_DIR,
     })
-    const [durationRaw, filesizeApproxRaw] = result
-      .toString()
-      .trim()
-      .split(';', 2)
+    const [durationRaw, filesizeApproxRaw] = stdout.trim().split(';', 2)
     const duration = Number.parseFloat(durationRaw)
     const filesizeApprox = Number.parseFloat(filesizeApproxRaw)
     return {
