@@ -206,10 +206,12 @@ class ParallelFetchVideoMetadata {
 class ParallelProcessVideo {
   private readonly ids: string[]
   private readonly videoCount: number
+  private readonly metadataByVideoId: Map<string, VideoMetadata>
 
-  constructor(ids: string[]) {
+  constructor(ids: string[], metadataByVideoId: Map<string, VideoMetadata>) {
     this.ids = [...ids]
     this.videoCount = ids.length
+    this.metadataByVideoId = metadataByVideoId
   }
 
   public async runAll(runnerCount = 3) {
@@ -360,6 +362,7 @@ class ParallelProcessVideo {
         getEchoPrint(downloadedFilePath)
     ) {
       logger.info(`⏭️ Skipping because the file is the same: ${id}`)
+      this.updateMetadataStoreIfFetched(id)
       return
     }
 
@@ -380,6 +383,7 @@ class ParallelProcessVideo {
     }
 
     logger.info(`✅ Successfully processed ${id}`)
+    this.updateMetadataStoreIfFetched(id)
 
     const baseUrl = process.env.BASE_URL ?? undefined
     const editUrl = baseUrl ? `${baseUrl}?vid=${id}` : undefined
@@ -411,6 +415,22 @@ class ParallelProcessVideo {
         },
       ],
     })
+  }
+
+  /**
+   * 一次フィルタで取得済みのメタデータがあれば、専用ストアへ反映する
+   *
+   * 一次フィルタが失敗していた動画IDについては、更新に使えるメタデータが
+   * 存在しないためストアを更新しない(前回値のまま据え置き、次回実行時に
+   * 再度「変更あり」として扱われる)
+   *
+   * @param id 動画 ID
+   */
+  private updateMetadataStoreIfFetched(id: string) {
+    const metadata = this.metadataByVideoId.get(id)
+    if (metadata) {
+      updateVideoMetadata(id, metadata)
+    }
   }
 }
 
