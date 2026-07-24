@@ -40,6 +40,11 @@ interface VideoInformation {
   artist: string
 }
 
+export interface VideoMetadata {
+  duration: number | null
+  filesizeApprox: number | null
+}
+
 export function getDefinedTracks(): Track[] {
   if (fs.existsSync('/data/tracks.json')) {
     const result = JSON.parse(
@@ -398,6 +403,47 @@ export function downloadVideo(videoId: string): boolean {
     return true
   } catch {
     return false
+  }
+}
+
+/**
+ * yt-dlp でダウンロードせずに動画のメタデータ(再生時間・概算ファイルサイズ)を取得する
+ *
+ * @param videoId 動画 ID
+ * @returns 取得できたメタデータ。コマンド自体が失敗した場合は null
+ */
+export function getVideoMetadata(videoId: string): VideoMetadata | null {
+  const logger = Logger.configure('getVideoMetadata')
+  const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
+  const command = [
+    'yt-dlp',
+    '--ignore-config',
+    httpsProxy ? '--proxy' : '',
+    httpsProxy ?? '',
+    '--skip-download',
+    '--add-header',
+    'Accept-Language:ja-JP',
+    '--print',
+    '"%(duration)s;%(filesize_approx)s"',
+    `https://youtu.be/${videoId}`,
+  ]
+  try {
+    const result = execSync(command.join(' '), {
+      cwd: DOWNLOAD_TEMP_DIR,
+    })
+    const [durationRaw, filesizeApproxRaw] = result
+      .toString()
+      .trim()
+      .split(';', 2)
+    const duration = Number.parseFloat(durationRaw)
+    const filesizeApprox = Number.parseFloat(filesizeApproxRaw)
+    return {
+      duration: Number.isNaN(duration) ? null : duration,
+      filesizeApprox: Number.isNaN(filesizeApprox) ? null : filesizeApprox,
+    }
+  } catch (error) {
+    logger.warn(`⚠️ Failed to get metadata for ${videoId}:`, error as Error)
+    return null
   }
 }
 
