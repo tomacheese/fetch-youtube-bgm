@@ -18,12 +18,12 @@ import {
   getVideoMetadata,
   getVideoMetadataStore,
   normalizeVolume,
-  removeCacheDir,
   updateArtwork,
   trimAndAddSilence,
   isSetArtwork,
   getArtworkData,
   updateVideoMetadata,
+  pruneVideoMetadataStore,
   VideoMetadata,
 } from './lib'
 import { Logger } from '@book000/node-utils'
@@ -121,7 +121,7 @@ class ParallelDownloadVideo {
 class ParallelFetchVideoMetadata {
   private readonly ids: string[]
   private readonly videoCount: number
-  private readonly store: Record<string, VideoMetadata>
+  private readonly store: Record<string, VideoMetadata | undefined>
   private readonly metadataByVideoId = new Map<string, VideoMetadata>()
   private readonly idsToProcess: string[] = []
 
@@ -189,8 +189,7 @@ class ParallelFetchVideoMetadata {
 
     const previous = this.store[id]
     const changed =
-      !previous ||
-      previous.duration !== metadata.duration ||
+      previous?.duration !== metadata.duration ||
       previous.filesizeApprox !== metadata.filesizeApprox
 
     if (!changed) {
@@ -485,6 +484,10 @@ async function main() {
   const runnerCountForProcessing = process.env.RUNNER_COUNT_FOR_PROCESSING
     ? Number.parseInt(process.env.RUNNER_COUNT_FOR_PROCESSING, 10)
     : 3
+  const runnerCountForMetadataCheck = process.env
+    .RUNNER_COUNT_FOR_METADATA_CHECK
+    ? Number.parseInt(process.env.RUNNER_COUNT_FOR_METADATA_CHECK, 10)
+    : 5
 
   logger.info('📝 Configuration:')
   logger.info(`  - Playlist ID: ${playlistId}`)
@@ -494,42 +497,61 @@ async function main() {
   )
   logger.info(`  - Runner count for download: ${runnerCountForDownload}`)
   logger.info(`  - Runner count for processing: ${runnerCountForProcessing}`)
+  logger.info(
+    `  - Runner count for metadata check: ${runnerCountForMetadataCheck}`,
+  )
 
   logger.info('📁 Recreating directories...')
   recreateDirectories()
 
-  logger.info('🗑️ Deleting yt-dlp cache...')
-  removeCacheDir()
-
   logger.info(`📚 Getting playlist videos for ${playlistId}`)
   const ids = getPlaylistVideoIds(playlistId)
 
-  logger.info(`🎥 Found ${ids.length} videos. Downloading...`)
+  logger.info(`🎥 Found ${ids.length} videos. Checking metadata...`)
 
-  // プレイリスト動画をダウンロード
-  const successfullyDownloadedIds = await new ParallelDownloadVideo(ids).runAll(
-    runnerCountForDownload,
-  )
+  // メタデータ一次フィルタ: 変更のない動画をダウンロード対象から除外
+  const { idsToProcess, metadataByVideoId } =
+    await new ParallelFetchVideoMetadata(ids).runAll(
+      runnerCountForMetadataCheck,
+    )
 
   logger.info(
-    `📥 Successfully downloaded ${successfullyDownloadedIds.length}/${ids.length} videos`,
+    `📊 ${idsToProcess.length}/${ids.length} videos need processing (skipped ${
+      ids.length - idsToProcess.length
+    } unchanged videos)`,
   )
 
-  if (successfullyDownloadedIds.length === 0) {
-    logger.warn(
-      '⚠️ No videos were successfully downloaded. Skipping processing.',
+  if (idsToProcess.length > 0) {
+    // プレイリスト動画をダウンロード
+    const successfullyDownloadedIds = await new ParallelDownloadVideo(
+      idsToProcess,
+    ).runAll(runnerCountForDownload)
+
+    logger.info(
+      `📥 Successfully downloaded ${successfullyDownloadedIds.length}/${idsToProcess.length} videos`,
     )
-    return
-  }
 
-  // ダウンロードしたプレイリスト動画を処理
-  await new ParallelProcessVideo(successfullyDownloadedIds).runAll(
-    runnerCountForProcessing,
-  )
+    if (successfullyDownloadedIds.length === 0) {
+      // 元の実装(全動画のダウンロードに失敗した場合、以降の処理を行わず終了する)を踏襲する
+      logger.warn(
+        '⚠️ No videos were successfully downloaded. Skipping processing.',
+      )
+      return
+    }
+
+    // ダウンロードしたプレイリスト動画を処理
+    await new ParallelProcessVideo(
+      successfullyDownloadedIds,
+      metadataByVideoId,
+    ).runAll(runnerCountForProcessing)
+  }
 
   // プレイリストにない音楽ファイルを削除
   logger.info('🗑️ Deleting playlist removed tracks...')
   deleteRemovedTracks(ids)
+
+  // 専用ストアからプレイリストに存在しない動画のエントリを削除
+  pruneVideoMetadataStore(ids)
 
   // ダウンロードした音楽ファイルを元にプレイリストファイルを作成
   logger.info('📝 Creating playlist file...')
