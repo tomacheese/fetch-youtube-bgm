@@ -365,68 +365,168 @@ function createPlaylistFile() {
   fs.writeFileSync('/data/tracks/YouTubeDownloadeds.m3u8', playlist)
 }
 
-async function main() {
-  const logger = Logger.configure('main')
-  const config = getConfig()
-  const playlistId = config.playlistId
+const DETECTION_INTERVAL_SECONDS = process.env.DETECTION_INTERVAL_SECONDS
+  ? Number.parseInt(process.env.DETECTION_INTERVAL_SECONDS, 10)
+  : 300
+const PIPELINE_INTERVAL_SECONDS = process.env.PIPELINE_INTERVAL_SECONDS
+  ? Number.parseInt(process.env.PIPELINE_INTERVAL_SECONDS, 10)
+  : 3600
 
-  const runnerCountForDownload = process.env.RUNNER_COUNT_FOR_DOWNLOAD
-    ? Number.parseInt(process.env.RUNNER_COUNT_FOR_DOWNLOAD, 10)
-    : 3
-  const runnerCountForProcessing = process.env.RUNNER_COUNT_FOR_PROCESSING
-    ? Number.parseInt(process.env.RUNNER_COUNT_FOR_PROCESSING, 10)
-    : 3
+let lastKnownIds: string[] = []
+let isHeavyRunning = false
+let heavyTimeoutHandle: NodeJS.Timeout | undefined
 
-  logger.info('📝 Configuration:')
-  logger.info(`  - Playlist ID: ${playlistId}`)
-  logger.info(`  - Discord: ${config.discord ? 'Enabled' : 'Disabled'}`)
-  logger.info(
-    `  - Using normalize volume app: ${process.env.NORMALIZE_VOLUME_APP ?? 'mp3gain'}`,
-  )
-  logger.info(`  - Runner count for download: ${runnerCountForDownload}`)
-  logger.info(`  - Runner count for processing: ${runnerCountForProcessing}`)
+/**
+ * 重いダウンロード・変換・後処理パイプラインを 1 回実行する
+ *
+ * 既にパイプラインが実行中の場合は何もせず終了する(多重実行の防止)。
+ * 実行完了後は、成否に関わらず次回の定期実行タイマーを再設定する。
+ *
+ * @param reason 実行理由(ログ出力用。例: 'startup' | 'scheduled' | 'new-videos-detected')
+ */
+async function runHeavyPipeline(reason: string) {
+  const logger = Logger.configure('runHeavyPipeline')
 
-  logger.info('📁 Recreating directories...')
-  recreateDirectories()
-
-  logger.info('🗑️ Deleting yt-dlp cache...')
-  removeCacheDir()
-
-  logger.info(`📚 Getting playlist videos for ${playlistId}`)
-  const ids = getPlaylistVideoIds(playlistId)
-
-  logger.info(`🎥 Found ${ids.length} videos. Downloading...`)
-
-  // プレイリスト動画をダウンロード
-  const successfullyDownloadedIds = await new ParallelDownloadVideo(ids).runAll(
-    runnerCountForDownload,
-  )
-
-  logger.info(
-    `📥 Successfully downloaded ${successfullyDownloadedIds.length}/${ids.length} videos`,
-  )
-
-  if (successfullyDownloadedIds.length === 0) {
-    logger.warn(
-      '⚠️ No videos were successfully downloaded. Skipping processing.',
+  if (isHeavyRunning) {
+    logger.info(
+      `⏭️ Skipping heavy pipeline trigger (${reason}): already running`,
     )
     return
   }
 
-  // ダウンロードしたプレイリスト動画を処理
-  await new ParallelProcessVideo(successfullyDownloadedIds).runAll(
-    runnerCountForProcessing,
-  )
+  isHeavyRunning = true
+  if (heavyTimeoutHandle) {
+    clearTimeout(heavyTimeoutHandle)
+    heavyTimeoutHandle = undefined
+  }
 
-  // プレイリストにない音楽ファイルを削除
-  logger.info('🗑️ Deleting playlist removed tracks...')
-  deleteRemovedTracks(ids)
+  try {
+    logger.info(`🚀 Starting heavy pipeline (reason: ${reason})`)
 
-  // ダウンロードした音楽ファイルを元にプレイリストファイルを作成
-  logger.info('📝 Creating playlist file...')
-  createPlaylistFile()
+    const config = getConfig()
+    const playlistId = config.playlistId
 
-  logger.info('🎉 Successfully finished!')
+    const runnerCountForDownload = process.env.RUNNER_COUNT_FOR_DOWNLOAD
+      ? Number.parseInt(process.env.RUNNER_COUNT_FOR_DOWNLOAD, 10)
+      : 3
+    const runnerCountForProcessing = process.env.RUNNER_COUNT_FOR_PROCESSING
+      ? Number.parseInt(process.env.RUNNER_COUNT_FOR_PROCESSING, 10)
+      : 3
+
+    logger.info('📝 Configuration:')
+    logger.info(`  - Playlist ID: ${playlistId}`)
+    logger.info(`  - Discord: ${config.discord ? 'Enabled' : 'Disabled'}`)
+    logger.info(
+      `  - Using normalize volume app: ${process.env.NORMALIZE_VOLUME_APP ?? 'mp3gain'}`,
+    )
+    logger.info(`  - Runner count for download: ${runnerCountForDownload}`)
+    logger.info(`  - Runner count for processing: ${runnerCountForProcessing}`)
+
+    logger.info('📁 Recreating directories...')
+    recreateDirectories()
+
+    logger.info('🗑️ Deleting yt-dlp cache...')
+    removeCacheDir()
+
+    logger.info(`📚 Getting playlist videos for ${playlistId}`)
+    const ids = getPlaylistVideoIds(playlistId)
+
+    logger.info(`🎥 Found ${ids.length} videos. Downloading...`)
+
+    // プレイリスト動画をダウンロード
+    const successfullyDownloadedIds = await new ParallelDownloadVideo(
+      ids,
+    ).runAll(runnerCountForDownload)
+
+    logger.info(
+      `📥 Successfully downloaded ${successfullyDownloadedIds.length}/${ids.length} videos`,
+    )
+
+    if (successfullyDownloadedIds.length === 0) {
+      logger.warn(
+        '⚠️ No videos were successfully downloaded. Skipping processing.',
+      )
+      return
+    }
+
+    // ダウンロードしたプレイリスト動画を処理
+    await new ParallelProcessVideo(successfullyDownloadedIds).runAll(
+      runnerCountForProcessing,
+    )
+
+    // プレイリストにない音楽ファイルを削除
+    logger.info('🗑️ Deleting playlist removed tracks...')
+    deleteRemovedTracks(ids)
+
+    // ダウンロードした音楽ファイルを元にプレイリストファイルを作成
+    logger.info('📝 Creating playlist file...')
+    createPlaylistFile()
+
+    logger.info('🎉 Successfully finished!')
+  } catch (error) {
+    logger.error('Failed to run heavy pipeline', error as Error)
+  } finally {
+    isHeavyRunning = false
+    heavyTimeoutHandle = setTimeout(() => {
+      ;(async () => {
+        await runHeavyPipeline('scheduled')
+      })()
+    }, PIPELINE_INTERVAL_SECONDS * 1000)
+  }
+}
+
+/**
+ * プレイリストの新規動画 ID を高頻度に検出するループを 1 回実行する
+ *
+ * 新規 ID を検出した場合、重いパイプラインを即座にトリガーする。
+ * 重いパイプラインの完了は待たず、検出ループ自体は直ちに次回をスケジュールする
+ * (待ってしまうと、検出自身がトリガーした実行中は高頻度検出が止まってしまうため)。
+ * 完了後は、成否に関わらず次回の検出ループをスケジュールする。
+ */
+function runDetectionLoop() {
+  const logger = Logger.configure('runDetectionLoop')
+
+  try {
+    const config = getConfig()
+    removeCacheDir()
+    const ids = getPlaylistVideoIds(config.playlistId)
+    const newIds = ids.filter((id) => !lastKnownIds.includes(id))
+    lastKnownIds = ids
+
+    if (newIds.length > 0) {
+      logger.info(
+        `🆕 Detected ${newIds.length} new video(s): ${newIds.join(', ')}`,
+      )
+      ;(async () => {
+        await runHeavyPipeline('new-videos-detected')
+      })()
+    }
+  } catch (error) {
+    logger.error('Failed to run detection loop', error as Error)
+  } finally {
+    setTimeout(() => {
+      runDetectionLoop()
+    }, DETECTION_INTERVAL_SECONDS * 1000)
+  }
+}
+
+async function main() {
+  const logger = Logger.configure('main')
+
+  logger.info('📝 Global configuration:')
+  logger.info(`  - Detection interval (sec): ${DETECTION_INTERVAL_SECONDS}`)
+  logger.info(`  - Pipeline interval (sec): ${PIPELINE_INTERVAL_SECONDS}`)
+
+  // 起動時に現在の ID 一覧を取得してベースラインとし、直後に重い処理を 1 回実行する
+  const config = getConfig()
+  removeCacheDir()
+  lastKnownIds = getPlaylistVideoIds(config.playlistId)
+  await runHeavyPipeline('startup')
+
+  // 常駐ループを開始する(このプロセスは終了しない)
+  setTimeout(() => {
+    runDetectionLoop()
+  }, DETECTION_INTERVAL_SECONDS * 1000)
 }
 
 ;(async () => {
