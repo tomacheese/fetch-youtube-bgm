@@ -377,7 +377,7 @@ let isHeavyRunning = false
 let heavyTimeoutHandle: NodeJS.Timeout | undefined
 
 /**
- * 重いダウンロード・変換・後処理パイプラインを1回実行する
+ * 重いダウンロード・変換・後処理パイプラインを 1 回実行する
  *
  * 既にパイプラインが実行中の場合は何もせず終了する(多重実行の防止)。
  * 実行完了後は、成否に関わらず次回の定期実行タイマーを再設定する。
@@ -476,16 +476,19 @@ async function runHeavyPipeline(reason: string) {
 }
 
 /**
- * プレイリストの新規動画IDを高頻度に検出するループを1回実行する
+ * プレイリストの新規動画 ID を高頻度に検出するループを 1 回実行する
  *
- * 新規IDを検出した場合、重いパイプラインを即座にトリガーする。
+ * 新規 ID を検出した場合、重いパイプラインを即座にトリガーする。
+ * 重いパイプラインの完了は待たず、検出ループ自体は直ちに次回をスケジュールする
+ * (待ってしまうと、検出自身がトリガーした実行中は高頻度検出が止まってしまうため)。
  * 完了後は、成否に関わらず次回の検出ループをスケジュールする。
  */
-async function runDetectionLoop() {
+function runDetectionLoop() {
   const logger = Logger.configure('runDetectionLoop')
 
   try {
     const config = getConfig()
+    removeCacheDir()
     const ids = getPlaylistVideoIds(config.playlistId)
     const newIds = ids.filter((id) => !lastKnownIds.includes(id))
     lastKnownIds = ids
@@ -494,15 +497,15 @@ async function runDetectionLoop() {
       logger.info(
         `🆕 Detected ${newIds.length} new video(s): ${newIds.join(', ')}`,
       )
-      await runHeavyPipeline('new-videos-detected')
+      ;(async () => {
+        await runHeavyPipeline('new-videos-detected')
+      })()
     }
   } catch (error) {
     logger.error('Failed to run detection loop', error as Error)
   } finally {
     setTimeout(() => {
-      ;(async () => {
-        await runDetectionLoop()
-      })()
+      runDetectionLoop()
     }, DETECTION_INTERVAL_SECONDS * 1000)
   }
 }
@@ -514,16 +517,15 @@ async function main() {
   logger.info(`  - Detection interval (sec): ${DETECTION_INTERVAL_SECONDS}`)
   logger.info(`  - Pipeline interval (sec): ${PIPELINE_INTERVAL_SECONDS}`)
 
-  // 起動時に現在のID一覧を取得してベースラインとし、直後に重い処理を1回実行する
+  // 起動時に現在の ID 一覧を取得してベースラインとし、直後に重い処理を 1 回実行する
   const config = getConfig()
+  removeCacheDir()
   lastKnownIds = getPlaylistVideoIds(config.playlistId)
   await runHeavyPipeline('startup')
 
   // 常駐ループを開始する(このプロセスは終了しない)
   setTimeout(() => {
-    ;(async () => {
-      await runDetectionLoop()
-    })()
+    runDetectionLoop()
   }, DETECTION_INTERVAL_SECONDS * 1000)
 }
 
