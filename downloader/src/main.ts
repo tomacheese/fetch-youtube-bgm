@@ -15,12 +15,16 @@ import {
   getPlaylistVideoIds,
   getTrack,
   getVideoInformation,
+  getVideoMetadata,
+  getVideoMetadataStore,
   normalizeVolume,
-  removeCacheDir,
   updateArtwork,
   trimAndAddSilence,
   isSetArtwork,
   getArtworkData,
+  updateVideoMetadata,
+  pruneVideoMetadataStore,
+  VideoMetadata,
 } from './lib'
 import { Logger } from '@book000/node-utils'
 import { DOWNLOAD_TEMP_DIR } from './constants'
@@ -114,13 +118,117 @@ class ParallelDownloadVideo {
   }
 }
 
-class ParallelProcessVideo {
+class ParallelFetchVideoMetadata {
   private readonly ids: string[]
   private readonly videoCount: number
+  private readonly store: Record<string, VideoMetadata | undefined>
+  private readonly metadataByVideoId = new Map<string, VideoMetadata>()
+  private readonly idsToProcess: string[] = []
 
   constructor(ids: string[]) {
     this.ids = [...ids]
     this.videoCount = ids.length
+    this.store = getVideoMetadataStore()
+  }
+
+  /**
+   * すべての動画についてメタデータ一次フィルタを実行する
+   *
+   * @param runnerCount 並列実行数 (デフォルト: 5)
+   * @returns 処理が必要な動画 ID と、そのうち新規に取得できたメタデータ
+   */
+  public async runAll(runnerCount = 5): Promise<{
+    idsToProcess: string[]
+    metadataByVideoId: Map<string, VideoMetadata>
+  }> {
+    const runners = []
+    for (let i = 0; i < runnerCount; i++) {
+      runners.push(this.runner(i))
+    }
+
+    await Promise.all(runners)
+    return {
+      idsToProcess: this.idsToProcess,
+      metadataByVideoId: this.metadataByVideoId,
+    }
+  }
+
+  private async runner(runnerId: number) {
+    const logger = Logger.configure(
+      `ParallelFetchVideoMetadata.runner#${runnerId.toString()}`,
+    )
+    logger.info(`Starting metadata check runner #${runnerId}`)
+    while (this.ids.length > 0) {
+      const id = this.ids.pop()
+      if (!id) {
+        break
+      }
+      const videoIndex = this.videoCount - this.ids.length
+      logger.info(
+        `📊 Checking metadata for ${id} (${videoIndex} / ${this.videoCount})`,
+      )
+      await this.checkVideo(id)
+    }
+  }
+
+  /**
+   * 動画のメタデータを取得し、前回値と比較して処理が必要かどうかを判定する
+   *
+   * @param id 動画 ID
+   */
+  private async checkVideo(id: string) {
+    const logger = Logger.configure(
+      `ParallelFetchVideoMetadata.checkVideo#${id}`,
+    )
+    const metadata = await getVideoMetadata(id)
+    if (!metadata) {
+      logger.warn(`⚠️ Failed to get metadata for ${id}, treating as changed`)
+      this.idsToProcess.push(id)
+      return
+    }
+
+    const previous = this.store[id]
+    // 1つ目の条件が false ということは previous が存在することを意味するため、
+    // 2つ目の条件では previous を non-null として扱ってよい(TS の型絞り込みによる)
+    const changed =
+      previous?.duration !== metadata.duration ||
+      previous.filesizeApprox !== metadata.filesizeApprox
+
+    if (!changed && (await this.hasExistingTrackFile(id))) {
+      logger.info(`⏭️ Skipping ${id} because metadata is unchanged`)
+      return
+    }
+
+    this.metadataByVideoId.set(id, metadata)
+    this.idsToProcess.push(id)
+  }
+
+  /**
+   * 前回処理時に生成されたはずの mp3 ファイルが、現在もディスク上に存在するかを確認する
+   *
+   * メタデータに変更がなくても、出力先ファイルが外部要因(手動削除・破損等)で
+   * 失われている場合は再処理が必要なため、スキップ判定の前提としてこのチェックを行う
+   *
+   * @param id 動画 ID
+   * @returns ファイルが存在すれば true
+   */
+  private async hasExistingTrackFile(id: string): Promise<boolean> {
+    const config = getConfig()
+    const track = await getTrack(id)
+    const filename = getFilename(config, track)
+    return fs.existsSync(`/data/tracks/${filename}`)
+  }
+}
+
+class ParallelProcessVideo {
+  private readonly ids: string[]
+  private readonly videoCount: number
+  private readonly metadataByVideoId: Map<string, VideoMetadata>
+
+  constructor(ids: string[], metadataByVideoId: Map<string, VideoMetadata>) {
+    this.ids = [...ids]
+    this.videoCount = ids.length
+    this.metadataByVideoId = metadataByVideoId
   }
 
   public async runAll(runnerCount = 3) {
@@ -271,6 +379,7 @@ class ParallelProcessVideo {
         getEchoPrint(downloadedFilePath)
     ) {
       logger.info(`⏭️ Skipping because the file is the same: ${id}`)
+      this.updateMetadataStoreIfFetched(id)
       return
     }
 
@@ -291,6 +400,7 @@ class ParallelProcessVideo {
     }
 
     logger.info(`✅ Successfully processed ${id}`)
+    this.updateMetadataStoreIfFetched(id)
 
     const baseUrl = process.env.BASE_URL ?? undefined
     const editUrl = baseUrl ? `${baseUrl}?vid=${id}` : undefined
@@ -322,6 +432,22 @@ class ParallelProcessVideo {
         },
       ],
     })
+  }
+
+  /**
+   * 一次フィルタで取得済みのメタデータがあれば、専用ストアへ反映する
+   *
+   * 一次フィルタが失敗していた動画 ID については、更新に使えるメタデータが
+   * 存在しないためストアを更新しない(前回値のまま据え置き、次回実行時に
+   * 再度「変更あり」として扱われる)
+   *
+   * @param id 動画 ID
+   */
+  private updateMetadataStoreIfFetched(id: string) {
+    const metadata = this.metadataByVideoId.get(id)
+    if (metadata) {
+      updateVideoMetadata(id, metadata)
+    }
   }
 }
 
@@ -412,6 +538,10 @@ async function runHeavyPipeline(reason: string) {
     const runnerCountForProcessing = process.env.RUNNER_COUNT_FOR_PROCESSING
       ? Number.parseInt(process.env.RUNNER_COUNT_FOR_PROCESSING, 10)
       : 3
+    const runnerCountForMetadataCheck = process.env
+      .RUNNER_COUNT_FOR_METADATA_CHECK
+      ? Number.parseInt(process.env.RUNNER_COUNT_FOR_METADATA_CHECK, 10)
+      : 5
 
     logger.info('📝 Configuration:')
     logger.info(`  - Playlist ID: ${playlistId}`)
@@ -421,42 +551,61 @@ async function runHeavyPipeline(reason: string) {
     )
     logger.info(`  - Runner count for download: ${runnerCountForDownload}`)
     logger.info(`  - Runner count for processing: ${runnerCountForProcessing}`)
+    logger.info(
+      `  - Runner count for metadata check: ${runnerCountForMetadataCheck}`,
+    )
 
     logger.info('📁 Recreating directories...')
     recreateDirectories()
 
-    logger.info('🗑️ Deleting yt-dlp cache...')
-    removeCacheDir()
-
     logger.info(`📚 Getting playlist videos for ${playlistId}`)
     const ids = getPlaylistVideoIds(playlistId)
 
-    logger.info(`🎥 Found ${ids.length} videos. Downloading...`)
+    logger.info(`🎥 Found ${ids.length} videos. Checking metadata...`)
 
-    // プレイリスト動画をダウンロード
-    const successfullyDownloadedIds = await new ParallelDownloadVideo(
-      ids,
-    ).runAll(runnerCountForDownload)
+    // メタデータ一次フィルタ: 変更のない動画をダウンロード対象から除外
+    const { idsToProcess, metadataByVideoId } =
+      await new ParallelFetchVideoMetadata(ids).runAll(
+        runnerCountForMetadataCheck,
+      )
 
     logger.info(
-      `📥 Successfully downloaded ${successfullyDownloadedIds.length}/${ids.length} videos`,
+      `📊 ${idsToProcess.length}/${ids.length} videos need processing (skipped ${
+        ids.length - idsToProcess.length
+      } unchanged videos)`,
     )
 
-    if (successfullyDownloadedIds.length === 0) {
-      logger.warn(
-        '⚠️ No videos were successfully downloaded. Skipping processing.',
+    if (idsToProcess.length > 0) {
+      // プレイリスト動画をダウンロード
+      const successfullyDownloadedIds = await new ParallelDownloadVideo(
+        idsToProcess,
+      ).runAll(runnerCountForDownload)
+
+      logger.info(
+        `📥 Successfully downloaded ${successfullyDownloadedIds.length}/${idsToProcess.length} videos`,
       )
-      return
-    }
 
-    // ダウンロードしたプレイリスト動画を処理
-    await new ParallelProcessVideo(successfullyDownloadedIds).runAll(
-      runnerCountForProcessing,
-    )
+      if (successfullyDownloadedIds.length === 0) {
+        // 元の実装(全動画のダウンロードに失敗した場合、以降の処理を行わず終了する)を踏襲する
+        logger.warn(
+          '⚠️ No videos were successfully downloaded. Skipping processing.',
+        )
+        return
+      }
+
+      // ダウンロードしたプレイリスト動画を処理
+      await new ParallelProcessVideo(
+        successfullyDownloadedIds,
+        metadataByVideoId,
+      ).runAll(runnerCountForProcessing)
+    }
 
     // プレイリストにない音楽ファイルを削除
     logger.info('🗑️ Deleting playlist removed tracks...')
     deleteRemovedTracks(ids)
+
+    // 専用ストアからプレイリストに存在しない動画のエントリを削除
+    pruneVideoMetadataStore(ids)
 
     // ダウンロードした音楽ファイルを元にプレイリストファイルを作成
     logger.info('📝 Creating playlist file...')
@@ -488,7 +637,6 @@ function runDetectionLoop() {
 
   try {
     const config = getConfig()
-    removeCacheDir()
     const ids = getPlaylistVideoIds(config.playlistId)
     const newIds = ids.filter((id) => !lastKnownIds.includes(id))
     lastKnownIds = ids
@@ -519,7 +667,6 @@ async function main() {
 
   // 起動時に現在の ID 一覧を取得してベースラインとし、直後に重い処理を 1 回実行する
   const config = getConfig()
-  removeCacheDir()
   lastKnownIds = getPlaylistVideoIds(config.playlistId)
   await runHeavyPipeline('startup')
 

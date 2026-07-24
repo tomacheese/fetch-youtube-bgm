@@ -75,6 +75,12 @@ services:
     init: true
 ```
 
+Every hourly run first performs a lightweight metadata pre-filter (via `yt-dlp --skip-download`) against each playlist video, and only videos whose `duration` / `filesize_approx` changed since the last run go through the full download → normalize → trim → fingerprint pipeline. This significantly reduces CPU load when the playlist content is mostly unchanged.
+
+The `downloader` service optionally accepts the following environment variable:
+
+- `RUNNER_COUNT_FOR_METADATA_CHECK`: Number of parallel workers used for the metadata pre-filter check at the start of each hourly run. Defaults to `5`.
+
 ### 3. Create a configuration file
 
 Create `data/config.json` and write the following JSON. Note that the strings enclosed in `<` and `>` should be replaced with the correct ones.

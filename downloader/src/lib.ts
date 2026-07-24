@@ -1,13 +1,16 @@
 import axios, { AxiosProxyConfig } from 'axios'
-import { execSync } from 'node:child_process'
+import { exec, execSync } from 'node:child_process'
 import fs from 'node:fs'
 import NodeID3 from 'node-id3'
 import { Logger } from '@book000/node-utils'
 import sharp from 'sharp'
 import path from 'node:path'
+import { promisify } from 'node:util'
 import { Config } from './configuration'
 import { MusicBrainz } from './musicbrainz'
 import { DOWNLOAD_TEMP_DIR } from './constants'
+
+const execAsync = promisify(exec)
 
 interface Track {
   vid: string
@@ -38,6 +41,11 @@ export interface YouTubeoEmbed {
 interface VideoInformation {
   title: string
   artist: string
+}
+
+export interface VideoMetadata {
+  duration: number | null
+  filesizeApprox: number | null
 }
 
 export function getDefinedTracks(): Track[] {
@@ -337,10 +345,6 @@ export function trimAndAddSilence(file: string, duration: number) {
   return result
 }
 
-export function removeCacheDir() {
-  execSync('yt-dlp --rm-cache-dir')
-}
-
 export function recreateDirectories() {
   if (fs.existsSync(DOWNLOAD_TEMP_DIR)) {
     fs.rmSync(DOWNLOAD_TEMP_DIR, { recursive: true })
@@ -399,6 +403,130 @@ export function downloadVideo(videoId: string): boolean {
   } catch {
     return false
   }
+}
+
+/**
+ * yt-dlp でダウンロードせずに動画のメタデータ(再生時間・概算ファイルサイズ)を取得する
+ *
+ * @param videoId 動画 ID
+ * @returns 取得できたメタデータ。コマンド自体が失敗した場合は null
+ */
+export async function getVideoMetadata(
+  videoId: string,
+): Promise<VideoMetadata | null> {
+  const logger = Logger.configure('getVideoMetadata')
+  const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
+  const command = [
+    'yt-dlp',
+    '--ignore-config',
+    httpsProxy ? '--proxy' : '',
+    httpsProxy ?? '',
+    '--skip-download',
+    '--add-header',
+    'Accept-Language:ja-JP',
+    '--print',
+    '"%(duration)s;%(filesize_approx)s"',
+    `https://youtu.be/${videoId}`,
+  ]
+  try {
+    // execSync だと呼び出し中 Node プロセス全体がブロックされ、複数動画分の
+    // yt-dlp 呼び出しを並列実行できないため、ここだけ非同期の exec を使う
+    const { stdout } = await execAsync(command.join(' '), {
+      cwd: DOWNLOAD_TEMP_DIR,
+    })
+    const [durationRaw, filesizeApproxRaw] = stdout.trim().split(';', 2)
+    const duration = Number.parseFloat(durationRaw)
+    const filesizeApprox = Number.parseFloat(filesizeApproxRaw)
+    return {
+      duration: Number.isNaN(duration) ? null : duration,
+      filesizeApprox: Number.isNaN(filesizeApprox) ? null : filesizeApprox,
+    }
+  } catch (error) {
+    // error.message には実行したシェルコマンド全体(プロキシの認証情報が
+    // 埋め込まれている場合はそれも含む)が含まれるため、ログには出力しない。
+    // yt-dlp 自身のエラー出力である stderr のみを診断情報として残す
+    const stderr =
+      typeof error === 'object' && error !== null && 'stderr' in error
+        ? String(error.stderr)
+        : undefined
+    logger.warn(
+      `⚠️ Failed to get metadata for ${videoId}${stderr ? `: ${stderr}` : ''}`,
+    )
+    return null
+  }
+}
+
+type VideoMetadataFile = Record<string, VideoMetadata>
+
+const VIDEO_METADATA_STORE_PATH = '/data/video-metadata.json'
+
+/**
+ * 動画メタデータの専用ストアを読み込む
+ *
+ * @returns 動画 ID をキーとしたメタデータの一覧。ファイルが存在しない、または
+ * 内容が壊れている場合は空オブジェクト(fail-open)
+ */
+export function getVideoMetadataStore(): VideoMetadataFile {
+  if (!fs.existsSync(VIDEO_METADATA_STORE_PATH)) {
+    return {}
+  }
+  try {
+    return JSON.parse(
+      fs.readFileSync(VIDEO_METADATA_STORE_PATH).toString(),
+    ) as VideoMetadataFile
+  } catch (error) {
+    const logger = Logger.configure('getVideoMetadataStore')
+    logger.warn(
+      `⚠️ Failed to parse video metadata store, treating as empty:`,
+      error as Error,
+    )
+    return {}
+  }
+}
+
+/**
+ * 動画メタデータの専用ストアファイルへ書き込む
+ *
+ * 書き込み途中でプロセスが停止しても壊れたファイルが残らないよう、
+ * 一時ファイルへ書き込んでからリネームすることでアトミックに反映する
+ *
+ * @param store 書き込む内容
+ */
+function writeVideoMetadataStore(store: VideoMetadataFile) {
+  const tempPath = `${VIDEO_METADATA_STORE_PATH}.tmp`
+  fs.writeFileSync(tempPath, JSON.stringify(store))
+  fs.renameSync(tempPath, VIDEO_METADATA_STORE_PATH)
+}
+
+/**
+ * 動画メタデータの専用ストアに単一動画のエントリを追加・更新する
+ *
+ * @param vid 動画 ID
+ * @param metadata 保存するメタデータ
+ */
+export function updateVideoMetadata(vid: string, metadata: VideoMetadata) {
+  const store = getVideoMetadataStore()
+  const next = {
+    ...store,
+    [vid]: metadata,
+  }
+  writeVideoMetadataStore(next)
+}
+
+/**
+ * 動画メタデータの専用ストアから、現在のプレイリストに存在しない動画のエントリを削除する
+ *
+ * @param currentIds 現在のプレイリストに含まれる動画 ID の一覧
+ */
+export function pruneVideoMetadataStore(currentIds: string[]) {
+  const store = getVideoMetadataStore()
+  const next: VideoMetadataFile = {}
+  for (const vid in store) {
+    if (currentIds.includes(vid)) {
+      next[vid] = store[vid]
+    }
+  }
+  writeVideoMetadataStore(next)
 }
 
 export function getEchoPrint(file: string) {
