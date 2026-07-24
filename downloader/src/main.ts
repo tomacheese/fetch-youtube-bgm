@@ -135,7 +135,7 @@ class ParallelFetchVideoMetadata {
    * すべての動画についてメタデータ一次フィルタを実行する
    *
    * @param runnerCount 並列実行数 (デフォルト: 5)
-   * @returns 処理が必要な動画IDと、そのうち新規に取得できたメタデータ
+   * @returns 処理が必要な動画 ID と、そのうち新規に取得できたメタデータ
    */
   public async runAll(runnerCount = 5): Promise<{
     idsToProcess: string[]
@@ -188,17 +188,35 @@ class ParallelFetchVideoMetadata {
     }
 
     const previous = this.store[id]
+    // 1つ目の条件が false ということは previous が存在することを意味するため、
+    // 2つ目の条件では previous を non-null として扱ってよい(TS の型絞り込みによる)
     const changed =
       previous?.duration !== metadata.duration ||
       previous.filesizeApprox !== metadata.filesizeApprox
 
-    if (!changed) {
+    if (!changed && (await this.hasExistingTrackFile(id))) {
       logger.info(`⏭️ Skipping ${id} because metadata is unchanged`)
       return
     }
 
     this.metadataByVideoId.set(id, metadata)
     this.idsToProcess.push(id)
+  }
+
+  /**
+   * 前回処理時に生成されたはずの mp3 ファイルが、現在もディスク上に存在するかを確認する
+   *
+   * メタデータに変更がなくても、出力先ファイルが外部要因(手動削除・破損等)で
+   * 失われている場合は再処理が必要なため、スキップ判定の前提としてこのチェックを行う
+   *
+   * @param id 動画 ID
+   * @returns ファイルが存在すれば true
+   */
+  private async hasExistingTrackFile(id: string): Promise<boolean> {
+    const config = getConfig()
+    const track = await getTrack(id)
+    const filename = getFilename(config, track)
+    return fs.existsSync(`/data/tracks/${filename}`)
   }
 }
 
@@ -419,7 +437,7 @@ class ParallelProcessVideo {
   /**
    * 一次フィルタで取得済みのメタデータがあれば、専用ストアへ反映する
    *
-   * 一次フィルタが失敗していた動画IDについては、更新に使えるメタデータが
+   * 一次フィルタが失敗していた動画 ID については、更新に使えるメタデータが
    * 存在しないためストアを更新しない(前回値のまま据え置き、次回実行時に
    * 再度「変更あり」として扱われる)
    *

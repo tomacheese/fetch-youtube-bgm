@@ -442,7 +442,16 @@ export async function getVideoMetadata(
       filesizeApprox: Number.isNaN(filesizeApprox) ? null : filesizeApprox,
     }
   } catch (error) {
-    logger.warn(`⚠️ Failed to get metadata for ${videoId}:`, error as Error)
+    // error.message には実行したシェルコマンド全体(プロキシの認証情報が
+    // 埋め込まれている場合はそれも含む)が含まれるため、ログには出力しない。
+    // yt-dlp 自身のエラー出力である stderr のみを診断情報として残す
+    const stderr =
+      typeof error === 'object' && error !== null && 'stderr' in error
+        ? String(error.stderr)
+        : undefined
+    logger.warn(
+      `⚠️ Failed to get metadata for ${videoId}${stderr ? `: ${stderr}` : ''}`,
+    )
     return null
   }
 }
@@ -454,15 +463,39 @@ const VIDEO_METADATA_STORE_PATH = '/data/video-metadata.json'
 /**
  * 動画メタデータの専用ストアを読み込む
  *
- * @returns 動画 ID をキーとしたメタデータの一覧。ファイルが存在しない場合は空オブジェクト
+ * @returns 動画 ID をキーとしたメタデータの一覧。ファイルが存在しない、または
+ * 内容が壊れている場合は空オブジェクト(fail-open)
  */
 export function getVideoMetadataStore(): VideoMetadataFile {
-  if (fs.existsSync(VIDEO_METADATA_STORE_PATH)) {
+  if (!fs.existsSync(VIDEO_METADATA_STORE_PATH)) {
+    return {}
+  }
+  try {
     return JSON.parse(
       fs.readFileSync(VIDEO_METADATA_STORE_PATH).toString(),
     ) as VideoMetadataFile
+  } catch (error) {
+    const logger = Logger.configure('getVideoMetadataStore')
+    logger.warn(
+      `⚠️ Failed to parse video metadata store, treating as empty:`,
+      error as Error,
+    )
+    return {}
   }
-  return {}
+}
+
+/**
+ * 動画メタデータの専用ストアファイルへ書き込む
+ *
+ * 書き込み途中でプロセスが停止しても壊れたファイルが残らないよう、
+ * 一時ファイルへ書き込んでからリネームすることでアトミックに反映する
+ *
+ * @param store 書き込む内容
+ */
+function writeVideoMetadataStore(store: VideoMetadataFile) {
+  const tempPath = `${VIDEO_METADATA_STORE_PATH}.tmp`
+  fs.writeFileSync(tempPath, JSON.stringify(store))
+  fs.renameSync(tempPath, VIDEO_METADATA_STORE_PATH)
 }
 
 /**
@@ -477,7 +510,7 @@ export function updateVideoMetadata(vid: string, metadata: VideoMetadata) {
     ...store,
     [vid]: metadata,
   }
-  fs.writeFileSync(VIDEO_METADATA_STORE_PATH, JSON.stringify(next))
+  writeVideoMetadataStore(next)
 }
 
 /**
@@ -493,7 +526,7 @@ export function pruneVideoMetadataStore(currentIds: string[]) {
       next[vid] = store[vid]
     }
   }
-  fs.writeFileSync(VIDEO_METADATA_STORE_PATH, JSON.stringify(next))
+  writeVideoMetadataStore(next)
 }
 
 export function getEchoPrint(file: string) {
