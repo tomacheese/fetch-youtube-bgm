@@ -15,12 +15,16 @@ import {
   getPlaylistVideoIds,
   getTrack,
   getVideoInformation,
+  getVideoMetadata,
+  getVideoMetadataStore,
   normalizeVolume,
   removeCacheDir,
   updateArtwork,
   trimAndAddSilence,
   isSetArtwork,
   getArtworkData,
+  updateVideoMetadata,
+  VideoMetadata,
 } from './lib'
 import { Logger } from '@book000/node-utils'
 import { DOWNLOAD_TEMP_DIR } from './constants'
@@ -111,6 +115,91 @@ class ParallelDownloadVideo {
       return false
     }
     return true
+  }
+}
+
+class ParallelFetchVideoMetadata {
+  private readonly ids: string[]
+  private readonly videoCount: number
+  private readonly store: Record<string, VideoMetadata>
+  private readonly metadataByVideoId = new Map<string, VideoMetadata>()
+  private readonly idsToProcess: string[] = []
+
+  constructor(ids: string[]) {
+    this.ids = [...ids]
+    this.videoCount = ids.length
+    this.store = getVideoMetadataStore()
+  }
+
+  /**
+   * すべての動画についてメタデータ一次フィルタを実行する
+   *
+   * @param runnerCount 並列実行数 (デフォルト: 5)
+   * @returns 処理が必要な動画IDと、そのうち新規に取得できたメタデータ
+   */
+  public async runAll(runnerCount = 5): Promise<{
+    idsToProcess: string[]
+    metadataByVideoId: Map<string, VideoMetadata>
+  }> {
+    const runners = []
+    for (let i = 0; i < runnerCount; i++) {
+      runners.push(this.runner(i))
+    }
+
+    await Promise.all(runners)
+    return {
+      idsToProcess: this.idsToProcess,
+      metadataByVideoId: this.metadataByVideoId,
+    }
+  }
+
+  private async runner(runnerId: number) {
+    const logger = Logger.configure(
+      `ParallelFetchVideoMetadata.runner#${runnerId.toString()}`,
+    )
+    logger.info(`Starting metadata check runner #${runnerId}`)
+    while (this.ids.length > 0) {
+      const id = this.ids.pop()
+      if (!id) {
+        break
+      }
+      const videoIndex = this.videoCount - this.ids.length
+      logger.info(
+        `📊 Checking metadata for ${id} (${videoIndex} / ${this.videoCount})`,
+      )
+      await this.checkVideo(id)
+    }
+  }
+
+  /**
+   * 動画のメタデータを取得し、前回値と比較して処理が必要かどうかを判定する
+   *
+   * @param id 動画 ID
+   */
+  private async checkVideo(id: string) {
+    const logger = Logger.configure(
+      `ParallelFetchVideoMetadata.checkVideo#${id}`,
+    )
+    const metadata = await getVideoMetadata(id)
+    if (!metadata) {
+      logger.warn(`⚠️ Failed to get metadata for ${id}, treating as changed`)
+      this.idsToProcess.push(id)
+      return
+    }
+
+    const previous = this.store[id]
+    const changed =
+      !previous ||
+      previous.duration !== metadata.duration ||
+      previous.filesizeApprox !== metadata.filesizeApprox
+
+    if (!changed) {
+      logger.info(`⏭️ Skipping ${id} because metadata is unchanged`)
+      return
+    }
+
+    this.metadataByVideoId.set(id, metadata)
+    this.idsToProcess.push(id)
   }
 }
 
