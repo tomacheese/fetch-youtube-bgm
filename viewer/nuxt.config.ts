@@ -48,6 +48,8 @@ export default defineNuxtConfig({
 
   srcDir: 'src/',
 
+  serverDir: 'src/server/',
+
   ssr: isSsr,
 
   typescript: {
