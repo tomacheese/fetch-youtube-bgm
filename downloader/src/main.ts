@@ -665,6 +665,9 @@ async function main() {
   logger.info(`  - Detection interval (sec): ${DETECTION_INTERVAL_SECONDS}`)
   logger.info(`  - Pipeline interval (sec): ${PIPELINE_INTERVAL_SECONDS}`)
 
+  logger.info('📁 Recreating directories...')
+  recreateDirectories()
+
   // 起動時に現在の ID 一覧を取得してベースラインとし、直後に重い処理を 1 回実行する
   const config = getConfig()
   lastKnownIds = getPlaylistVideoIds(config.playlistId)
