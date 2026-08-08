@@ -45,10 +45,10 @@
     neostandard "0.13.0"
     typescript-eslint "8.66.0"
 
-"@book000/node-utils@1.25.35":
-  version "1.25.35"
-  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.25.35.tgz#28224cbf34c633b43fab73989353e0d70f0c93df"
-  integrity sha512-lcodHjz5KTzLHaGXGl9baN74TZJz4axqGhqe5o3C8qpdUkh9WSiwF/it06NW6HCgnyQJepBRgexuR1eKUYCnOw==
+"@book000/node-utils@1.25.36":
+  version "1.25.36"
+  resolved "https://registry.yarnpkg.com/@book000/node-utils/-/node-utils-1.25.36.tgz#1cc8c05c652cde5a3aa2d3490231dd79d235ce84"
+  integrity sha512-fwZ3UMP5nNC068G47N4Lcxw7uSia2RHinEURJqpxF4vFy+F73k/hxnTk5P9HnStpdLys6A+DY/S6uEz4g6Attg==
   dependencies:
     "@sentry/node" "10.68.0"
     cycle "1.0.3"
