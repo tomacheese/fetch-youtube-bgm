@@ -305,17 +305,38 @@ export async function getArtworkData(vid: string) {
   return null
 }
 
+/**
+ * 動画サムネイルの中央を最大の正方形として切り出す
+ *
+ * @param vid 動画 ID
+ * @returns 加工済み artwork。取得または加工できない場合は null
+ */
 export async function getClippedArtwork(vid: string) {
   const artworkData = await getArtworkData(vid)
   if (!artworkData) return null
-  return await sharp(artworkData)
-    .extract({
-      left: 280,
-      top: 0,
-      width: 720,
-      height: 720,
-    })
-    .toBuffer()
+
+  const logger = Logger.configure('getClippedArtwork')
+  try {
+    const image = sharp(artworkData)
+    const { width, height } = await image.metadata()
+    if (!width || !height) {
+      logger.warn(`🚫 Failed to get artwork dimensions for ${vid}`)
+      return null
+    }
+
+    const side = Math.min(width, height)
+    return await image
+      .extract({
+        left: Math.floor((width - side) / 2),
+        top: Math.floor((height - side) / 2),
+        width: side,
+        height: side,
+      })
+      .toBuffer()
+  } catch (error) {
+    logger.warn(`⚠️ Failed to clip artwork for ${vid}:`, error as Error)
+    return null
+  }
 }
 
 export function normalizeVolume(file: string) {
