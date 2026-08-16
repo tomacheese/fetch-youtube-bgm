@@ -398,7 +398,36 @@ export function getPlaylistVideoIds(playlistId: string) {
   return result.toString().split('\n').filter(Boolean)
 }
 
-export function downloadVideo(videoId: string): boolean {
+/**
+ * stderr 等の診断文字列から秘密情報(URL 内の認証情報、Cookie / Authorization
+ * ヘッダーの値)を scrub する
+ *
+ * @param text scrub 対象の文字列
+ * @returns 秘密情報を scrub した文字列
+ */
+export function sanitizeSecrets(text: string): string {
+  return text
+    .replaceAll(/(\w+:\/\/)[^/\s:@]+:[^/\s@]+@/g, '$1***:***@')
+    .replaceAll(/(Cookie:\s*).+/gi, '$1***')
+    .replaceAll(/(Authorization:\s*).+/gi, '$1***')
+}
+
+/**
+ * yt-dlp によるダウンロード結果
+ */
+export interface DownloadResult {
+  success: boolean
+  exitCode: number | null
+  stderr: string | null
+}
+
+/**
+ * yt-dlp で動画をダウンロードする
+ *
+ * @param videoId 動画 ID
+ * @returns ダウンロード結果。失敗時は yt-dlp の exit code と sanitized stderr を含む
+ */
+export function downloadVideo(videoId: string): DownloadResult {
   const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
   const command = [
     'yt-dlp',
@@ -421,9 +450,22 @@ export function downloadVideo(videoId: string): boolean {
     execSync(command.join(' '), {
       cwd: DOWNLOAD_TEMP_DIR,
     })
-    return true
-  } catch {
-    return false
+    return { success: true, exitCode: 0, stderr: null }
+  } catch (error) {
+    // error.message はプロキシ認証情報を含みうるコマンド全体を含むため、stderr のみを診断情報として扱う
+    const exitCode =
+      typeof error === 'object' && error !== null && 'status' in error
+        ? (error.status as number | null)
+        : null
+    const rawStderr =
+      typeof error === 'object' && error !== null && 'stderr' in error
+        ? String(error.stderr)
+        : null
+    return {
+      success: false,
+      exitCode,
+      stderr: rawStderr ? sanitizeSecrets(rawStderr) : null,
+    }
   }
 }
 
@@ -469,7 +511,7 @@ export async function getVideoMetadata(
     // yt-dlp 自身のエラー出力である stderr のみを診断情報として残す
     const stderr =
       typeof error === 'object' && error !== null && 'stderr' in error
-        ? String(error.stderr)
+        ? sanitizeSecrets(String(error.stderr))
         : undefined
     logger.warn(
       `⚠️ Failed to get metadata for ${videoId}${stderr ? `: ${stderr}` : ''}`,
