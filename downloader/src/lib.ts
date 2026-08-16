@@ -398,7 +398,30 @@ export function getPlaylistVideoIds(playlistId: string) {
   return result.toString().split('\n').filter(Boolean)
 }
 
-export function downloadVideo(videoId: string): boolean {
+/**
+ * stderr 等の診断文字列から秘密情報(URL 内の認証情報、Cookie / Authorization
+ * ヘッダーの値)を scrub する
+ *
+ * @param text scrub 対象の文字列
+ * @returns 秘密情報を scrub した文字列
+ */
+export function sanitizeSecrets(text: string): string {
+  return text
+    .replaceAll(/(\w+:\/\/)[^/\s:@]+:[^/\s@]+@/g, '$1***:***@')
+    .replaceAll(/(Cookie:\s*).+/gi, '$1***')
+    .replaceAll(/(Authorization:\s*).+/gi, '$1***')
+}
+
+/**
+ * yt-dlp によるダウンロード結果
+ */
+export interface DownloadResult {
+  success: boolean
+  exitCode: number | null
+  stderr: string | null
+}
+
+export function downloadVideo(videoId: string): DownloadResult {
   const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
   const command = [
     'yt-dlp',
@@ -421,9 +444,23 @@ export function downloadVideo(videoId: string): boolean {
     execSync(command.join(' '), {
       cwd: DOWNLOAD_TEMP_DIR,
     })
-    return true
-  } catch {
-    return false
+    return { success: true, exitCode: 0, stderr: null }
+  } catch (error) {
+    // error.message にはプロキシ認証情報を含みうるコマンド全体が含まれるため、
+    // これまで通り message は使わず、stderr のみを診断情報として扱う
+    const exitCode =
+      typeof error === 'object' && error !== null && 'status' in error
+        ? (error.status as number | null)
+        : null
+    const rawStderr =
+      typeof error === 'object' && error !== null && 'stderr' in error
+        ? String(error.stderr)
+        : null
+    return {
+      success: false,
+      exitCode,
+      stderr: rawStderr ? sanitizeSecrets(rawStderr) : null,
+    }
   }
 }
 
@@ -564,18 +601,4 @@ export function getHumanReadableSize(bytes: number) {
   const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
   const i = Math.floor(Math.log(bytes) / Math.log(1024))
   return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${units[i]}`
-}
-
-/**
- * stderr 等の診断文字列から秘密情報(URL 内の認証情報、Cookie / Authorization
- * ヘッダーの値)を scrub する
- *
- * @param text scrub 対象の文字列
- * @returns 秘密情報を scrub した文字列
- */
-export function sanitizeSecrets(text: string): string {
-  return text
-    .replaceAll(/(\w+:\/\/)[^/\s:@]+:[^/\s@]+@/g, '$1***:***@')
-    .replaceAll(/(Cookie:\s*).+/gi, '$1***')
-    .replaceAll(/(Authorization:\s*).+/gi, '$1***')
 }

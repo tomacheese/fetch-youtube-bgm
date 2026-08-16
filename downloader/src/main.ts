@@ -7,6 +7,7 @@ import {
   addTrack,
   recreateDirectories,
   downloadVideo,
+  DownloadResult,
   getClippedArtwork,
   getEchoPrint,
   getFilename,
@@ -88,10 +89,14 @@ class ParallelDownloadVideo {
     )
     const filePath = path.join(DOWNLOAD_TEMP_DIR, `${id}.mp3`)
 
+    let lastResult: DownloadResult | null = null
+    let lastAttempt = 0
+
     // MAX_DOWNLOAD_RETRIES回までリトライする
     for (let i = 0; i < MAX_DOWNLOAD_RETRIES; i++) {
-      const result = downloadVideo(id)
-      if (result) {
+      lastAttempt = i + 1
+      lastResult = downloadVideo(id)
+      if (lastResult.success) {
         try {
           const stats = await fsPromises.stat(filePath)
           const humanFileSize = getHumanReadableSize(stats.size)
@@ -109,8 +114,17 @@ class ParallelDownloadVideo {
     try {
       await fsPromises.access(filePath)
     } catch {
-      logger.warn(
+      const detail = [
+        `videoId=${id}`,
+        `attempt=${lastAttempt.toString()}/${MAX_DOWNLOAD_RETRIES.toString()}`,
+        `exitCode=${lastResult?.exitCode ?? 'unknown'}`,
+        lastResult?.stderr ? `stderr=${lastResult.stderr}` : undefined,
+      ]
+        .filter(Boolean)
+        .join(' ')
+      logger.error(
         `⚠️ Skipping ${id} due to download failure after ${MAX_DOWNLOAD_RETRIES} retries`,
+        new Error(detail),
       )
       return false
     }
