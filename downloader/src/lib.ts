@@ -289,7 +289,8 @@ export async function getArtworkData(vid: string) {
         validateStatus: () => true,
       })
       if (secondResponse.status !== 200) {
-        logger.warn(
+        // 個別解像度の 404 は fallback 設計上の想定内事象のため、GlitchTip 等の監視ノイズにしない
+        logger.debug(
           `⏭️ Failed to get artwork for ${vid} at ${resolution} (${firstResponse.status} / ${secondResponse.status}), trying next resolution`,
         )
         continue
