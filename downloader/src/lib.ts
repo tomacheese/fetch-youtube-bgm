@@ -421,6 +421,12 @@ export interface DownloadResult {
   stderr: string | null
 }
 
+/**
+ * yt-dlp で動画をダウンロードする
+ *
+ * @param videoId 動画 ID
+ * @returns ダウンロード結果。失敗時は yt-dlp の exit code と sanitized stderr を含む
+ */
 export function downloadVideo(videoId: string): DownloadResult {
   const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
   const command = [
@@ -446,8 +452,7 @@ export function downloadVideo(videoId: string): DownloadResult {
     })
     return { success: true, exitCode: 0, stderr: null }
   } catch (error) {
-    // error.message にはプロキシ認証情報を含みうるコマンド全体が含まれるため、
-    // これまで通り message は使わず、stderr のみを診断情報として扱う
+    // error.message はプロキシ認証情報を含みうるコマンド全体を含むため、stderr のみを診断情報として扱う
     const exitCode =
       typeof error === 'object' && error !== null && 'status' in error
         ? (error.status as number | null)
@@ -506,7 +511,7 @@ export async function getVideoMetadata(
     // yt-dlp 自身のエラー出力である stderr のみを診断情報として残す
     const stderr =
       typeof error === 'object' && error !== null && 'stderr' in error
-        ? String(error.stderr)
+        ? sanitizeSecrets(String(error.stderr))
         : undefined
     logger.warn(
       `⚠️ Failed to get metadata for ${videoId}${stderr ? `: ${stderr}` : ''}`,

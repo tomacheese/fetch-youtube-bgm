@@ -122,7 +122,7 @@ class ParallelDownloadVideo {
       ]
         .filter(Boolean)
         .join(' ')
-      logger.error(
+      logger.warn(
         `⚠️ Skipping ${id} due to download failure after ${MAX_DOWNLOAD_RETRIES} retries`,
         new Error(detail),
       )
