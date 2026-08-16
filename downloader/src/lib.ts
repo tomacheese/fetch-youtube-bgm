@@ -565,3 +565,17 @@ export function getHumanReadableSize(bytes: number) {
   const i = Math.floor(Math.log(bytes) / Math.log(1024))
   return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${units[i]}`
 }
+
+/**
+ * stderr 等の診断文字列から秘密情報(URL 内の認証情報、Cookie / Authorization
+ * ヘッダーの値)を scrub する
+ *
+ * @param text scrub 対象の文字列
+ * @returns 秘密情報を scrub した文字列
+ */
+export function sanitizeSecrets(text: string): string {
+  return text
+    .replaceAll(/(\w+:\/\/)[^/\s:@]+:[^/\s@]+@/g, '$1***:***@')
+    .replaceAll(/(Cookie:\s*).+/gi, '$1***')
+    .replaceAll(/(Authorization:\s*).+/gi, '$1***')
+}
