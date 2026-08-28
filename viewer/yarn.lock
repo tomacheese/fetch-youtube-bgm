@@ -280,10 +280,10 @@
   resolved "https://registry.yarnpkg.com/@bomb.sh/tab/-/tab-0.0.19.tgz#c22f3b75c8a391a38cd956b7391b45551587d76a"
   integrity sha512-dTRfo9Q9B+lbLG3JCu8a/AGQSfD2XXcFcnakQzVjSOX+VvR/s9zpsH8TlqV3iHqazniRn1Ypwd1hcRlXcu/4BA==
 
-"@book000/eslint-config@1.16.43":
-  version "1.16.43"
-  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.16.43.tgz#46948b33c4e62bd3d350b106385884c6b187f04b"
-  integrity sha512-QZJD6ezyfPpR+TLIqw4MmVXNGeUE+NnSZgqJc2e0CbZ/VRz6elln5jSAlUYQa7gZV+quxlUlAe7PMXl2q2sVVg==
+"@book000/eslint-config@1.16.45":
+  version "1.16.45"
+  resolved "https://registry.yarnpkg.com/@book000/eslint-config/-/eslint-config-1.16.45.tgz#f73b84cee70d6cfa0548c44e5f49abf97da5675e"
+  integrity sha512-Pf5KPsrTC9WV69k9XVcllRh2hQQaWEt1Ewj5wsqXO2WqdurPRMGshri/NpgNx/7mGM9Qzsq9Ob/yliBieTmf9Q==
   dependencies:
     "@typescript-eslint/parser" "8.67.0"
     eslint-config-prettier "10.1.8"
