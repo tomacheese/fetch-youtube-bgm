@@ -44,6 +44,7 @@ RUN apt-get update && \
   libsox-fmt-mp3 \
   libmp3lame0 \
   libmad0 \
+  unzip \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -66,6 +67,16 @@ RUN node -e "require('sharp')({ create: { width: 1, height: 1, channels: 3, back
 ENV YT_DLP_VERSION=2026.08.19
 RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/download/${YT_DLP_VERSION}/yt-dlp -o /usr/local/bin/yt-dlp && \
   chmod a+rx /usr/local/bin/yt-dlp
+
+# yt-dlp は署名解読・PO Token 生成に外部 JS ランタイムを要求する。
+# 未導入だと "No supported JavaScript runtime" 警告の末に 403 で失敗する。
+# deno はデフォルト有効かつ最も制限された権限で動くため採用する。
+# renovate: datasource=github-releases depName=denoland/deno versioning=semver
+ENV DENO_VERSION=v2.9.6
+RUN curl -fsSL https://github.com/denoland/deno/releases/download/${DENO_VERSION}/deno-x86_64-unknown-linux-gnu.zip -o /tmp/deno.zip && \
+  unzip /tmp/deno.zip -d /usr/local/bin && \
+  rm /tmp/deno.zip && \
+  chmod a+rx /usr/local/bin/deno
 
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
