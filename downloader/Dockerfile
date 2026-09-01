@@ -56,9 +56,11 @@ COPY package.json yarn.lock requirements.txt ./
 # hadolint ignore=DL3016
 RUN echo network-timeout 600000 > .yarnrc && \
   yarn install --frozen-lockfile && \
-  npm install --force @img/sharp-linux-x64 && \
   yarn cache clean && \
   pip install --no-cache-dir --upgrade --break-system-packages --requirement requirements.txt
+
+# sharp のネイティブバインディングと libvips の組が整合していることをビルド時に検証する
+RUN node -e "require('sharp')({ create: { width: 1, height: 1, channels: 3, background: '#000' } }).png().toBuffer().then(() => process.exit(0)).catch((e) => { console.error(e); process.exit(1) })"
 
 # renovate: datasource=github-tags depName=yt-dlp/yt-dlp versioning=loose
 ENV YT_DLP_VERSION=2026.08.19
