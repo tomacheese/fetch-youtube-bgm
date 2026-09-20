@@ -72,7 +72,7 @@ RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/download/${YT_DLP_VERSION}
 # 未導入だと "No supported JavaScript runtime" 警告の末に 403 で失敗する。
 # deno はデフォルト有効かつ最も制限された権限で動くため採用する。
 # renovate: datasource=github-releases depName=denoland/deno versioning=semver
-ENV DENO_VERSION=v2.9.6
+ENV DENO_VERSION=v2.9.7
 RUN curl -fsSL https://github.com/denoland/deno/releases/download/${DENO_VERSION}/deno-x86_64-unknown-linux-gnu.zip -o /tmp/deno.zip && \
   unzip /tmp/deno.zip -d /usr/local/bin && \
   rm /tmp/deno.zip && \
