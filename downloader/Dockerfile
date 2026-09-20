@@ -1,4 +1,4 @@
-FROM buildpack-deps:bullseye AS echogen-builder
+FROM buildpack-deps:bookworm AS echogen-builder
 
 WORKDIR /build
 
