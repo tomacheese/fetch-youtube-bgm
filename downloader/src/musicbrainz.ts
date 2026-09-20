@@ -253,17 +253,18 @@ export class MusicBrainz {
         continue
       }
       const urlMatch = searchResult.urls[0]
-      if (urlMatch.resource === url) {
-        const relations = urlMatch['relation-list']
-        if (relations) {
-          for (const relationList of relations) {
-            for (const relation of relationList.relations) {
-              if (!relation.release) {
-                continue
-              }
-              releaseId = relation.release.id
-              break
+      if (urlMatch.resource !== url) {
+        continue
+      }
+      const relations = urlMatch['relation-list']
+      if (relations) {
+        for (const relationList of relations) {
+          for (const relation of relationList.relations) {
+            if (!relation.release) {
+              continue
             }
+            releaseId = relation.release.id
+            break
           }
         }
       }

@@ -73,23 +73,21 @@ export async function getTrack(vid: string): Promise<Track> {
   }
 
   const musicbrainzInfo = await MusicBrainz.getTrackInfo(vid)
-  if (musicbrainzInfo) {
-    return {
-      vid,
-      track: musicbrainzInfo.title,
-      artist: musicbrainzInfo.artist,
-      album: null,
-      albumArtist: null,
-    }
-  }
-
-  return {
-    vid,
-    track: null,
-    artist: null,
-    album: null,
-    albumArtist: null,
-  }
+  return musicbrainzInfo
+    ? {
+        vid,
+        track: musicbrainzInfo.title,
+        artist: musicbrainzInfo.artist,
+        album: null,
+        albumArtist: null,
+      }
+    : {
+        vid,
+        track: null,
+        artist: null,
+        album: null,
+        albumArtist: null,
+      }
 }
 
 export function addTrack(vid: string, information: VideoInformation | null) {
@@ -127,8 +125,7 @@ export function getFilename(config: Config, track: Track) {
   const sanitizeChars = config.filename?.sanitizeChars ?? defaultSanitizeChars
 
   const sanitizedTitle = title
-    ? // eslint-disable-next-line unicorn/no-array-reduce
-      sanitizeChars.reduce(
+    ? sanitizeChars.reduce(
         (acc, char) =>
           acc.replaceAll(
             new RegExp(
@@ -142,8 +139,7 @@ export function getFilename(config: Config, track: Track) {
     : null
 
   const sanitizedArtist = artist
-    ? // eslint-disable-next-line unicorn/no-array-reduce
-      sanitizeChars.reduce(
+    ? sanitizeChars.reduce(
         (acc, char) =>
           acc.replaceAll(
             new RegExp(
@@ -156,10 +152,9 @@ export function getFilename(config: Config, track: Track) {
       )
     : null
 
-  if (sanitizedTitle && sanitizedArtist) {
-    return `${sanitizedTitle} - ${sanitizedArtist} (${vid}).mp3`
-  }
-  return `${vid}.mp3`
+  return sanitizedTitle && sanitizedArtist
+    ? `${sanitizedTitle} - ${sanitizedArtist} (${vid}).mp3`
+    : `${vid}.mp3`
 }
 
 function parseHttpProxy(): AxiosProxyConfig | false {
@@ -167,20 +162,20 @@ function parseHttpProxy(): AxiosProxyConfig | false {
   if (!proxy) return false
 
   const parsed = new URL(proxy)
-  if (!parsed.hostname || !parsed.port) return false
-
-  return {
-    host: parsed.hostname,
-    port: Number.parseInt(parsed.port),
-    auth:
-      parsed.username && parsed.password
-        ? {
-            username: parsed.username,
-            password: parsed.password,
-          }
-        : undefined,
-    protocol: parsed.protocol.replace(':', ''),
-  }
+  return !parsed.hostname || !parsed.port
+    ? false
+    : {
+        host: parsed.hostname,
+        port: Number.parseInt(parsed.port),
+        auth:
+          parsed.username && parsed.password
+            ? {
+                username: parsed.username,
+                password: parsed.password,
+              }
+            : undefined,
+        protocol: parsed.protocol.replace(':', ''),
+      }
 }
 
 export async function getVideoInformation(

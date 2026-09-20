@@ -88,23 +88,24 @@ export async function sendDiscordMessage(
     }
     return
   }
-  if (config.discord.token && config.discord.channel_id) {
-    // bot
-    const response = await axios.post(
-      `https://discord.com/api/channels/${config.discord.channel_id}/messages`,
-      {
-        content: text,
-        embeds: embed ? [embed] : undefined,
+  if (!config.discord.token || !config.discord.channel_id) {
+    return
+  }
+  // bot
+  const response = await axios.post(
+    `https://discord.com/api/channels/${config.discord.channel_id}/messages`,
+    {
+      content: text,
+      embeds: embed ? [embed] : undefined,
+    },
+    {
+      headers: {
+        Authorization: `Bot ${config.discord.token}`,
       },
-      {
-        headers: {
-          Authorization: `Bot ${config.discord.token}`,
-        },
-        validateStatus: () => true,
-      },
-    )
-    if (response.status !== 200) {
-      throw new Error(`Discord bot failed (${response.status})`)
-    }
+      validateStatus: () => true,
+    },
+  )
+  if (response.status !== 200) {
+    throw new Error(`Discord bot failed (${response.status})`)
   }
 }

@@ -378,11 +378,9 @@ class ParallelProcessVideo {
       const fileUrl = getId3TagFileUrl(`/data/tracks/${file}`)
       return file !== filename && fileUrl?.split('/').pop() === id
     })
-    if (oldEqualFilename.length > 0) {
-      for (const oldFile of oldEqualFilename) {
-        logger.info(`🗑️ Deleting old file: ${oldFile}`)
-        fs.unlinkSync(`/data/tracks/${oldFile}`)
-      }
+    for (const oldFile of oldEqualFilename) {
+      logger.info(`🗑️ Deleting old file: ${oldFile}`)
+      fs.unlinkSync(`/data/tracks/${oldFile}`)
     }
 
     // 音声指紋を元にファイル内容が異なるかを確認
@@ -480,10 +478,12 @@ function deleteRemovedTracks(ids: string[]) {
     }
 
     const id = fileUrl.split('/').pop()
-    if (id && !ids.includes(id)) {
-      logger.info(`🗑️ Deleting track: ${file}`)
-      fs.unlinkSync(`/data/tracks/${file}`)
+    if (!id || ids.includes(id)) {
+      continue
     }
+
+    logger.info(`🗑️ Deleting track: ${file}`)
+    fs.unlinkSync(`/data/tracks/${file}`)
   }
 }
 
