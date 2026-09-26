@@ -7614,10 +7614,10 @@ vue@^3.5.40:
     "@vue/server-renderer" "3.5.43"
     "@vue/shared" "3.5.43"
 
-vuetify@4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-4.2.1.tgz#7dbbad6ef41937251992f462b32062563abf9dc0"
-  integrity sha512-K3ZIqu7YkorQFB6//dR5KEBpbfOo+y/LkcGtknsnneE3JN1pW3R7o/JB9QDkJuP1ELhENIdBZIkiSmXu0dQ9lQ==
+vuetify@4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-4.2.2.tgz#b434ef4c4e940963c9756829eb407e5116d01fea"
+  integrity sha512-6PYw9V5bA1ug+r1gWOs+ztMnz4qJDue3WLiz5VJN/y1blW9e/oeh0D8eCw7jqc8ufjm8XSN7hf6x2odJXtzw0Q==
   dependencies:
     "@vuetify/v0" "^1.2.1"
 
