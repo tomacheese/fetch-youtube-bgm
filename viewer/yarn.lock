@@ -7718,10 +7718,10 @@ vue@^3.5.43:
     "@vue/server-renderer" "3.5.43"
     "@vue/shared" "3.5.43"
 
-vuetify@4.2.4:
-  version "4.2.4"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-4.2.4.tgz#20f47f5503ca9a50e1b96b1d87249d7d8700a75d"
-  integrity sha512-zLYtVGJcg2hK3DHoeiBXSImpzg4E0N19p3zCgGnNhMp/YwaVQZXP4cPkIKeL/evVnUeLP/CjSnFsFBThWSl2Ew==
+vuetify@4.2.5:
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-4.2.5.tgz#0c496bc284d3665db5d157e9b7867fd9df8632fd"
+  integrity sha512-L9o/pE3t74GiBEvbeOeXf63Jhq+AEIZaTIFp05j5y4lQ9fSXxHboqXm8HSfG5EuzGfg1FFyB5pZt+uDiF2/jdg==
   dependencies:
     "@vuetify/v0" "^1.2.1"
 
