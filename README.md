@@ -75,6 +75,9 @@ services:
     init: true
 ```
 
+> [!WARNING]
+> The viewer has no authentication: anyone who can reach `<ViewerPort>` can read and edit your tracks. Expose it only to a trusted network (e.g. your LAN or behind a VPN / reverse proxy with access control), and do not publish it directly to the internet.
+
 Every hourly run first performs a lightweight metadata pre-filter (via `yt-dlp --skip-download`) against each playlist video, and only videos whose `duration` / `filesize_approx` changed since the last run go through the full download → normalize → trim → fingerprint pipeline. This significantly reduces CPU load when the playlist content is mostly unchanged.
 
 The `downloader` service optionally accepts the following environment variable:

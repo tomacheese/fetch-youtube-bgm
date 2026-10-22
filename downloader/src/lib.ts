@@ -1,5 +1,5 @@
 import axios, { AxiosProxyConfig } from 'axios'
-import { exec, execSync } from 'node:child_process'
+import { execFile, execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import NodeID3 from 'node-id3'
 import { Logger } from '@book000/node-utils'
@@ -10,7 +10,37 @@ import { Config } from './configuration'
 import { MusicBrainz } from './musicbrainz'
 import { DOWNLOAD_TEMP_DIR } from './constants'
 
-const execAsync = promisify(exec)
+const execFileAsync = promisify(execFile)
+
+/** YouTube のプレイリスト ID として許可する文字集合 */
+const PLAYLIST_ID_PATTERN = /^[\w-]+$/
+
+/** YouTube の動画 ID(11 文字固定)として許可する文字集合 */
+const VIDEO_ID_PATTERN = /^[\w-]{11}$/
+
+/**
+ * プレイリスト ID が許可された文字集合であることを検証する
+ *
+ * @param playlistId 検証対象のプレイリスト ID
+ * @throws 許可されていない文字を含む場合
+ */
+function assertPlaylistId(playlistId: string) {
+  if (!PLAYLIST_ID_PATTERN.test(playlistId)) {
+    throw new Error(`Invalid playlist ID: "${playlistId}"`)
+  }
+}
+
+/**
+ * 動画 ID が YouTube の動画 ID の形式であることを検証する
+ *
+ * @param videoId 検証対象の動画 ID
+ * @throws 動画 ID の形式でない場合
+ */
+function assertVideoId(videoId: string) {
+  if (!VIDEO_ID_PATTERN.test(videoId)) {
+    throw new Error(`Invalid video ID: "${videoId}"`)
+  }
+}
 
 interface Track {
   vid: string
@@ -343,10 +373,10 @@ export function normalizeVolume(file: string) {
     // -r: apply Track gain automatically (all files set to equal loudness)
     // -c: ignore clipping warning when applying gain
     // -p: preserve original file timestamp
-    return execSync(`mp3gain -r -c -p "${file}"`)
+    return execFileSync('mp3gain', ['-r', '-c', '-p', file])
   }
   if (envApp === 'rgain3') {
-    return execSync(`replaygain "${file}"`)
+    return execFileSync('replaygain', [file])
   }
   throw new Error(`Unknown normalize volume app: ${envApp}`)
 }
@@ -354,9 +384,23 @@ export function normalizeVolume(file: string) {
 export function trimAndAddSilence(file: string, duration: number) {
   // "/tmp/download-movies/${id}.mp3" -> "/tmp/download-movies/${id}-trimmed.mp3"
   const newFile = file.replace('.mp3', '-trimmed.mp3')
-  const result = execSync(
-    `sox "${file}" "${newFile}" silence 1 0.1 1% reverse silence 1 0.1 1% reverse pad ${duration} ${duration}`,
-  )
+  const result = execFileSync('sox', [
+    file,
+    newFile,
+    'silence',
+    '1',
+    '0.1',
+    '1%',
+    'reverse',
+    'silence',
+    '1',
+    '0.1',
+    '1%',
+    'reverse',
+    'pad',
+    String(duration),
+    String(duration),
+  ])
   fs.unlinkSync(file)
   fs.renameSync(newFile, file)
   return result
@@ -374,12 +418,11 @@ export function recreateDirectories() {
 }
 
 export function getPlaylistVideoIds(playlistId: string) {
+  assertPlaylistId(playlistId)
   const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
-  const command = [
-    'yt-dlp',
+  const args = [
     '--ignore-config',
-    httpsProxy ? '--proxy' : '',
-    httpsProxy ?? '',
+    ...(httpsProxy ? ['--proxy', httpsProxy] : []),
     '--add-header',
     'Accept-Language:ja-JP',
     '--flat-playlist',
@@ -387,10 +430,21 @@ export function getPlaylistVideoIds(playlistId: string) {
     'id',
     `https://www.youtube.com/playlist?list=${playlistId}`,
   ]
-  const result = execSync(command.join(' '), {
+  const result = execFileSync('yt-dlp', args, {
     cwd: DOWNLOAD_TEMP_DIR,
   })
-  return result.toString().split('\n').filter(Boolean)
+  const logger = Logger.configure('getPlaylistVideoIds')
+  const lines = result.toString().split('\n').filter(Boolean)
+  const ids: string[] = []
+  for (const line of lines) {
+    if (VIDEO_ID_PATTERN.test(line)) {
+      ids.push(line)
+    } else {
+      // 想定外の行が 1 件あるだけでパイプライン全体が止まらないよう、除外して続行する
+      logger.warn(`⚠️ Ignoring invalid video ID in playlist: "${line}"`)
+    }
+  }
+  return ids
 }
 
 /**
@@ -405,6 +459,35 @@ export function sanitizeSecrets(text: string): string {
     .replaceAll(/(\w+:\/\/)[^/\s:@]+:[^/\s@]+@/g, '$1***:***@')
     .replaceAll(/(Cookie:\s*).+/gi, '$1***')
     .replaceAll(/(Authorization:\s*).+/gi, '$1***')
+}
+
+/**
+ * execFile 系が投げたエラーから、診断に使う stderr を取り出す
+ *
+ * コマンドが存在しない場合などは stderr が undefined になるため、
+ * Buffer または文字列のときだけ stderr として扱い、そうでなければ起動失敗の理由を返す
+ *
+ * @param error 捕捉したエラー
+ * @param command 実行したコマンド名
+ * @returns sanitize 済みの診断文字列。取り出せない場合は null
+ */
+function getErrorStderr(error: unknown, command: string): string | null {
+  if (typeof error !== 'object' || error === null) {
+    return null
+  }
+  if (
+    'stderr' in error &&
+    (Buffer.isBuffer(error.stderr) || typeof error.stderr === 'string')
+  ) {
+    const stderr = error.stderr.toString()
+    if (stderr) {
+      return sanitizeSecrets(stderr)
+    }
+  }
+  // 非同期の execFile は起動失敗時に stderr が空文字になるため、空の場合も起動失敗の理由を探す
+  return 'code' in error && typeof error.code === 'string'
+    ? `Failed to spawn ${command}: ${error.code}`
+    : null
 }
 
 /**
@@ -423,12 +506,11 @@ export interface DownloadResult {
  * @returns ダウンロード結果。失敗時は yt-dlp の exit code と sanitized stderr を含む
  */
 export function downloadVideo(videoId: string): DownloadResult {
+  assertVideoId(videoId)
   const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
-  const command = [
-    'yt-dlp',
+  const args = [
     '--ignore-config',
-    httpsProxy ? '--proxy' : '',
-    httpsProxy ?? '',
+    ...(httpsProxy ? ['--proxy', httpsProxy] : []),
     '-f',
     'ba',
     '-x',
@@ -438,11 +520,11 @@ export function downloadVideo(videoId: string): DownloadResult {
     '--add-header',
     'Accept-Language:ja-JP',
     '-o',
-    '"%(id)s.%(ext)s"',
+    '%(id)s.%(ext)s',
     `https://youtu.be/${videoId}`,
   ]
   try {
-    execSync(command.join(' '), {
+    execFileSync('yt-dlp', args, {
       cwd: DOWNLOAD_TEMP_DIR,
     })
     return { success: true, exitCode: 0, stderr: null }
@@ -452,14 +534,10 @@ export function downloadVideo(videoId: string): DownloadResult {
       typeof error === 'object' && error !== null && 'status' in error
         ? (error.status as number | null)
         : null
-    const rawStderr =
-      typeof error === 'object' && error !== null && 'stderr' in error
-        ? String(error.stderr)
-        : null
     return {
       success: false,
       exitCode,
-      stderr: rawStderr ? sanitizeSecrets(rawStderr) : null,
+      stderr: getErrorStderr(error, 'yt-dlp'),
     }
   }
 }
@@ -473,24 +551,23 @@ export function downloadVideo(videoId: string): DownloadResult {
 export async function getVideoMetadata(
   videoId: string,
 ): Promise<VideoMetadata | null> {
+  assertVideoId(videoId)
   const logger = Logger.configure('getVideoMetadata')
   const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
-  const command = [
-    'yt-dlp',
+  const args = [
     '--ignore-config',
-    httpsProxy ? '--proxy' : '',
-    httpsProxy ?? '',
+    ...(httpsProxy ? ['--proxy', httpsProxy] : []),
     '--skip-download',
     '--add-header',
     'Accept-Language:ja-JP',
     '--print',
-    '"%(duration)s;%(filesize_approx)s"',
+    '%(duration)s;%(filesize_approx)s',
     `https://youtu.be/${videoId}`,
   ]
   try {
-    // execSync だと呼び出し中 Node プロセス全体がブロックされ、複数動画分の
-    // yt-dlp 呼び出しを並列実行できないため、ここだけ非同期の exec を使う
-    const { stdout } = await execAsync(command.join(' '), {
+    // execFileSync だと呼び出し中 Node プロセス全体がブロックされ、複数動画分の
+    // yt-dlp 呼び出しを並列実行できないため、ここだけ非同期の execFile を使う
+    const { stdout } = await execFileAsync('yt-dlp', args, {
       cwd: DOWNLOAD_TEMP_DIR,
     })
     const [durationRaw, filesizeApproxRaw] = stdout.trim().split(';', 2)
@@ -501,13 +578,10 @@ export async function getVideoMetadata(
       filesizeApprox: Number.isNaN(filesizeApprox) ? null : filesizeApprox,
     }
   } catch (error) {
-    // error.message には実行したシェルコマンド全体(プロキシの認証情報が
+    // error.message には実行したコマンド全体(プロキシの認証情報が
     // 埋め込まれている場合はそれも含む)が含まれるため、ログには出力しない。
     // yt-dlp 自身のエラー出力である stderr のみを診断情報として残す
-    const stderr =
-      typeof error === 'object' && error !== null && 'stderr' in error
-        ? sanitizeSecrets(String(error.stderr))
-        : undefined
+    const stderr = getErrorStderr(error, 'yt-dlp')
     logger.warn(
       `⚠️ Failed to get metadata for ${videoId}${stderr ? `: ${stderr}` : ''}`,
     )
@@ -589,8 +663,11 @@ export function pruneVideoMetadataStore(currentIds: string[]) {
 }
 
 export function getEchoPrint(file: string) {
-  const command = ['/usr/local/bin/echoprint-codegen', `"${file}"`, '10', '30']
-  const result = execSync(command.join(' '))
+  const result = execFileSync('/usr/local/bin/echoprint-codegen', [
+    file,
+    '10',
+    '30',
+  ])
   const json: {
     code: string
   } = JSON.parse(result.toString())
