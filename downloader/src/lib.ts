@@ -192,9 +192,8 @@ function parseHttpProxy(): AxiosProxyConfig | false {
   if (!proxy) return false
 
   const parsed = new URL(proxy)
-  return !parsed.hostname || !parsed.port
-    ? false
-    : {
+  return parsed.hostname && parsed.port
+    ? {
         host: parsed.hostname,
         port: Number.parseInt(parsed.port),
         auth:
@@ -206,6 +205,7 @@ function parseHttpProxy(): AxiosProxyConfig | false {
             : undefined,
         protocol: parsed.protocol.replace(':', ''),
       }
+    : false
 }
 
 export async function getVideoInformation(
@@ -239,9 +239,9 @@ export function addId3Tag(
   const file = path.join(DOWNLOAD_TEMP_DIR, `${track.vid}.mp3`)
   const prevBuffer = fs.readFileSync(file)
   const tags =
-    !track.track || !track.artist
-      ? {}
-      : { title: track.track, artist: track.artist }
+    track.track && track.artist
+      ? { title: track.track, artist: track.artist }
+      : {}
   const newBuffer = NodeID3.update(
     {
       ...tags,
@@ -263,7 +263,6 @@ export function updateArtwork(vid: string, image: Buffer) {
         mime: 'image/jpeg',
         type: {
           id: 3,
-          name: 'front cover',
         },
         description: 'Cover',
         imageBuffer: image,
