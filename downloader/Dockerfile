@@ -64,7 +64,7 @@ RUN echo network-timeout 600000 > .yarnrc && \
 RUN node -e "require('sharp')({ create: { width: 1, height: 1, channels: 3, background: '#000' } }).png().toBuffer().then(() => process.exit(0)).catch((e) => { console.error(e); process.exit(1) })"
 
 # renovate: datasource=github-tags depName=yt-dlp/yt-dlp versioning=loose
-ENV YT_DLP_VERSION=2026.10.21
+ENV YT_DLP_VERSION=2026.10.26
 RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/download/${YT_DLP_VERSION}/yt-dlp -o /usr/local/bin/yt-dlp && \
   chmod a+rx /usr/local/bin/yt-dlp
 
