@@ -15,7 +15,7 @@ const emit = defineEmits<{
 const track = defineProps<{ track: EditingTrack }>()
 
 // --- data
-/** ダイヤログ表示有無 */
+/** ダイアログを表示しているか */
 const isActiveDialog = ref(true)
 /** 編集中トラック情報 */
 const editingTrack = ref<EditingTrack>({
@@ -38,7 +38,7 @@ const isSaveFailed = ref(false)
 const isDeleted = ref(false)
 /** 削除失敗 */
 const isDeleteFailed = ref(false)
-/** YouTubeからの動画情報取得失敗か */
+/** YouTube からの動画情報の取得に失敗したか */
 const isFetchFailed = ref(false)
 /** 残りの未確認 WebhookTrack 数 */
 const remainingWebhookTracks = ref(0)
@@ -54,7 +54,7 @@ const isRequired = (value: string) => !!value || 'Required.'
 const form = ref<VForm>()
 
 // --- methods
-/** YouTube URLから動画 IDを取得する */
+/** YouTube の URL から動画 ID を取得する */
 function getVideoId(url: string) {
   const ytLongUrlRegex = /https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/
   const ytShortUrlRegex = /https:\/\/youtu\.be\/([a-zA-Z0-9_-]+)/
@@ -71,7 +71,7 @@ function getVideoId(url: string) {
   return null
 }
 
-/** YouTubeから動画情報を取得する */
+/** YouTube から動画情報を取得する */
 function getVideoInfo() {
   const vid = getVideoId(editingTrack.value.vid)
   if (vid) {
@@ -202,13 +202,13 @@ function deleteTrack() {
 }
 
 // --- watch
-/** 保存失敗フラグが false になったら = スナックバーが閉じたら失敗理由をクリアする */
+/** 保存失敗フラグが false になったら (スナックバーが閉じたら) 失敗理由をクリアする */
 watch(isSaveFailed, (value, oldValue) => {
   if (oldValue && !value) {
     failedMessage.value = ''
   }
 })
-/** YouTubeからの動画情報取得失敗フラグが false になったら = スナックバーが閉じたら失敗理由をクリアする */
+/** 動画情報の取得失敗フラグが false になったら (スナックバーが閉じたら) 失敗理由をクリアする */
 watch(isFetchFailed, (value, oldValue) => {
   if (oldValue && !value) {
     failedMessage.value = ''

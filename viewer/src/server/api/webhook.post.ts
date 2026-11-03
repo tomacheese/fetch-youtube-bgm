@@ -85,7 +85,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // タイトルに、trackの値が含まれているかどうかをチェック
+  // 動画タイトルに Web Scrobbler のトラック名が含まれているかをチェック
   if (!videoInfo.track.toLowerCase().includes(track.toLowerCase())) {
     throw createError({
       statusCode: 400,
@@ -93,7 +93,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // MusicBrainzから情報を取得
+  // MusicBrainz から情報を取得
   let trackName = track
   let artistName = artist
   const musicbrainzInfo = await MusicBrainz.getTrackInfo(vid)

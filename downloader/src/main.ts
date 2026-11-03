@@ -46,7 +46,7 @@ class ParallelDownloadVideo {
    * すべての動画をダウンロードする
    *
    * @param runnerCount 並列実行数 (デフォルト: 3)
-   * @returns 成功したダウンロードの動画ID配列
+   * @returns 成功したダウンロードの動画 ID 配列
    */
   public async runAll(runnerCount = 3): Promise<string[]> {
     const runners = []
@@ -92,7 +92,6 @@ class ParallelDownloadVideo {
     let lastResult: DownloadResult | null = null
     let lastAttempt = 0
 
-    // MAX_DOWNLOAD_RETRIES回までリトライする
     for (let i = 0; i < MAX_DOWNLOAD_RETRIES; i++) {
       lastAttempt = i + 1
       lastResult = downloadVideo(id)
@@ -104,7 +103,7 @@ class ParallelDownloadVideo {
           return true
         } catch (error) {
           logger.warn(`⚠️ Failed to get file stats for ${id}:`, error as Error)
-          // ファイルステータス確認に失敗してもリトライを継続
+          // ファイル情報の取得に失敗してもリトライを継続する
         }
       }
       logger.info(`❌ Failed to download ${id}. Retry after 3 seconds...`)
@@ -202,8 +201,8 @@ class ParallelFetchVideoMetadata {
     }
 
     const previous = this.store[id]
-    // 1つ目の条件が false ということは previous が存在することを意味するため、
-    // 2つ目の条件では previous を non-null として扱ってよい(TS の型絞り込みによる)
+    // 1 つ目の条件が false なら previous は存在するため、
+    // 2 つ目の条件では previous を non-null として扱ってよい(TS の型絞り込みによる)
     const changed =
       previous?.duration !== metadata.duration ||
       previous.filesizeApprox !== metadata.filesizeApprox
@@ -305,7 +304,6 @@ class ParallelProcessVideo {
       logger.error('Failed to get video information', error as Error)
     }
     if (!videoInfo) {
-      // retry
       logger.info(
         `❌ Failed to get video information. Retry after 5 seconds...`,
       )
@@ -350,7 +348,6 @@ class ParallelProcessVideo {
       logger.info(`  > ${line}`)
     }
 
-    // ID3タグを付与
     logger.info(`📃 Adding ID3 tag for ${track.vid}`)
     addId3Tag(track, videoIndex, videoCount)
 
@@ -373,7 +370,7 @@ class ParallelProcessVideo {
 
     const filename = getFilename(config, track)
 
-    // 異なるファイル名で同じIDが含まれているファイルを探し、削除
+    // ファイル名が変わったために残っている、同じ動画 ID の古いファイルを削除する
     const oldEqualFilename = fs.readdirSync('/data/tracks/').filter((file) => {
       const fileUrl = getId3TagFileUrl(`/data/tracks/${file}`)
       return file !== filename && fileUrl?.split('/').pop() === id
@@ -383,8 +380,7 @@ class ParallelProcessVideo {
       fs.unlinkSync(`/data/tracks/${oldFile}`)
     }
 
-    // 音声指紋を元にファイル内容が異なるかを確認
-    // 同じな場合はスキップ
+    // 音声指紋が同じなら内容は変わっていないため、コピーせずスキップする
     if (
       fs.existsSync(`/data/tracks/${filename}`) &&
       getEchoPrint(`/data/tracks/${filename}`) ===
@@ -600,7 +596,7 @@ async function runHeavyPipeline(reason: string) {
       )
 
       if (successfullyDownloadedIds.length === 0) {
-        // 元の実装(全動画のダウンロードに失敗した場合、以降の処理を行わず終了する)を踏襲する
+        // 全動画のダウンロードに失敗した場合は、以降の処理を行わず終了する
         logger.warn(
           '⚠️ No videos were successfully downloaded. Skipping processing.',
         )

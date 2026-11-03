@@ -42,7 +42,6 @@ export class TrackManager {
     if (!fs.existsSync(this.tracksDir)) {
       return []
     }
-    // 10 minutes cache
     if (this.trackFiles && this.lastLoadedAt && Date.now() - this.lastLoadedAt < 600000) {
       return this.trackFiles
     }

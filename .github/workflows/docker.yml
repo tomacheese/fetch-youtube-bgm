@@ -1,4 +1,4 @@
-# 任意のレジストリに Docker image を公開orビルドする。
+# 任意のレジストリに Docker image を公開またはビルドする。
 # プルリクの作成・更新時に動作する。
 
 name: Docker

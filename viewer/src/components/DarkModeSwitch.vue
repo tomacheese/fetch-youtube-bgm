@@ -3,9 +3,6 @@
 <script setup lang="ts">
 import { useTheme } from 'vuetify'
 
-/**
- * Vuetify で持っているテーマアクセス用の関数
- */
 const vuetifyTheme = useTheme()
 
 // --- data
