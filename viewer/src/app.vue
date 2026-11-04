@@ -6,9 +6,8 @@ import { getReadableError } from './server/utils/readable-error'
 // --- data
 /** トラック一覧 */
 const tracks = ref<Track[]>([])
-/** アーティスト定義済み非表示か */
+/** アーティストが定義済みのトラックを非表示にするか */
 const isHideDefinedArtist = ref(false)
-/** ダウンロード済みのみ表示か */
 const isOnlyDownloaded = ref(false)
 /** 検索テキスト */
 const searchText = ref('')
@@ -16,18 +15,18 @@ const searchText = ref('')
 const remainingWebhookTracks = ref(0)
 /** 編集中トラック情報 */
 const editingTrack = ref<EditingTrack>()
-/** サムネイル解像度のフォールバック - vid ごとに現在の解像度インデックスを管理 */
+/** サムネイル解像度のフォールバック。vid ごとに現在の解像度インデックスを管理する */
 const thumbnailResolutionIndex = ref<Record<string, number>>({})
 const thumbnailResolutions = ['maxresdefault.jpg', 'sddefault.jpg', 'hqdefault.jpg', 'mqdefault.jpg', 'default.jpg']
 
 // --- methods
-/** サムネイルURL取得 */
+/** サムネイル URL を取得する */
 function getThumbnailUrl(vid: string) {
   const index = thumbnailResolutionIndex.value[vid] || 0
   return `https://i.ytimg.com/vi/${vid}/${thumbnailResolutions[index]}`
 }
 
-/** サムネイルエラーハンドリング */
+/** サムネイルの読み込みに失敗したら、次に低い解像度へ切り替える */
 function handleThumbnailError(vid: string) {
   const currentIndex = thumbnailResolutionIndex.value[vid] || 0
   if (currentIndex < thumbnailResolutions.length - 1) {
@@ -133,7 +132,6 @@ onMounted(async () => {
   await fetchTracks()
   await fetchRemainingWebhookTracks()
 
-  // 1分ごとに再取得する
   setInterval(() => {
     fetchTracks()
     fetchRemainingWebhookTracks()

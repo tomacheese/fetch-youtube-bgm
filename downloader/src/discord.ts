@@ -70,9 +70,8 @@ export async function sendDiscordMessage(
   if (!config.discord) {
     return
   }
-  // webhook or bot
+  // Webhook の設定があれば Webhook を優先し、なければ Bot で送信する
   if (config.discord.webhook_url) {
-    // webhook
     const response = await axios.post(
       config.discord.webhook_url,
       {
@@ -91,7 +90,6 @@ export async function sendDiscordMessage(
   if (!config.discord.token || !config.discord.channel_id) {
     return
   }
-  // bot
   const response = await axios.post(
     `https://discord.com/api/channels/${config.discord.channel_id}/messages`,
     {

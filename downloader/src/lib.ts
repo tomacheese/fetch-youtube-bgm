@@ -307,7 +307,7 @@ export async function getArtworkData(vid: string) {
     if (firstResponse.status === 200) {
       response = firstResponse
     } else {
-      // retry
+      // 一度だけ再試行する
       const secondResponse = await axios.get<ArrayBuffer>(url, {
         responseType: 'arraybuffer',
         validateStatus: () => true,
@@ -367,11 +367,11 @@ export async function getClippedArtwork(vid: string) {
 export function normalizeVolume(file: string) {
   const envApp = process.env.NORMALIZE_VOLUME_APP ?? 'mp3gain'
 
-  // 89dbになるように音量を調整
+  // 89 dB になるように音量を調整
   if (envApp === 'mp3gain') {
-    // -r: apply Track gain automatically (all files set to equal loudness)
-    // -c: ignore clipping warning when applying gain
-    // -p: preserve original file timestamp
+    // -r: トラックゲインを自動適用する (全ファイルの音量を揃える)
+    // -c: ゲイン適用時のクリッピング警告を無視する
+    // -p: 元のファイルのタイムスタンプを保持する
     return execFileSync('mp3gain', ['-r', '-c', '-p', file])
   }
   if (envApp === 'rgain3') {

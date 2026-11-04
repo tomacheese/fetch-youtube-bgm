@@ -1,48 +1,47 @@
 # fetch-youtube-bgm
 
-Download playlist videos, convert to mp3 and add metadata.
+YouTube のプレイリストの動画をダウンロードし、MP3 に変換してメタデータを付与する。
 
-## Features
+## 機能
 
-- Download videos added to YouTube playlist (public or limited), convert to MP3, and add meta tags (mp3tag).
-- The volume of the mp3 file is adjusted to the appropriate volume using mp3gain or replaygain.
-- With a simple web UI, you can set Title, Artist, Album and Album Artist to be assigned as metadata for YouTube videos.
-- You can download a JSON file in a file format that can be imported with the "Edited tracks" browser extension Web Scrobbler.
-  - You can use [tomacheese/auto-update-web-scrobbler](https://github.com/tomacheese/auto-update-web-scrobbler) to automatically synchronize with Web Scrobbler.
-- With an Android app such as [FolderSync](https://play.google.com/store/apps/details?id=dk.tacit.android.foldersync.lite) you can automatically store mp3 files on your smartphone.
-- Google Account credentials are not required.
-- Notification can be sent to Discord when a new track is added.
+- YouTube のプレイリスト (公開または限定公開) に追加された動画をダウンロードし、MP3 に変換して ID3 タグを付与する。
+- mp3gain または ReplayGain (rgain3) で MP3 の音量を揃える。
+- シンプルな Web UI で、動画に付与するタイトル・アーティスト・アルバム・アルバムアーティストを設定できる。
+- ブラウザ拡張機能 Web Scrobbler の "Edited tracks" にインポートできる形式の JSON をダウンロードできる。
+  - [tomacheese/auto-update-web-scrobbler](https://github.com/tomacheese/auto-update-web-scrobbler) を使うと Web Scrobbler と自動で同期できる。
+- [FolderSync](https://play.google.com/store/apps/details?id=dk.tacit.android.foldersync.lite) などの Android アプリを使うと、MP3 ファイルをスマートフォンへ自動で保存できる。
+- Google アカウントの認証情報は不要。
+- 新しいトラックが追加されたときに Discord へ通知できる。
 
-## Screenshots
+## スクリーンショット
 
-### Light mode
+### ライトモード
 
-| Viewer Top | Edit Track Page |
+| 一覧画面 | トラック編集画面 |
 | :-: | :-: |
 | ![](assets/screenshot-viewer-top-light.png) | ![](assets/screenshot-viewer-edittrack-light.png) |
 
-### Dark mode
+### ダークモード
 
-| Viewer Top | Edit Track Page |
+| 一覧画面 | トラック編集画面 |
 | :-: | :-: |
 | ![](assets/screenshot-viewer-top-dark.png) | ![](assets/screenshot-viewer-edittrack-dark.png) |
 
-## Installation
+## インストール
 
-### 1. Create a limited or public playlist on YouTube
+### 1. YouTube で限定公開または公開のプレイリストを作成する
 
-Please see [Create & manage playlists - YouTube Help](https://support.google.com/youtube/answer/57792)
+[再生リストの作成と管理 - YouTube ヘルプ](https://support.google.com/youtube/answer/57792)を参照する。
 
-Get the ID of the playlist. This will be a string like `PLOCwArr8ScAyyr6EtRgt1TYLsOSoLBiEk`.  
-You can get it from the list parameter of the playlist URL.
+作成したプレイリストの ID を控える。`PLOCwArr8ScAyyr6EtRgt1TYLsOSoLBiEk` のような文字列で、プレイリスト URL の `list` パラメーターから取得できる。
 
-### 2. Create a Docker compose file
+### 2. Docker Compose ファイルを作成する
 
-Create `compose.yaml` in any folder and write the following. Note that the strings enclosed in `<` and `>` should be replaced with the correct ones.
+任意のフォルダーに `compose.yaml` を作成し、次の内容を書く。`<` と `>` で囲んだ部分は実際の値に置き換える。
 
-- `<Timezone>`: Your time zone, e.g. Asia/Tokyo.
-- `<ServerHost>`: Hostname of the server on which fetch-youtube-bgm will be installed, or IP address.
-- `<ViewerPort>`: Port number to expose the fetch-youtube-bgm viewer
+- `<Timezone>`: タイムゾーン。例: `Asia/Tokyo`
+- `<ServerHost>`: fetch-youtube-bgm を動かすサーバーのホスト名または IP アドレス
+- `<ViewerPort>`: viewer を公開するポート番号
 
 ```yaml
 services:
@@ -51,8 +50,8 @@ services:
     environment:
       - TZ=<Timezone>
       - BASE_URL=http://<ServerHost>:<ViewerPort>
-      # - DETECTION_INTERVAL_SECONDS=300 # Optional: interval (seconds) for detecting new videos in the playlist. Default: 300 (5 minutes)
-      # - PIPELINE_INTERVAL_SECONDS=3600 # Optional: interval (seconds) for the full download/processing pipeline. Default: 3600 (1 hour)
+      # - DETECTION_INTERVAL_SECONDS=300 # 省略可: プレイリストの新規動画を検出する間隔 (秒)。デフォルト: 300 (5 分)
+      # - PIPELINE_INTERVAL_SECONDS=3600 # 省略可: ダウンロード・変換のパイプライン全体を実行する間隔 (秒)。デフォルト: 3600 (1 時間)
     volumes:
       - type: bind
         source: ./data
@@ -76,43 +75,53 @@ services:
 ```
 
 > [!WARNING]
-> The viewer has no authentication: anyone who can reach `<ViewerPort>` can read and edit your tracks. Expose it only to a trusted network (e.g. your LAN or behind a VPN / reverse proxy with access control), and do not publish it directly to the internet.
+> viewer には認証がない。`<ViewerPort>` に到達できる人は誰でもトラックを閲覧・編集できる。LAN 内や、アクセス制御を設定した VPN / リバースプロキシの背後など、信頼できるネットワークにだけ公開し、インターネットへ直接公開しないこと。
 
-Every hourly run first performs a lightweight metadata pre-filter (via `yt-dlp --skip-download`) against each playlist video, and only videos whose `duration` / `filesize_approx` changed since the last run go through the full download → normalize → trim → fingerprint pipeline. This significantly reduces CPU load when the playlist content is mostly unchanged.
+パイプラインの実行時は、まず各動画に対して `yt-dlp --skip-download` で軽量なメタデータの一次フィルタを行う。前回から `duration` / `filesize_approx` が変わった動画 (または出力済みの MP3 が見つからない動画) だけが、ダウンロード、音量調整、前後の無音の調整、音声指紋の比較という本処理に進む。プレイリストにほとんど変更がないときの CPU 負荷を大きく減らせる。
 
-The `downloader` service optionally accepts the following environment variable:
+`downloader` は、次の環境変数も受け付ける (すべて省略可)。
 
-- `RUNNER_COUNT_FOR_METADATA_CHECK`: Number of parallel workers used for the metadata pre-filter check at the start of each hourly run. Defaults to `5`.
+- `DETECTION_INTERVAL_SECONDS`: 新規動画を検出する間隔 (秒)。デフォルトは `300`。新しい動画を検出すると、パイプラインを即座に実行する。
+- `PIPELINE_INTERVAL_SECONDS`: パイプラインを定期実行する間隔 (秒)。デフォルトは `3600`。
+- `RUNNER_COUNT_FOR_METADATA_CHECK`: メタデータの一次フィルタを並列実行する数。デフォルトは `5`。
+- `RUNNER_COUNT_FOR_DOWNLOAD`: ダウンロードの並列実行数。デフォルトは `3`。
+- `RUNNER_COUNT_FOR_PROCESSING`: 変換・タグ付けなどの処理の並列実行数。デフォルトは `3`。
+- `NORMALIZE_VOLUME_APP`: 音量調整に使うアプリ。`mp3gain` (デフォルト) または `rgain3`。
+- `HTTPS_PROXY` / `HTTP_PROXY`: YouTube への通信に使うプロキシ。
 
-### 3. Create a configuration file
+### 3. 設定ファイルを作成する
 
-Create `data/config.json` and write the following JSON. Note that the strings enclosed in `<` and `>` should be replaced with the correct ones.
+`data/config.json` を作成し、次の JSON を書く。`<` と `>` で囲んだ部分は実際の値に置き換える。
 
-- `<YouTubePlaylistId>`: The ID of the playlist you have just obtained
-- `<DiscordWebhookUrl>`: Discord Webhook Url (Optional)
-- `<DiscordBotToken>`: Discord Bot Token (Optional)
-- `<DiscordChannelId>`: Discord Channel Id (Optional)
+- `<YouTubePlaylistId>`: 控えておいたプレイリストの ID
+- `<DiscordWebhookUrl>`: Discord の Webhook URL (省略可)
+- `<DiscordBotToken>`: Discord の Bot トークン (省略可)
+- `<DiscordChannelId>`: Discord のチャンネル ID (省略可)
 
-```json
+```jsonc
 {
   "playlistId": "<YouTubePlaylistId>",
-  "discord": { // Optional
+  "discord": { // 省略可
     "webhook_url": "<DiscordWebhookUrl>"
-    // Or Bot token and channel ID
+    // Webhook の代わりに Bot トークンとチャンネル ID を使う場合
     // "token": "<DiscordBotToken>",
     // "channel_id": "<DiscordChannelId>"
   }
 }
 ```
 
-### 4. Run
+上の例は説明用にコメントを含めている。実際の `config.json` にコメントは書けない。
 
-Execute the following command:
+ファイル名から取り除く文字は、`filename.sanitizeChars` (文字列の配列) で変更できる。デフォルトは `/` `\` `?` `%` `*` `:` `|` `"` `<` `>`。
+
+### 4. 起動する
+
+次のコマンドを実行する。
 
 ```shell
-docker compose up --build -d
+docker compose up -d
 ```
 
-## License
+## ライセンス
 
-The license for this project is [MIT License](LICENSE).
+このプロジェクトのライセンスは [MIT License](LICENSE) である。

@@ -20,5 +20,5 @@ export default defineEventHandler((event) => {
   WebhookTrackManager.delete(vid)
 
   event.node.res.statusCode = 204
-  return '' // empty body
+  return ''
 })

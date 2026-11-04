@@ -2,13 +2,13 @@ import fs from 'node:fs'
 
 export interface Config {
   playlistId: string
-  /** Discord webhook URL or bot token */
+  /** Discord 通知の設定。Webhook か Bot のどちらかを指定する */
   discord?: {
-    /** Discord webhook URL (required if using webhook) */
+    /** Webhook URL (Webhook を使う場合に必須) */
     webhook_url?: string
-    /** Discord bot token (required if using bot) */
+    /** Bot トークン (Bot を使う場合に必須) */
     token?: string
-    /** Discord channel ID (required if using bot) */
+    /** チャンネル ID (Bot を使う場合に必須) */
     channel_id?: string
   }
   filename?: {
