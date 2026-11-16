@@ -71,7 +71,7 @@ viewer に型チェック用のスクリプトはない。
 
 - `data/config.json` の認証情報 (Discord の Webhook URL / Bot トークン) をコミットしない。ログにも出力しない。
 - 外部プロセスは `execFile` / `execFileSync` に引数配列で渡し、シェルを経由しない。プレイリスト ID と動画 ID は `assertPlaylistId` / `assertVideoId` で検証してから `yt-dlp` に渡す。
-- `downloadVideo` / `getVideoMetadata` の `yt-dlp` 失敗ログには `error.message` を出さない (プロキシの認証情報を含むコマンド全体が入りうる)。stderr を `sanitizeSecrets` に通したものだけを診断情報として使う。なお `getPlaylistVideoIds` は `--proxy` 付きの `execFileSync` を try/catch せず呼んでおり、この規則の例外になっている (生のエラーが `main.ts` の `Failed to run heavy pipeline` / `Failed to run detection loop` のログに渡る)。
+- `getPlaylistVideoIds` / `downloadVideo` / `getVideoMetadata` の `yt-dlp` 失敗ログには `error.message` を出さない (プロキシの認証情報を含むコマンド全体が入りうる)。stderr を `sanitizeSecrets` に通したものだけを診断情報として使う。
 - 動画メタデータのストア (`/data/video-metadata.json`) は、読み込み失敗時に空として扱い (fail-open)、書き込みは一時ファイル経由のリネームでアトミックに行う。
 - `skipLibCheck` を有効にしない。
 - ログのエラーメッセージで絵文字を使う場合は、既存のメッセージの付け方に合わせる。
