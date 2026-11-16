@@ -416,36 +416,6 @@ export function recreateDirectories() {
   }
 }
 
-export function getPlaylistVideoIds(playlistId: string) {
-  assertPlaylistId(playlistId)
-  const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
-  const args = [
-    '--ignore-config',
-    ...(httpsProxy ? ['--proxy', httpsProxy] : []),
-    '--add-header',
-    'Accept-Language:ja-JP',
-    '--flat-playlist',
-    '--print',
-    'id',
-    `https://www.youtube.com/playlist?list=${playlistId}`,
-  ]
-  const result = execFileSync('yt-dlp', args, {
-    cwd: DOWNLOAD_TEMP_DIR,
-  })
-  const logger = Logger.configure('getPlaylistVideoIds')
-  const lines = result.toString().split('\n').filter(Boolean)
-  const ids: string[] = []
-  for (const line of lines) {
-    if (VIDEO_ID_PATTERN.test(line)) {
-      ids.push(line)
-    } else {
-      // 想定外の行が 1 件あるだけでパイプライン全体が止まらないよう、除外して続行する
-      logger.warn(`⚠️ Ignoring invalid video ID in playlist: "${line}"`)
-    }
-  }
-  return ids
-}
-
 /**
  * stderr 等の診断文字列から秘密情報(URL 内の認証情報、Cookie / Authorization
  * ヘッダーの値)を scrub する
@@ -487,6 +457,45 @@ function getErrorStderr(error: unknown, command: string): string | null {
   return 'code' in error && typeof error.code === 'string'
     ? `Failed to spawn ${command}: ${error.code}`
     : null
+}
+
+export function getPlaylistVideoIds(playlistId: string) {
+  assertPlaylistId(playlistId)
+  const httpsProxy = process.env.HTTPS_PROXY ?? process.env.https_proxy
+  const args = [
+    '--ignore-config',
+    ...(httpsProxy ? ['--proxy', httpsProxy] : []),
+    '--add-header',
+    'Accept-Language:ja-JP',
+    '--flat-playlist',
+    '--print',
+    'id',
+    `https://www.youtube.com/playlist?list=${playlistId}`,
+  ]
+  let result: Buffer
+  try {
+    result = execFileSync('yt-dlp', args, {
+      cwd: DOWNLOAD_TEMP_DIR,
+      stdio: 'pipe',
+    })
+  } catch (error) {
+    const stderr = getErrorStderr(error, 'yt-dlp')
+    throw new Error(
+      `Failed to get playlist video IDs${stderr ? `: ${stderr}` : ''}`,
+    )
+  }
+  const logger = Logger.configure('getPlaylistVideoIds')
+  const lines = result.toString().split('\n').filter(Boolean)
+  const ids: string[] = []
+  for (const line of lines) {
+    if (VIDEO_ID_PATTERN.test(line)) {
+      ids.push(line)
+    } else {
+      // 想定外の行が 1 件あるだけでパイプライン全体が止まらないよう、除外して続行する
+      logger.warn(`⚠️ Ignoring invalid video ID in playlist: "${line}"`)
+    }
+  }
+  return ids
 }
 
 /**
