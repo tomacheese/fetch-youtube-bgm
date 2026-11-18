@@ -32,6 +32,7 @@ YouTube プレイリストの動画をダウンロードし、MP3 へ変換し�
 ```bash
 yarn install       # 依存関係のインストール
 yarn dev           # 開発モードで実行 (ts-node-dev)
+yarn test          # Node.js 組み込みのテストを実行
 yarn compile:test  # 型チェックのみ (出力なし)
 yarn lint          # Prettier / ESLint / tsc
 yarn fix           # Prettier / ESLint の自動修正
@@ -62,9 +63,9 @@ viewer に型チェック用のスクリプトはない。
 
 ## テスト
 
-自動テストはない。変更後は次を実行して確認する。
+変更後は次を実行して確認する。
 
-- downloader: `yarn lint` と `yarn compile:test`
+- downloader: `yarn test`、`yarn lint`、`yarn compile:test`
 - viewer: `yarn lint`
 
 ## 守るべきルール
