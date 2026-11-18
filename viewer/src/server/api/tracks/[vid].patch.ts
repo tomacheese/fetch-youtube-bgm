@@ -10,28 +10,26 @@ export default defineEventHandler(async (event) => {
   const vid = event.context.params.vid
 
   const body = await readBody(event)
-  if (!body || typeof body !== 'object') {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Invalid request body'
     })
   }
 
-  const {
-    track: title,
-    artist,
-    album,
-    albumArtist
-  } = body satisfies {
-      track: string | null | undefined
-      artist: string | null | undefined
-      album: string | null | undefined
-      albumArtist: string | null | undefined
-    }
+  const { track: title, artist, album, albumArtist } = body
+  if (
+    (title !== undefined && typeof title !== 'string') ||
+    [artist, album, albumArtist].some(value => value !== undefined && value !== null && typeof value !== 'string')
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid track fields'
+    })
+  }
 
   const track = TrackManager.getTrack(vid)
-  // track.track か title があれば OK
-  const newTitle = title || track?.track
+  const newTitle = title === undefined ? track?.track : title
   if (!newTitle) {
     throw createError({
       statusCode: 400,
@@ -40,9 +38,9 @@ export default defineEventHandler(async (event) => {
   }
   const newTrack = {
     track: newTitle,
-    artist: artist || track?.artist || null,
-    album: album || track?.album || null,
-    albumArtist: albumArtist || track?.albumArtist || null
+    artist: artist === undefined ? track?.artist ?? null : artist,
+    album: album === undefined ? track?.album ?? null : album,
+    albumArtist: albumArtist === undefined ? track?.albumArtist ?? null : albumArtist
   }
 
   TrackManager.set(vid, newTrack)

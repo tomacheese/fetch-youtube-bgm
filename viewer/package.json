@@ -12,6 +12,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "test": "node --test tests/*.test.mjs",
     "lint": "run-p -c lint:eslint",
     "fix": "run-s fix:eslint",
     "lint:eslint": "eslint . -c eslint.config.mjs",
