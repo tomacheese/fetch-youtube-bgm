@@ -676,10 +676,23 @@ export function getEchoPrint(file: string) {
     '10',
     '30',
   ])
-  const json: {
-    code: string
-  } = JSON.parse(result.toString())
-  return json.code
+  const json: unknown = JSON.parse(result.toString())
+  if (!Array.isArray(json) || json.length !== 1) {
+    throw new Error('Invalid echoprint-codegen response')
+  }
+  const entry: unknown = json[0]
+  if (
+    typeof entry !== 'object' ||
+    entry === null ||
+    Array.isArray(entry) ||
+    'error' in entry ||
+    !('code' in entry) ||
+    typeof entry.code !== 'string' ||
+    entry.code.trim().length === 0
+  ) {
+    throw new Error('Invalid echoprint-codegen response')
+  }
+  return entry.code
 }
 
 export function getHumanReadableSize(bytes: number) {
