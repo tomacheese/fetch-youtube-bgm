@@ -1,19 +1,33 @@
 import type { FileTrack } from '~/models/track';
 import { TrackManager } from '../utils/track-manager';
 import { WebhookTrackManager } from '../utils/webhook-track-manager';
-import type { WebScrobblerWebhookBody } from '~/models/web-scrobbler';
 import { MusicBrainz } from '../utils/musicbrainz';
 
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function validateBody(body: any): body is WebScrobblerWebhookBody {
-  // 最低限必要なプロパティがあるかどうかをチェック
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function validateBody(body: unknown): body is {
+  data: {
+    song: {
+      parsed: { uniqueID: string; track: string; artist: string | null }
+      flags: { isCorrectedByUser: boolean }
+    }
+  }
+} {
+  if (!isRecord(body) || !isRecord(body.data) || !isRecord(body.data.song)) {
+    return false
+  }
+
+  const { parsed, flags } = body.data.song
   return (
-    typeof body === 'object' &&
-    typeof body.data.song.parsed.uniqueID === 'string' &&
-    typeof body.data.song.parsed.track === 'string' &&
-    (typeof body.data.song.parsed.artist === 'string' || body.data.song.parsed.artist === null) &&
-    typeof body.data.song.flags.isCorrectedByUser === 'boolean'
+    isRecord(parsed) &&
+    isRecord(flags) &&
+    typeof parsed.uniqueID === 'string' &&
+    typeof parsed.track === 'string' &&
+    (typeof parsed.artist === 'string' || parsed.artist === null) &&
+    typeof flags.isCorrectedByUser === 'boolean'
   )
 }
 
@@ -45,7 +59,7 @@ function getVideoInfo(vid: string): Promise<FileTrack | null> {
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  if (!body || typeof body !== 'object' || !validateBody(body)) {
+  if (!validateBody(body)) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Invalid request body'
