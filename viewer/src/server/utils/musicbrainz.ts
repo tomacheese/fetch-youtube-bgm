@@ -240,10 +240,10 @@ export class MusicBrainz {
     let releaseId: string | null = null
     for (const url of youtubeUrls) {
       const searchResult = await this.searchUrl(url)
-      if (searchResult.urls.length === 0) {
+      const urlMatch = searchResult.urls[0]
+      if (!urlMatch) {
         continue
       }
-      const urlMatch = searchResult.urls[0]
       if (urlMatch.resource === url) {
         const relations = urlMatch['relation-list']
         if (relations) {
@@ -267,7 +267,7 @@ export class MusicBrainz {
     const release = await this.getRelease(releaseId)
 
     const title = release.title
-    const artist = release['artist-credit']?.[0].artist.name ?? ''
+    const artist = release['artist-credit']?.[0]?.artist.name ?? ''
 
     return { title, artist }
   }

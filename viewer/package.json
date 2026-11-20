@@ -13,9 +13,10 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "test": "node --test tests/*.test.mjs",
-    "lint": "run-p -c lint:eslint",
+    "lint": "run-p -c lint:eslint lint:tsc",
     "fix": "run-s fix:eslint",
     "lint:eslint": "eslint . -c eslint.config.mjs",
+    "lint:tsc": "nuxt typecheck",
     "fix:eslint": "eslint . -c eslint.config.mjs --fix"
   },
   "devDependencies": {

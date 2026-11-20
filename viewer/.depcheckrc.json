@@ -1,0 +1,13 @@
+{
+  "ignores": [
+    "@book000/eslint-config",
+    "@mdi/font",
+    "@nuxt/eslint",
+    "sass",
+    "vite-plugin-eslint",
+    "vue-tsc",
+    "ofetch",
+    "~~",
+    "~"
+  ]
+}
