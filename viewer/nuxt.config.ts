@@ -42,7 +42,7 @@ export default defineNuxtConfig({
           content: '#ff0000'
         }
       ],
-      noscript: [{ children: 'This website requires JavaScript.' }]
+      noscript: [{ textContent: 'This website requires JavaScript.' }]
     }
   },
 

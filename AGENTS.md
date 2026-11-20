@@ -46,11 +46,9 @@ yarn fix           # Prettier / ESLint の自動修正
 yarn install  # 依存関係のインストール (postinstall で nuxt prepare を実行)
 yarn dev      # 開発サーバー
 yarn build    # 本番ビルド
-yarn lint     # ESLint
+yarn lint     # ESLint / 型検査 (nuxt typecheck)
 yarn fix      # ESLint の自動修正
 ```
-
-viewer に型チェック用のスクリプトはない。
 
 ## ディレクトリ構成
 

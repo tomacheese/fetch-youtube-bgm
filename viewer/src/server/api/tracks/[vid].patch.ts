@@ -1,13 +1,13 @@
 import { TrackManager } from '../../utils/track-manager'
 
 export default defineEventHandler(async (event) => {
-  if (!event.context.params) {
+  const vid = event.context.params?.vid
+  if (!vid) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Required parameter "vid" is missing'
     })
   }
-  const vid = event.context.params.vid
 
   const body = await readBody(event)
   if (!body || typeof body !== 'object' || Array.isArray(body)) {

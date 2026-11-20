@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { VForm } from 'vuetify/components'
-import type { EditingTrack } from '../models/track';
+import type { EditingTrack, Track } from '../models/track';
 import type { YouTubeOembed } from '../models/youtube-oembed';
 import { getReadableError } from '../server/utils/readable-error'
 
@@ -92,7 +92,7 @@ function getVideoInfo() {
 }
 
 function nextWebhookTrack() {
-  useFetch('/api/webhook-tracks/')
+  useFetch<Track[]>('/api/webhook-tracks/')
     .then((response) => {
       if (response.error.value) {
         getReadableError(response.error.value).then((message) => {
@@ -105,7 +105,8 @@ function nextWebhookTrack() {
         return
       }
       remainingWebhookTracks.value = response.data.value.length - 1
-      if (response.data.value.length === 0) {
+      const firstTrack = response.data.value[0]
+      if (!firstTrack) {
         isAllWebhookTracksChecked.value = true
         setTimeout(() => {
           isActiveDialog.value = false
@@ -113,7 +114,7 @@ function nextWebhookTrack() {
         return
       }
       editingTrack.value = {
-        ...response.data.value[0],
+        ...firstTrack,
         isNew: false,
         isWebhookTrack: true
       }
