@@ -23,7 +23,7 @@
     "test": "node --test tests/*.test.mjs"
   },
   "devDependencies": {
-    "@book000/eslint-config": "1.16.123",
+    "@book000/eslint-config": "1.17.3",
     "@book000/node-utils": "1.26.33",
     "@types/node": "26.6.6",
     "@types/sharp": "0.32.0",
