@@ -46,6 +46,7 @@ const remainingWebhookTracks = ref(0)
 const isAllWebhookTracksChecked = ref(false)
 /** 失敗理由 */
 const failedMessage = ref('')
+const deleteFailedMessage = ref('')
 
 // --- data validation
 const isRequired = (value: string) => !!value || 'Required.'
@@ -182,7 +183,7 @@ function deleteTrack() {
     .then((response) => {
       if (response.error.value) {
         getReadableError(response.error.value).then((message) => {
-          failedMessage.value = message
+          deleteFailedMessage.value = message
         })
         isDeleteFailed.value = true
         return
@@ -194,7 +195,7 @@ function deleteTrack() {
       }, 3000)
     })
     .catch((error) => {
-      failedMessage.value = String(error)
+      deleteFailedMessage.value = String(error)
       isDeleteFailed.value = true
     })
     .finally(() => {
@@ -207,6 +208,11 @@ function deleteTrack() {
 watch(isSaveFailed, (value, oldValue) => {
   if (oldValue && !value) {
     failedMessage.value = ''
+  }
+})
+watch(isDeleteFailed, (value, oldValue) => {
+  if (oldValue && !value) {
+    deleteFailedMessage.value = ''
   }
 })
 /** 動画情報の取得失敗フラグが false になったら (スナックバーが閉じたら) 失敗理由をクリアする */
@@ -327,11 +333,11 @@ onMounted(() => {
         </v-btn>
       </template>
     </v-snackbar>
-    <v-snackbar v-model="isSaveFailed" color="error">
+    <v-snackbar v-model="isDeleteFailed" color="error">
       <v-icon>mdi-close</v-icon>
-      Failed to delete track: {{ failedMessage }}
+      Failed to delete track: {{ deleteFailedMessage }}
       <template #actions>
-        <v-btn variant="text" @click="isSaveFailed = false">
+        <v-btn variant="text" @click="isDeleteFailed = false">
           Close
         </v-btn>
       </template>
