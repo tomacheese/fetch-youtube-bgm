@@ -231,27 +231,45 @@ export async function getVideoInformation(
   }
 }
 
+/** 保存済みメタデータを既存の ID3 タグに反映する。 */
+export function updateTrackTags(
+  file: string,
+  track: Track,
+  trackNumber?: string,
+) {
+  const prevBuffer = fs.readFileSync(file)
+  const existing = NodeID3.read(prevBuffer)
+  if (
+    trackNumber === undefined &&
+    (existing.title ?? '') === (track.track ?? '') &&
+    (existing.artist ?? '') === (track.artist ?? '') &&
+    (existing.album ?? '') === (track.album ?? '') &&
+    (existing.performerInfo ?? '') === (track.albumArtist ?? '') &&
+    existing.fileUrl === `https://youtu.be/${track.vid}`
+  ) {
+    return
+  }
+  const newBuffer = NodeID3.update(
+    {
+      title: track.track ?? '',
+      artist: track.artist ?? '',
+      album: track.album ?? '',
+      performerInfo: track.albumArtist ?? '',
+      fileUrl: `https://youtu.be/${track.vid}`,
+      ...(trackNumber && { trackNumber, generalObject: [] }),
+    },
+    prevBuffer,
+  )
+  fs.writeFileSync(file, newBuffer)
+}
+
 export function addId3Tag(
   track: Track,
   videoIndex: number,
   videoCount: number,
 ) {
   const file = path.join(DOWNLOAD_TEMP_DIR, `${track.vid}.mp3`)
-  const prevBuffer = fs.readFileSync(file)
-  const tags =
-    track.track && track.artist
-      ? { title: track.track, artist: track.artist }
-      : {}
-  const newBuffer = NodeID3.update(
-    {
-      ...tags,
-      fileUrl: `https://youtu.be/${track.vid}`,
-      trackNumber: `${videoIndex}/${videoCount}`,
-      generalObject: [],
-    },
-    prevBuffer,
-  )
-  fs.writeFileSync(file, newBuffer)
+  updateTrackTags(file, track, `${videoIndex}/${videoCount}`)
 }
 
 export function updateArtwork(vid: string, image: Buffer) {

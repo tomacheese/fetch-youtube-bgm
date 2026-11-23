@@ -15,6 +15,7 @@ import {
   getId3TagFileUrl,
   getPlaylistVideoIds,
   getTrack,
+  getDefinedTracks,
   getVideoInformation,
   getVideoMetadata,
   getVideoMetadataStore,
@@ -24,6 +25,7 @@ import {
   isSetArtwork,
   getArtworkData,
   updateVideoMetadata,
+  updateTrackTags,
   pruneVideoMetadataStore,
   VideoMetadata,
 } from './lib'
@@ -131,7 +133,7 @@ class ParallelDownloadVideo {
   }
 }
 
-class ParallelFetchVideoMetadata {
+export class ParallelFetchVideoMetadata {
   private readonly ids: string[]
   private readonly videoCount: number
   private readonly store: Record<string, VideoMetadata | undefined>
@@ -229,11 +231,16 @@ class ParallelFetchVideoMetadata {
     const config = getConfig()
     const track = await getTrack(id)
     const filename = getFilename(config, track)
-    return fs.existsSync(`/data/tracks/${filename}`)
+    const file = `/data/tracks/${filename}`
+    if (!fs.existsSync(file)) {
+      return false
+    }
+    updateTrackTags(file, track)
+    return true
   }
 }
 
-class ParallelProcessVideo {
+export class ParallelProcessVideo {
   private readonly ids: string[]
   private readonly videoCount: number
   private readonly metadataByVideoId: Map<string, VideoMetadata>
@@ -321,7 +328,7 @@ class ParallelProcessVideo {
 
     // 登録されているトラック情報を取得
     const track = await getTrack(id)
-    if (!track.track) {
+    if (!track.track && getDefinedTracks().every((item) => item.vid !== id)) {
       // トラック情報がない場合は、デフォルト値を設定
       addTrack(id, videoInfo)
     }
@@ -386,6 +393,7 @@ class ParallelProcessVideo {
       getEchoPrint(`/data/tracks/${filename}`) ===
         getEchoPrint(downloadedFilePath)
     ) {
+      updateTrackTags(`/data/tracks/${filename}`, track)
       logger.info(`⏭️ Skipping because the file is the same: ${id}`)
       this.updateMetadataStoreIfFetched(id)
       return
@@ -689,9 +697,12 @@ async function main() {
   }, DETECTION_INTERVAL_SECONDS * 1000)
 }
 
-;(async () => {
-  await main().catch((error: unknown) => {
-    const logger = Logger.configure('main')
-    logger.error('Error', error as Error)
-  })
-})()
+// eslint-disable-next-line unicorn/prefer-module -- CommonJS の起動時のみ実行する。
+if (require.main === module) {
+  ;(async () => {
+    await main().catch((error: unknown) => {
+      const logger = Logger.configure('main')
+      logger.error('Error', error as Error)
+    })
+  })()
+}
