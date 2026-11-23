@@ -534,6 +534,7 @@ export function downloadVideo(videoId: string): DownloadResult {
   try {
     execFileSync('yt-dlp', args, {
       cwd: DOWNLOAD_TEMP_DIR,
+      stdio: 'pipe',
     })
     return { success: true, exitCode: 0, stderr: null }
   } catch (error) {
