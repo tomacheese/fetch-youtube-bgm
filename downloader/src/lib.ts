@@ -9,6 +9,7 @@ import { promisify } from 'node:util'
 import { Config } from './configuration'
 import { MusicBrainz } from './musicbrainz'
 import { DOWNLOAD_TEMP_DIR } from './constants'
+import { updateTracks } from './tracks-store'
 
 const execFileAsync = promisify(execFile)
 
@@ -121,20 +122,14 @@ export async function getTrack(vid: string): Promise<Track> {
 }
 
 export function addTrack(vid: string, information: VideoInformation | null) {
-  const prev = fs.existsSync('/data/tracks.json')
-    ? (JSON.parse(fs.readFileSync('/data/tracks.json').toString()) as TrackFile)
-    : {}
-  const newTrack = {
-    track: information?.title ?? null,
-    artist: null,
-    album: null,
-    albumArtist: null,
-  }
-  const next = {
-    ...prev,
-    [vid]: newTrack,
-  }
-  fs.writeFileSync('/data/tracks.json', JSON.stringify(next))
+  updateTracks<TrackFile>('/data/tracks.json', (tracks) => {
+    tracks[vid] = {
+      track: information?.title ?? null,
+      artist: null,
+      album: null,
+      albumArtist: null,
+    }
+  })
 }
 
 export function getFilename(config: Config, track: Track) {

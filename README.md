@@ -122,6 +122,10 @@ services:
 docker compose up -d
 ```
 
+### tracks.json のロック
+
+`tracks.json` の更新中にプロセスが強制終了した場合、`tracks.json.lock` ディレクトリが残り、以後の更新はタイムアウトします。downloader と viewer の両方を停止して更新処理が動作していないことを確認した後、このディレクトリを削除してから再起動してください。
+
 ## ライセンス
 
 このプロジェクトのライセンスは [MIT License](LICENSE) である。
